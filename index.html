@@ -2,315 +2,64 @@
 <html lang="es">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>GEOMERCADO - Sistema Comercial Pro</title>
-    <script src="https://cdn.jsdelivr.net/npm/tesseract.js@5/dist/tesseract.min.js"></script>
-    <script src="https://unpkg.com/html5-qrcode"></script>
+    <title>GEOMERCADO</title>
     <style>
-        body { background-color: #0b0e14; color: #ffffff; font-family: 'Segoe UI', Arial, sans-serif; margin: 0; padding: 15px; box-sizing: border-box; display: flex; flex-direction: column; align-items: center; min-height: 100vh; }
-        .app-container { width: 100%; max-width: 450px; display: flex; flex-direction: column; gap: 16px; }
-        
-        /* HEADER Y MENÚ PRINCIPAL */
-        #menu-principal { display: flex; flex-direction: column; align-items: center; text-align: center; margin-top: 20px; width: 100%; }
-        .logo-grande { width: 120px; height: 120px; margin-bottom: 10px; filter: drop-shadow(0 0 12px #00ff66); }
-        .main-title { font-size: 28px; font-weight: 900; letter-spacing: 2px; }
-        .main-title span { color: #00ff66; }
-        .version-tag { font-size: 11px; color: #8fa0b7; font-weight: bold; letter-spacing: 1px; margin-bottom: 15px; }
-        .role-badge { background-color: #161a23; border: 1px solid #242c3d; padding: 6px 16px; border-radius: 20px; font-size: 13px; color: #8fa0b7; margin-bottom: 20px; font-weight: bold; }
-        
-        .menu-grid { display: flex; flex-direction: column; gap: 12px; width: 100%; }
-        .btn-menu { background: linear-gradient(135deg, #161a23 0%, #0f121a 100%); border: 1px solid #242c3d; border-radius: 14px; padding: 16px; color: #ffffff; font-size: 15px; font-weight: bold; text-align: left; cursor: pointer; display: flex; align-items: center; gap: 15px; }
-        .btn-menu:focus, .btn-menu:active { border-color: #00ff66; box-shadow: 0 0 10px rgba(0, 255, 102, 0.2); }
-        .btn-menu .icon { font-size: 22px; color: #00ff66; }
-
-        /* MÓDULOS DEL SISTEMA */
-        .modulo-app { display: none; width: 100%; flex-direction: column; gap: 14px; box-sizing: border-box; }
-        .header-modulo { display: flex; align-items: center; justify-content: space-between; padding-bottom: 8px; border-bottom: 1px solid #242c3d; }
-        .btn-back { background-color: #161a23; border: 1px solid #242c3d; color: #fff; padding: 8px 12px; border-radius: 8px; font-weight: bold; cursor: pointer; }
-
-        /* CARRITO DE COMPRAS */
-        .cart-card { background-color: #11151d; border: 1px dashed #242c3d; border-radius: 14px; padding: 12px; width: 100%; box-sizing: border-box; }
-        .cart-title { font-size: 11px; color: #8fa0b7; text-transform: uppercase; margin-bottom: 6px; font-weight: bold; text-align: center; }
-        .cart-items-container { display: flex; flex-direction: column; gap: 6px; max-height: 120px; overflow-y: auto; }
-        .cart-item { display: flex; justify-content: space-between; font-size: 14px; border-bottom: 1px solid #161a23; padding-bottom: 4px; }
-
-        /* TOTALES DE FACTURA */
-        .display-card { background: linear-gradient(135deg, #161a23 0%, #0d1017 100%); border: 1px solid #242c3d; border-radius: 16px; padding: 15px; text-align: center; width: 100%; box-sizing: border-box; }
-        .display-card h2 { font-size: 34px; margin: 4px 0; color: #ffffff; font-weight: 700; }
-        .display-card p { margin: 0; color: #00ff66; font-size: 13px; font-weight: 600; letter-spacing: 1px; }
-
-        .scanner-trigger { background: linear-gradient(90deg, #00b347 0%, #00ff66 100%); border: none; border-radius: 14px; display: flex; align-items: center; justify-content: center; gap: 12px; padding: 14px; color: #000000; font-weight: bold; cursor: pointer; width: 100%; box-sizing: border-box; }
-        
-        /* FORMULARIOS VERTICALES AJUSTADOS */
-        .form-payments { display: flex; flex-direction: column; gap: 12px; width: 100%; }
-        .input-group { background-color: #161a23; border: 1px solid #242c3d; border-radius: 14px; padding: 14px; display: flex; flex-direction: column; width: 100%; box-sizing: border-box; }
-        .input-group:focus-within { border-color: #00ff66; box-shadow: 0 0 12px rgba(0, 255, 102, 0.4); }
-        .input-group label { font-size: 11px; color: #8fa0b7; text-transform: uppercase; margin-bottom: 6px; text-align: center; }
-        .input-row { display: flex; align-items: center; justify-content: center; gap: 10px; width: 100%; }
-        .input-row input, .input-row select { width: 100%; background: transparent; border: none; color: #ffffff; font-size: 18px; font-weight: bold; outline: none; text-align: center; }
-        
-        .pm-details { display: flex; flex-direction: column; gap: 8px; margin-top: 10px; width: 100%; }
-        .pm-details input { width: 100%; background-color: #0f121a; border: 1px solid #242c3d; border-radius: 8px; padding: 10px; color: #ffffff; font-size: 14px; outline: none; text-align: center; box-sizing: border-box; }
-
-        /* INVENTARIO */
-        .admin-form-box { background-color: #161a23; border: 1px solid #242c3d; border-radius: 14px; padding: 15px; display: flex; flex-direction: column; gap: 10px; width: 100%; box-sizing: border-box; }
-        .admin-form-box input, .admin-form-box select { width: 100%; background-color: #0b0e14; border: 1px solid #242c3d; padding: 12px; border-radius: 8px; color: #fff; font-size: 14px; outline: none; box-sizing: border-box; text-align: center; }
-
-        .inventory-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; width: 100%; box-sizing: border-box; }
-        .product-card { background-color: #161a23; border: 1px solid #242c3d; border-radius: 12px; padding: 12px; text-align: center; display: flex; flex-direction: column; justify-content: space-between; }
-        .product-card h4 { margin: 6px 0 2px 0; font-size: 14px; }
-        .product-card p { margin: 0; color: #00ff66; font-size: 13px; font-weight: bold; }
-        .stock-indicator { font-size: 11px; color: #8fa0b7; margin-top: 4px; font-weight: bold; }
-
-        .footer-totals { background-color: #11151d; border: 1px solid #242c3d; border-radius: 14px; padding: 14px; width: 100%; box-sizing: border-box; }
-        .total-row { display: flex; justify-content: space-between; padding: 4px 0; font-size: 14px; color: #8fa0b7; }
-        .total-row strong { color: #ffffff; }
-        .total-row.final { border-top: 1px dashed #242c3d; margin-top: 6px; padding-top: 8px; font-size: 16px; font-weight: bold; color: #00ff66; }
-
-        .action-container { display: flex; gap: 12px; width: 100%; }
-        .btn-clear { flex: 1; background-color: #242c3d; color: #ffffff; border: 1px solid #313c52; padding: 14px; border-radius: 12px; font-weight: bold; cursor: pointer; }
-        .btn-charge { flex: 1.5; background-color: #00ff66; color: #000000; border: none; padding: 14px; border-radius: 12px; font-weight: bold; cursor: pointer; text-align: center; }
-        
-        #file-ocr, #file-product-scan, #file-register-scan { display: none; }
-        /* El escáner láser usa un div para mostrar la cámara en vivo */
-        #reader-laser { width: 100%; margin-bottom: 10px; border-radius: 12px; overflow: hidden; display: none; border: 2px solid #00ff66;}
+        body { background-color: #0b0e14; color: #ffffff; font-family: sans-serif; margin: 0; padding: 15px; display: flex; flex-direction: column; align-items: center; min-height: 100vh; }
+        .app-container { width: 100%; max-width: 450px; }
+        .menu-grid { display: flex; flex-direction: column; gap: 15px; margin-top: 20px; }
+        .btn-menu { background: #161a23; border: 1px solid #242c3d; border-radius: 14px; padding: 20px; color: #fff; font-size: 16px; font-weight: bold; cursor: pointer; text-align: left; width: 100%; }
+        .modulo-app { display: none; flex-direction: column; gap: 15px; width: 100%; }
+        .btn-back { background: #242c3d; color: #fff; padding: 10px; border-radius: 8px; cursor: pointer; border: none; }
+        .input-group { background: #161a23; padding: 15px; border-radius: 14px; margin-bottom: 10px; }
+        input { width: 100%; background: #0b0e14; border: 1px solid #242c3d; color: #fff; padding: 10px; border-radius: 8px; box-sizing: border-box; }
+        button.action { background: #00ff66; color: #000; border: none; padding: 15px; border-radius: 10px; font-weight: bold; width: 100%; cursor: pointer; }
     </style>
 </head>
 <body>
 
-    <script>
-        window.onerror = function(msg, url, line) {
-            alert("⚠️ Alerta de Seguridad (Línea " + line + "):\nDetalle: " + msg);
-            return true; 
-        };
-    </script>
-
-    <div class="app-container">
-
-        <div id="menu-principal">
-            <div class="logo-grande">
-                <svg viewBox="0 0 100 100" xmlns="http://www.w3.org/2000/svg">
-                    <path d="M15 25 h15 l12 32 h33 l10 -22 h-50" fill="none" stroke="#00ff66" stroke-width="4" stroke-linecap="round" stroke-linejoin="round"/>
-                    <circle cx="45" cy="70" r="6" fill="none" stroke="#00ff66" stroke-width="3"/>
-                    <circle cx="70" cy="70" r="6" fill="none" stroke="#00ff66" stroke-width="3"/>
-                    <circle cx="58" cy="44" r="7" fill="#ffffff"/>
-                </svg>
-            </div>
-            <div class="main-title">GEO<span>MERCADO</span></div>
-            <div class="version-tag">VERSIÓN 9.0 LÁSER HÍBRIDO</div>
-            <div class="role-badge">Usuario: <span id="txt-rol">Administrador 👑</span></div>
-
-            <div class="menu-grid">
-                <button class="btn-menu" onclick="window.cambiarModulo('modulo-caja')"><span class="icon">🛒</span>Caja de Cobro Multimoneda</button>
-                <button class="btn-menu" onclick="window.cambiarModulo('modulo-inventario')"><span class="icon">📦</span>Registro de Productos (Stock)</button>
-                <button class="btn-menu" onclick="window.cambiarModulo('modulo-admin')"><span class="icon">⚙️</span>Ajustes de Tasa y Usuarios</button>
-            </div>
+<div class="app-container">
+    <div id="menu-principal">
+        <h1 style="text-align:center;">GEO<span>MERCADO</span></h1>
+        <div class="menu-grid">
+            <button class="btn-menu" onclick="showModule('modulo-caja')">🛒 Caja de Cobro</button>
+            <button class="btn-menu" onclick="showModule('modulo-inventario')">📦 Inventario</button>
         </div>
-
-        <div id="modulo-caja" class="modulo-app">
-            <div class="header-modulo">
-                <h3>🛒 Caja de Facturación</h3>
-                <button class="btn-back" onclick="window.volverAlMenu()">🏠 Menú</button>
-            </div>
-
-            <div class="cart-card">
-                <div class="cart-title">📝 Artículos en esta Venta</div>
-                <div class="cart-items-container" id="items-carrito-factura">
-                    <div style="color:#57687e; text-align:center; font-size:13px; padding:6px;">Ningún artículo en cuenta.</div>
-                </div>
-            </div>
-
-            <div class="input-group">
-                <label>➕ Seleccionar Artículo Manual</label>
-                <div class="input-row">
-                    <select id="select-item-caja" onchange="window.agregarAlCarritoDesdeCaja(this.value)">
-                        <option value="">-- Toca para buscar --</option>
-                    </select>
-                </div>
-            </div>
-
-            <div class="display-card">
-                <p>TOTAL FACTURA (SENIAT)</p>
-                <h2 id="grand-total-ves">0,00 Bs</h2>
-                <span id="sub-total-usd" style="color: #8fa0b7; font-size: 14px;">Ref: $ 0.00</span>
-            </div>
-
-            <div id="reader-laser"></div>
-            <button class="scanner-trigger" onclick="document.getElementById('file-product-scan').click()">
-                <span style="font-size:18px;">🔴</span> ESCANEAR CÓDIGO BARRAS RÁPIDO / LÁSER
-            </button>
-            <input type="file" id="file-product-scan" accept="image/*" capture="environment" onchange="window.escanearProductoCaja(event)">
-            <button id="btn-cerrar-laser" style="display:none; background:#ff5252; color:#fff; border:none; padding:10px; border-radius:8px; font-weight:bold;" onclick="window.detenerLaser()">Cerrar Cámara</button>
-
-            <div class="form-payments">
-                <div class="input-group">
-                    <label>📲 Pago Móvil Recibido</label>
-                    <div class="input-row">
-                        <span>Bs</span>
-                        <input type="tel" id="pay-pm" placeholder="0,00" oninput="window.mascaraMoneda(this); window.calcularCaja();">
-                    </div>
-                    <div class="pm-details">
-                        <input type="tel" id="pm-phone" placeholder="Teléfono del Cliente">
-                        <input type="tel" id="pm-ref" placeholder="Número de Referencia">
-                        <button class="btn-ocr-scan" style="background:#242c3d; border:1px solid #00ff66; color:#00ff66; padding:10px; border-radius:8px; width:100%; font-weight:bold;" onclick="document.getElementById('file-ocr').click()">📸 LEER CAPTURE AUTO</button>
-                        <input type="file" id="file-ocr" accept="image/*" onchange="window.escanearCapturePagoCompleto(event)">
-                    </div>
-                </div>
-
-                <div class="input-group">
-                    <label>💵 Efectivo Divisas ($)</label>
-                    <div class="input-row">
-                        <span>$</span>
-                        <input type="tel" id="pay-usd" placeholder="0" oninput="window.calcularCaja()">
-                    </div>
-                </div>
-
-                <div class="input-group">
-                    <label>🫴 Efectivo Bolívares</label>
-                    <div class="input-row">
-                        <span>Bs</span>
-                        <input type="tel" id="pay-ves" placeholder="0,00" oninput="window.mascaraMoneda(this); window.calcularCaja();">
-                    </div>
-                </div>
-            </div>
-
-            <div class="footer-totals">
-                <div class="total-row"><span>Total Recibido:</span><strong id="total-recibido-ves">0,00 Bs</strong></div>
-                <div class="total-row final"><span>Diferencia / Vuelto:</span><span id="total-restante-ves">0,00 Bs</span></div>
-            </div>
-
-            <div class="action-container">
-                <button class="btn-clear" onclick="window.limpiarCaja()">LIMPIAR</button>
-                <button class="btn-charge" onclick="window.procesarCobro()">COBRAR</button>
-            </div>
-        </div>
-
-        <div id="modulo-inventario" class="modulo-app">
-            <div class="header-modulo">
-                <h3>📦 Catálogo de Mercancía</h3>
-                <button class="btn-back" onclick="window.volverAlMenu()">🏠 Menú</button>
-            </div>
-
-            <div class="admin-form-box" id="form-registro-prod">
-                <h4 style="margin:0; color:#00ff66; text-align:center;">Registrar Artículo</h4>
-                <input type="text" id="prod-name" placeholder="Nombre (Ej. Mantequilla Nelly)">
-                <input type="number" id="prod-price" placeholder="Precio Base ($)">
-                
-                <input type="tel" id="prod-serial" placeholder="Serial / Código de Barras">
-                <button style="background:#0b0e14; border:1px solid #00ff66; color:#00ff66; padding:10px; border-radius:8px; font-weight:bold; width:100%; display:flex; align-items:center; justify-content:center; gap:8px;" onclick="document.getElementById('file-register-scan').click()">
-                    <span>🔴</span> LEER CÓDIGO BARRAS RÁPIDO / LÁSER
-                </button>
-                <input type="file" id="file-register-scan" accept="image/*" capture="environment" onchange="window.leerSerialRegistro(event)">
-
-                <select id="prod-type" onchange="window.conmutarCampoCantidad(this.value)">
-                    <option value="unidad">Venta por Unidad 📦</option>
-                    <option value="peso">Venta al Peso / Kilo ⚖️</option>
-                </select>
-                <input type="number" id="prod-qty" placeholder="Cantidad Disponible en Tienda">
-                
-                <button class="btn-charge" style="width:100%; background:#00ff66; color:#000; border:none; padding:12px; border-radius:8px; font-weight:bold;" onclick="window.agregarProductoNuevo()">Guardar en Memoria</button>
-            </div>
-
-            <div class="inventory-grid" id="lista-productos"></div>
-        </div>
-
-        <div id="modulo-admin" class="modulo-app">
-            <div class="header-modulo">
-                <h3>⚙️ Ajustes Contables</h3>
-                <button class="btn-back" onclick="window.volverAlMenu()">🏠 Menú</button>
-            </div>
-            <div class="admin-form-box">
-                <label>📈 Modificar Tasa del Dólar (Bs):</label>
-                <input type="number" id="input-tasa-global" value="623.02" oninput="window.cambiarTasaManual(this.value)">
-            </div>
-            <div class="admin-form-box">
-                <label>👤 Configurar Perfil de Operación:</label>
-                <button class="btn-charge" style="background:#242c3d; color:#fff; margin-bottom:6px; border:none; padding:12px; border-radius:8px;" onclick="window.conmutarPerfil('Cajero 👤')">Modo Cajero</button>
-                <button class="btn-charge" style="background:#00ff66; color:#000; border:none; padding:12px; border-radius:8px; font-weight:bold;" onclick="window.conmutarPerfil('Administrador 👑')">Modo Administrador</button>
-            </div>
-        </div>
-
     </div>
 
-    <script>
-        // VARIABLES GLOBALES
-        var tasaDia = 623.02;
-        var totalVentaUSD = 0.00;
-        var totalVentaVES = 0.00; 
-        var rolActual = "Administrador 👑";
-        var carrito = [];
-        var html5QrcodeScanner = null;
+    <div id="modulo-caja" class="modulo-app">
+        <button class="btn-back" onclick="showModule('menu-principal')">⬅ Volver</button>
+        <div class="input-group">
+            <label>Monto a cobrar (Bs):</label>
+            <input type="number" id="caja-monto" placeholder="0,00">
+        </div>
+        <button class="action" onclick="alert('Cobrado')">COBRAR</button>
+    </div>
 
-        var stockInicial = [
-            { id: 101, nombre: "Harina PAN", precio: 1.10, tipo: "unidad", qty: 15, serial: "7591" },
-            { id: 102, nombre: "Mantequilla Nelly", precio: 1.50, tipo: "unidad", qty: 10, serial: "7590006200540" }
-        ];
+    <div id="modulo-inventario" class="modulo-app">
+        <button class="btn-back" onclick="showModule('menu-principal')">⬅ Volver</button>
+        <h3>Inventario</h3>
+        <input type="text" id="prod-nombre" placeholder="Nombre producto">
+        <button class="action" onclick="agregarProd()">Guardar</button>
+        <div id="lista-prod"></div>
+    </div>
+</div>
+
+<script>
+    // ESTA FORMA DE PROGRAMAR ES ANTIGUA Y COMPATIBLE CON TODOS LOS TELÉFONOS
+    function showModule(id) {
+        document.getElementById('menu-principal').style.display = 'none';
+        document.getElementById('modulo-caja').style.display = 'none';
+        document.getElementById('modulo-inventario').style.display = 'none';
         
-        var productos = [];
-        
-        try {
-            var db = window.localStorage ? window.localStorage.getItem('geomercado_db_v9') : null;
-            productos = db ? JSON.parse(db) : stockInicial;
-        } catch(e) {
-            productos = stockInicial;
-        }
+        var target = document.getElementById(id);
+        if(target) target.style.display = 'flex';
+    }
 
-        window.cambiarModulo = function(idModulo) {
-            if(idModulo === 'modulo-admin' && rolActual !== "Administrador 👑") {
-                alert("Bloqueado: Solo administradores."); return;
-            }
-            window.detenerLaser();
-            document.getElementById('menu-principal').style.display = 'none';
-            var modulos = document.querySelectorAll('.modulo-app');
-            for(var i=0; i<modulos.length; i++) {
-                modulos[i].style.display = 'none';
-            }
-            
-            var target = document.getElementById(idModulo);
-            if(target) { target.style.display = 'flex'; }
-            
-            if(idModulo === 'modulo-inventario') window.renderizarInventario();
-            if(idModulo === 'modulo-caja') window.actualizarSelectorCaja();
-        };
+    function agregarProd() {
+        var nombre = document.getElementById('prod-nombre').value;
+        alert("Producto " + nombre + " guardado.");
+    }
+</script>
 
-        window.volverAlMenu = function() {
-            window.detenerLaser();
-            var modulos = document.querySelectorAll('.modulo-app');
-            for(var i=0; i<modulos.length; i++) {
-                modulos[i].style.display = 'none';
-            }
-            document.getElementById('menu-principal').style.display = 'flex';
-        };
-
-        window.mascaraMoneda = function(input) {
-            var valor = input.value.replace(/\D/g, "");
-            if(valor === "") { input.value = ""; return; }
-            var numero = (parseFloat(valor) / 100).toFixed(2);
-            var partes = numero.split('.');
-            partes[0] = partes[0].replace(/\B(?=(\d{3})+(?!\d))/g, ".");
-            input.value = partes.join(',');
-        };
-
-        window.extraerNumeroLimpio = function(idInput) {
-            var el = document.getElementById(idInput);
-            if(!el || !el.value) return 0;
-            return parseFloat(el.value.replace(/\./g, '').replace(',', '.')) || 0;
-        };
-
-        window.formatVE = function(monto) {
-            return monto.toLocaleString('es-VE', {minimumFractionDigits: 2, maximumFractionDigits: 2}) + ' Bs';
-        };
-
-        window.conmutarCampoCantidad = function(tipo) {
-            var eQty = document.getElementById('prod-qty');
-            if(eQty) eQty.style.display = (tipo === 'peso') ? 'none' : 'block';
-        };
-
-        window.renderizarInventario = function() {
-            var contenedor = document.getElementById('lista-productos');
-            var formBox = document.getElementById('form-registro-prod');
-            if(formBox) formBox.style.display = (rolActual === "Administrador 👑") ? "flex" : "none";
-
-            if(!contenedor) return;
-            var html = "";
-            for
+</body>
+</html>
