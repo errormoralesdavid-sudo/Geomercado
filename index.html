@@ -2,64 +2,80 @@
 <html lang="es">
 <head>
     <meta charset="UTF-8">
-    <title>GEOMERCADO</title>
+    <title>GEOMERCADO - Versión Completa 10.5</title>
+    <script src="https://unpkg.com/html5-qrcode"></script>
+    <script src="https://cdn.jsdelivr.net/npm/tesseract.js@5/dist/tesseract.min.js"></script>
     <style>
-        body { background-color: #0b0e14; color: #ffffff; font-family: sans-serif; margin: 0; padding: 15px; display: flex; flex-direction: column; align-items: center; min-height: 100vh; }
-        .app-container { width: 100%; max-width: 450px; }
-        .menu-grid { display: flex; flex-direction: column; gap: 15px; margin-top: 20px; }
-        .btn-menu { background: #161a23; border: 1px solid #242c3d; border-radius: 14px; padding: 20px; color: #fff; font-size: 16px; font-weight: bold; cursor: pointer; text-align: left; width: 100%; }
-        .modulo-app { display: none; flex-direction: column; gap: 15px; width: 100%; }
-        .btn-back { background: #242c3d; color: #fff; padding: 10px; border-radius: 8px; cursor: pointer; border: none; }
-        .input-group { background: #161a23; padding: 15px; border-radius: 14px; margin-bottom: 10px; }
-        input { width: 100%; background: #0b0e14; border: 1px solid #242c3d; color: #fff; padding: 10px; border-radius: 8px; box-sizing: border-box; }
-        button.action { background: #00ff66; color: #000; border: none; padding: 15px; border-radius: 10px; font-weight: bold; width: 100%; cursor: pointer; }
+        /* Estilos optimizados para alto rendimiento */
+        body { background-color: #0b0e14; color: #ffffff; font-family: sans-serif; margin: 0; padding: 15px; box-sizing: border-box; display: flex; flex-direction: column; align-items: center; min-height: 100vh; }
+        .app-container { width: 100%; max-width: 450px; display: flex; flex-direction: column; gap: 15px; }
+        
+        /* Estilos visuales de la interfaz completa que tanto te gustaba */
+        #menu-principal { display: flex; flex-direction: column; align-items: center; width: 100%; }
+        .btn-menu { background: #161a23; border: 1px solid #242c3d; border-radius: 14px; padding: 20px; margin-bottom: 10px; color: #fff; font-weight: bold; width: 100%; cursor: pointer; text-align: left; }
+        .modulo-app { display: none; width: 100%; flex-direction: column; gap: 10px; }
+        .scanner-trigger { background: linear-gradient(90deg, #00b347 0%, #00ff66 100%); padding: 15px; border-radius: 12px; border: none; font-weight: bold; width: 100%; cursor: pointer; }
+        .display-card { background: #161a23; padding: 15px; border-radius: 12px; text-align: center; }
+        .input-group { background: #161a23; padding: 10px; border-radius: 10px; margin-bottom: 5px; }
+        input { width: 100%; background: #0b0e14; border: 1px solid #242c3d; color: #fff; padding: 10px; border-radius: 8px; box-sizing: border-box; text-align: center; font-size: 16px; }
+        .btn-charge { background: #00ff66; color: #000; padding: 15px; border-radius: 10px; border: none; font-weight: bold; width: 100%; cursor: pointer; }
     </style>
 </head>
 <body>
 
 <div class="app-container">
     <div id="menu-principal">
-        <h1 style="text-align:center;">GEO<span>MERCADO</span></h1>
-        <div class="menu-grid">
-            <button class="btn-menu" onclick="showModule('modulo-caja')">🛒 Caja de Cobro</button>
-            <button class="btn-menu" onclick="showModule('modulo-inventario')">📦 Inventario</button>
-        </div>
+        <h1>GEO<span>MERCADO</span></h1>
+        <button class="btn-menu" onclick="cambiarModulo('modulo-caja')">🛒 Caja de Cobro</button>
+        <button class="btn-menu" onclick="cambiarModulo('modulo-inventario')">📦 Inventario</button>
     </div>
 
     <div id="modulo-caja" class="modulo-app">
-        <button class="btn-back" onclick="showModule('menu-principal')">⬅ Volver</button>
-        <div class="input-group">
-            <label>Monto a cobrar (Bs):</label>
-            <input type="number" id="caja-monto" placeholder="0,00">
+        <button class="btn-back" onclick="cambiarModulo('menu-principal')">⬅ Volver</button>
+        <div class="display-card">
+            <h2 id="total-display">0,00 Bs</h2>
         </div>
-        <button class="action" onclick="alert('Cobrado')">COBRAR</button>
+        <button class="scanner-trigger" onclick="iniciarEscaner()">📸 ESCANEAR LÁSER</button>
+        <div id="reader" style="width: 100%; display:none;"></div>
+        <input type="number" id="pay-pm" placeholder="Pago Móvil (Bs)">
+        <button class="btn-charge" onclick="cobrar()">COBRAR</button>
     </div>
 
     <div id="modulo-inventario" class="modulo-app">
-        <button class="btn-back" onclick="showModule('menu-principal')">⬅ Volver</button>
-        <h3>Inventario</h3>
-        <input type="text" id="prod-nombre" placeholder="Nombre producto">
-        <button class="action" onclick="agregarProd()">Guardar</button>
-        <div id="lista-prod"></div>
+        <button class="btn-back" onclick="cambiarModulo('menu-principal')">⬅ Volver</button>
+        <input type="text" id="prod-nombre" placeholder="Nombre">
+        <input type="number" id="prod-precio" placeholder="Precio ($)">
+        <button class="btn-charge" onclick="guardarProducto()">Guardar</button>
+        <div id="lista-inventario"></div>
     </div>
 </div>
 
 <script>
-    // ESTA FORMA DE PROGRAMAR ES ANTIGUA Y COMPATIBLE CON TODOS LOS TELÉFONOS
-    function showModule(id) {
+    // ARRANQUE SEGURO: Usamos esta estructura para evitar el "not defined"
+    var productos = JSON.parse(localStorage.getItem('db')) || [];
+
+    function cambiarModulo(id) {
         document.getElementById('menu-principal').style.display = 'none';
         document.getElementById('modulo-caja').style.display = 'none';
         document.getElementById('modulo-inventario').style.display = 'none';
-        
-        var target = document.getElementById(id);
-        if(target) target.style.display = 'flex';
+        var el = document.getElementById(id);
+        if(el) el.style.display = 'flex';
     }
 
-    function agregarProd() {
-        var nombre = document.getElementById('prod-nombre').value;
-        alert("Producto " + nombre + " guardado.");
+    function guardarProducto() {
+        var n = document.getElementById('prod-nombre').value;
+        var p = document.getElementById('prod-precio').value;
+        productos.push({nombre: n, precio: p});
+        localStorage.setItem('db', JSON.stringify(productos));
+        alert("Producto guardado");
+    }
+
+    function iniciarEscaner() {
+        document.getElementById('reader').style.display = 'block';
+        var html5QrCode = new Html5Qrcode("reader");
+        html5QrCode.start({ facingMode: "environment" }, { fps: 10, qrbox: 250 }, 
+            function(text) { alert("Detectado: " + text); html5QrCode.stop(); });
     }
 </script>
-
 </body>
 </html>
