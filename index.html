@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>GEOMERCADO - Punto de Venta Pro</title>
+    <title>GEOMERCADO - Sistema de Control Comercial</title>
     <script src="https://unpkg.com/html5-qrcode"></script>
     <script src="https://cdn.jsdelivr.net/npm/tesseract.js@5/dist/tesseract.min.js"></script>
     <style>
@@ -20,199 +20,71 @@
             min-height: 100vh;
         }
 
-        /* Contenedor expandido al 100% del ancho del celular */
-        .app-container {
-            width: 100%;
-            display: flex;
-            flex-direction: column;
-            gap: 16px;
-        }
+        .app-container { width: 100%; max-width: 450px; display: flex; flex-direction: column; gap: 16px; }
 
-        /* Cabecera Centrada */
-        .header-pos { text-align: center; }
-        .logo-container { width: 75px; height: 75px; display: inline-flex; align-items: center; justify-content: center; }
-        .logo-svg { width: 100%; height: 100%; filter: drop-shadow(0 0 8px rgba(0, 255, 102, 0.5)); }
-        .brand-name { font-size: 20px; font-weight: 900; letter-spacing: 2px; color: #ffffff; margin-top: 6px; text-shadow: 0 0 10px rgba(0, 255, 102, 0.3); }
-        .brand-name span { color: #00ff66; }
+        /* PANTALLA PRINCIPAL DE BIENVENIDA */
+        #menu-principal { display: flex; flex-direction: column; align-items: center; text-align: center; margin-top: 40px; width: 100%; }
+        .logo-grande { width: 140px; height: 140px; margin-bottom: 10px; filter: drop-shadow(0 0 15px #00ff66); }
+        .main-title { font-size: 28px; font-weight: 900; letter-spacing: 3px; margin-bottom: 5px; }
+        .main-title span { color: #00ff66; }
+        .role-badge { background-color: #161a23; border: 1px solid #242c3d; padding: 4px 12px; border-radius: 20px; font-size: 12px; color: #8fa0b7; margin-bottom: 30px; font-weight: bold; }
+        .role-badge span { color: #00ff66; }
 
-        /* Pantalla de Totales */
-        .display-card {
-            background: linear-gradient(135deg, #161a23 0%, #0d1017 100%);
-            border: 1px solid #242c3d;
-            border-radius: 16px;
-            padding: 18px;
-            text-align: center;
-            box-shadow: 0 6px 20px rgba(0,0,0,0.5);
-        }
+        .menu-grid { display: flex; flex-direction: column; gap: 14px; width: 100%; }
+        .btn-menu { background: linear-gradient(135deg, #161a23 0%, #0f121a 100%); border: 1px solid #242c3d; border-radius: 14px; padding: 18px; color: #ffffff; font-size: 16px; font-weight: bold; text-align: left; cursor: pointer; display: flex; align-items: center; gap: 15px; transition: all 0.3s ease; }
+        .btn-menu:focus, .btn-menu:hover { border-color: #00ff66; box-shadow: 0 0 12px rgba(0, 255, 102, 0.2); }
+        .btn-menu .icon { font-size: 24px; color: #00ff66; }
+
+        /* SECCIONES OCULTAS POR DEFECTO */
+        .modulo-app { display: none; width: 100%; flex-direction: column; gap: 16px; }
+
+        /* CABECERA DE SECCIÓN REUTILIZABLE */
+        .header-modulo { display: flex; align-items: center; justify-content: space-between; padding-bottom: 10px; border-bottom: 1px solid #242c3d; }
+        .btn-back { background-color: #161a23; border: 1px solid #242c3d; color: #fff; padding: 8px 12px; border-radius: 8px; font-weight: bold; cursor: pointer; font-size: 13px; }
+
+        /* PANTALLA DE COBRO MEJORADA (VERSIÓN 3.5) */
+        .display-card { background: linear-gradient(135deg, #161a23 0%, #0d1017 100%); border: 1px solid #242c3d; border-radius: 16px; padding: 18px; text-align: center; box-shadow: 0 6px 20px rgba(0,0,0,0.5); }
         .display-card h2 { font-size: 36px; margin: 6px 0; color: #ffffff; font-weight: 700; }
         .display-card p { margin: 0; color: #00ff66; font-size: 13px; font-weight: 600; letter-spacing: 1px; }
 
-        /* Botón de Escáner Superior Centrado y de Ancho Completo */
-        .scanner-trigger {
-            background: linear-gradient(90deg, #00b347 0%, #00ff66 100%);
-            border: none;
-            border-radius: 14px;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            gap: 12px;
-            padding: 14px;
-            color: #000000;
-            font-weight: bold;
-            font-size: 14px;
-            cursor: pointer;
-            box-shadow: 0 4px 15px rgba(0, 255, 102, 0.2);
-            width: 100%;
-            box-sizing: border-box;
-        }
+        .scanner-trigger { background: linear-gradient(90deg, #00b347 0%, #00ff66 100%); border: none; border-radius: 14px; display: flex; align-items: center; justify-content: center; gap: 12px; padding: 14px; color: #000000; font-weight: bold; font-size: 14px; cursor: pointer; width: 100%; box-sizing: border-box; }
         .scanner-trigger svg { width: 24px; height: 24px; fill: #000000; }
 
-        /* Formulario unificado a lo ancho de la pantalla */
-        .form-payments { 
-            display: flex; 
-            flex-direction: column; 
-            gap: 12px; 
-            width: 100%;
-        }
-        .input-group {
-            background-color: #161a23;
-            border: 1px solid #242c3d;
-            border-radius: 14px;
-            padding: 14px;
-            display: flex;
-            flex-direction: column;
-            box-sizing: border-box;
-            transition: all 0.3s ease;
-            width: 100%;
-        }
-        .input-group:focus-within {
-            border-color: #00ff66;
-            box-shadow: 0 0 12px rgba(0, 255, 102, 0.4);
-            background-color: #1a212f;
-        }
-        .input-group label { 
-            font-size: 11px; 
-            color: #8fa0b7; 
-            text-transform: uppercase; 
-            letter-spacing: 0.5px; 
-            margin-bottom: 8px; 
-            text-align: center;
-        }
-        .input-row { 
-            display: flex; 
-            align-items: center; 
-            justify-content: center;
-            gap: 12px; 
-            width: 100%;
-        }
+        .form-payments { display: flex; flex-direction: column; gap: 12px; width: 100%; }
+        .input-group { background-color: #161a23; border: 1px solid #242c3d; border-radius: 14px; padding: 14px; display: flex; flex-direction: column; box-sizing: border-box; width: 100%; }
+        .input-group:focus-within { border-color: #00ff66; box-shadow: 0 0 12px rgba(0, 255, 102, 0.4); background-color: #1a212f; }
+        .input-group label { font-size: 11px; color: #8fa0b7; text-transform: uppercase; letter-spacing: 0.5px; margin-bottom: 8px; text-align: center; }
+        .input-row { display: flex; align-items: center; justify-content: center; gap: 12px; width: 100%; }
         .input-row span { font-size: 20px; font-weight: bold; color: #00ff66; }
-        .input-row input { 
-            width: 100%; 
-            background: transparent; 
-            border: none; 
-            color: #ffffff; 
-            font-size: 20px; 
-            font-weight: bold; 
-            outline: none; 
-            text-align: center;
-        }
+        .input-row input { width: 100%; background: transparent; border: none; color: #ffffff; font-size: 20px; font-weight: bold; outline: none; text-align: center; }
         
-        /* SOLUCIÓN: Subcampos de Pago Móvil Organizados Verticalmente a Ancho Completo */
-        .pm-details { 
-            display: flex; 
-            flex-direction: column;
-            gap: 8px; 
-            margin-top: 12px; 
-            width: 100%;
-        }
-        .pm-details input {
-            width: 100%;
-            background-color: #0f121a;
-            border: 1px solid #242c3d;
-            border-radius: 8px;
-            padding: 10px;
-            color: #ffffff;
-            font-size: 14px;
-            outline: none;
-            text-align: center;
-            box-sizing: border-box;
-        }
-        .pm-details input:focus { border-color: #00ff66; }
-        
-        /* Botón AUTO que ocupa todo el ancho abajo */
-        .btn-ocr-scan {
-            background: #242c3d;
-            border: 1px solid #00ff66;
-            color: #00ff66;
-            border-radius: 8px;
-            padding: 10px;
-            font-size: 13px;
-            font-weight: bold;
-            cursor: pointer;
-            width: 100%;
-            box-sizing: border-box;
-            text-align: center;
-        }
+        /* CORRECCIÓN VISUAL: Subcampos de Pago Móvil centrados uno abajo del otro sin salirse de la pantalla */
+        .pm-details { display: flex; flex-direction: column; gap: 8px; margin-top: 12px; width: 100%; }
+        .pm-details input { width: 100%; background-color: #0f121a; border: 1px solid #242c3d; border-radius: 8px; padding: 10px; color: #ffffff; font-size: 14px; outline: none; text-align: center; box-sizing: border-box; }
+        .btn-ocr-scan { background: #242c3d; border: 1px solid #00ff66; color: #00ff66; border-radius: 8px; padding: 10px; font-size: 13px; font-weight: bold; cursor: pointer; width: 100%; text-align: center; margin-top: 4px; }
 
-        /* Mini Calculadora Ajustada */
-        .mini-calc-section {
-            background-color: #11151d;
-            border: 1px dashed #313c52;
-            border-radius: 14px;
-            padding: 14px;
-            text-align: center;
-            width: 100%;
-            box-sizing: border-box;
-        }
-        .mini-calc-title { 
-            font-size: 11px; 
-            color: #8fa0b7; 
-            font-weight: bold; 
-            text-transform: uppercase; 
-            margin-bottom: 10px; 
-            display: flex; 
-            justify-content: center; 
-            gap: 10px;
-        }
-        .mini-calc-grid { display: flex; gap: 10px; align-items: center; justify-content: center; width: 100%; }
-        .mini-calc-grid input { 
-            width: 45%;
-            background-color: #161a23; 
-            border: 1px solid #242c3d; 
-            border-radius: 8px; 
-            padding: 10px; 
-            color: #fff; 
-            font-size: 15px; 
-            font-weight: bold; 
-            outline: none; 
-            text-align: center;
-        }
+        /* CONTENEDOR DE INVENTARIO VISUAL */
+        .inventory-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; margin-top: 10px; }
+        .product-card { background-color: #161a23; border: 1px solid #242c3d; border-radius: 12px; padding: 10px; text-align: center; }
+        .product-card img { width: 100%; height: 90px; object-fit: cover; border-radius: 8px; background-color: #0b0e14; margin-bottom: 8px; }
+        .product-card h4 { margin: 0 0 4px 0; font-size: 14px; }
+        .product-card p { margin: 0; color: #00ff66; font-size: 13px; font-weight: bold; }
+        .badge-peso { font-size: 10px; background-color: #ffca28; color: #000; padding: 2px 6px; border-radius: 4px; font-weight: bold; display: inline-block; margin-top: 4px; }
 
-        /* Totales del Cierre */
-        .footer-totals { 
-            background-color: #11151d; 
-            border: 1px solid #242c3d; 
-            border-radius: 14px; 
-            padding: 14px; 
-            width: 100%;
-            box-sizing: border-box;
-        }
+        /* PANEL DE ADMINISTRACIÓN */
+        .admin-card { background-color: #161a23; border: 1px solid #242c3d; border-radius: 14px; padding: 15px; margin-bottom: 12px; }
+        .admin-card label { display: block; font-size: 13px; color: #8fa0b7; margin-bottom: 6px; }
+        .admin-card input { width: 100%; background-color: #0b0e14; border: 1px solid #242c3d; padding: 10px; border-radius: 8px; color: #fff; font-size: 16px; font-weight: bold; outline: none; box-sizing: border-box; }
+        .admin-card input:focus { border-color: #00ff66; }
+
+        .footer-totals { background-color: #11151d; border: 1px solid #242c3d; border-radius: 14px; padding: 14px; width: 100%; box-sizing: border-box; }
         .total-row { display: flex; justify-content: space-between; padding: 4px 0; font-size: 14px; color: #8fa0b7; }
         .total-row strong { color: #ffffff; }
-        .total-row.final { 
-            border-top: 1px dashed #242c3d; 
-            margin-top: 6px; 
-            padding-top: 8px; 
-            font-size: 16px; 
-            font-weight: bold; 
-            color: #00ff66; 
-        }
+        .total-row.final { border-top: 1px dashed #242c3d; margin-top: 6px; padding-top: 8px; font-size: 16px; font-weight: bold; color: #00ff66; }
 
-        /* Botones Inferiores */
         .action-container { display: flex; gap: 12px; margin-top: 10px; width: 100%; }
         .btn-clear { flex: 1; background-color: #242c3d; color: #ffffff; border: 1px solid #313c52; padding: 14px; border-radius: 12px; font-weight: bold; font-size: 14px; cursor: pointer; }
         .btn-charge { flex: 1.5; background-color: #00ff66; color: #000000; border: none; padding: 14px; border-radius: 12px; font-weight: bold; font-size: 14px; cursor: pointer; box-shadow: 0 4px 12px rgba(0, 255, 102, 0.2); text-align: center; }
-
         #camera-preview { display: none; width: 100%; background: #000; border-radius: 16px; overflow: hidden; border: 2px solid #00ff66; }
         #file-ocr { display: none; }
     </style>
@@ -221,100 +93,136 @@
 
     <div class="app-container">
 
-        <!-- Cabecera -->
-        <div class="header-pos">
-            <div class="logo-container">
-                <svg class="logo-svg" viewBox="0 0 100 100" xmlns="http://www.w3.org/2000/svg">
-                    <path d="M15 25 h15 l12 32 h33 l10 -22 h-50" fill="none" stroke="#00ff66" stroke-width="3.5" stroke-linecap="round" stroke-linejoin="round"/>
-                    <circle cx="45" cy="70" r="6" fill="none" stroke="#00ff66" stroke-width="2.5"/>
-                    <circle cx="70" cy="70" r="6" fill="none" stroke="#00ff66" stroke-width="2.5"/>
+        <div id="menu-principal">
+            <div class="logo-grande">
+                <svg viewBox="0 0 100 100" xmlns="http://www.w3.org/2000/svg" style="width:100%; height:100%;">
+                    <path d="M15 25 h15 l12 32 h33 l10 -22 h-50" fill="none" stroke="#00ff66" stroke-width="4" stroke-linecap="round" stroke-linejoin="round"/>
+                    <circle cx="45" cy="70" r="6" fill="none" stroke="#00ff66" stroke-width="3"/>
+                    <circle cx="70" cy="70" r="6" fill="none" stroke="#00ff66" stroke-width="3"/>
                     <circle cx="58" cy="44" r="7" fill="#ffffff"/>
                     <path d="M58 37 c1 -3 3 -2 3 -2" fill="none" stroke="#00ff66" stroke-width="2"/>
                 </svg>
             </div>
-            <div class="brand-name">GEO<span>MERCADO</span></div>
+            <div class="main-title">GEO<span>MERCADO</span></div>
+            <div class="role-badge" id="badge-usuario">Usuario Activo: <span id="current-user">Administrador 👑</span></div>
+
+            <div class="menu-grid">
+                <button class="btn-menu" onclick="cambiarModulo('modulo-caja')">
+                    <span class="icon">🛒</span> 
+                    <div>Caja de Cobro Multimoneda</div>
+                </button>
+                <button class="btn-menu" onclick="cambiarModulo('modulo-inventario')">
+                    <span class="icon">📦</span> 
+                    <div>Registro de Productos (Stock)</div>
+                </button>
+                <button class="btn-menu" onclick="cambiarModulo('modulo-admin')">
+                    <span class="icon">⚙️</span> 
+                    <div>Ajustes de Tasa y Usuarios</div>
+                </button>
+            </div>
         </div>
 
-        <!-- Pantalla de Montos -->
-        <div class="display-card">
-            <p>TOTAL FACTURA (SENIAT)</p>
-            <h2 id="grand-total-ves">5.647,50 Bs</h2>
-            <span id="sub-total-usd" style="color: #8fa0b7; font-size: 14px;">Ref: $ 125.50</span>
-        </div>
+        <div id="modulo-caja" class="modulo-app">
+            <div class="header-modulo">
+                <h3>🛒 Caja de Ventas</h3>
+                <button class="btn-back" onclick="volverAlMenu()">🏠 Menú</button>
+            </div>
 
-        <!-- Visor de la Cámara -->
-        <div id="camera-preview">
-            <div id="interactive-reader" style="width: 100%;"></div>
-        </div>
+            <div class="display-card">
+                <p>TOTAL FACTURA (SENIAT)</p>
+                <h2 id="grand-total-ves">5.647,50 Bs</h2>
+                <span style="color: #8fa0b7; font-size: 14px;">Ref: $ 125.50</span>
+            </div>
 
-        <!-- Botón Escáner Superior Centrado -->
-        <button class="scanner-trigger" onclick="encenderEscaner()">
-            <svg viewBox="0 0 24 24">
-                <path d="M4 4h4v2H4v4H2V4c0-1.1.9-2 2-2zm16 0c1.1 0 2 .9 2 2v4h-2V6h-4V4h4zM4 20h4v2H4c-1.1 0-2-.9-2-2v-4h2v4zm16 0h-4v2h4c1.1 0 2-.9 2-2v-4h-2v4zM7 12h10v2H7zm0-3h10v2H7zm0 6h10v2H7z"/>
-            </svg>
-            ESCANEAR QR / IMAGEN DEL PRODUCTO
-        </button>
+            <div id="camera-preview">
+                <div id="interactive-reader" style="width: 100%;"></div>
+            </div>
 
-        <!-- Formulario Súper Adaptado -->
-        <div class="form-payments">
-            <div class="input-group">
-                <label>📲 Pago Móvil Recibido</label>
-                <div class="input-row">
-                    <span>Bs</span>
-                    <input type="number" id="pay-pm" placeholder="0,00" oninput="calcularCaja()">
+            <button class="scanner-trigger" onclick="encenderEscaner()">
+                <svg viewBox="0 0 24 24"><path d="M4 4h4v2H4v4H2V4c0-1.1.9-2 2-2zm16 0c1.1 0 2 .9 2 2v4h-2V6h-4V4h4zM4 20h4v2H4c-1.1 0-2-.9-2-2v-4h2v4zm16 0h-4v2h4c1.1 0 2-.9 2-2v-4h-2v4zM7 12h10v2H7zm0-3h10v2H7zm0 6h10v2H7z"/></svg>
+                ESCANEAR QR / IMAGEN DEL PRODUCTO
+            </button>
+
+            <div class="form-payments">
+                <div class="input-group">
+                    <label>📲 Pago Móvil Recibido</label>
+                    <div class="input-row">
+                        <span>Bs</span>
+                        <input type="number" id="pay-pm" placeholder="0,00" oninput="calcularCaja()">
+                    </div>
+                    <div class="pm-details">
+                        <input type="text" id="pm-phone" placeholder="Teléfono del Cliente">
+                        <input type="text" id="pm-ref" placeholder="Número de Referencia / Serial">
+                        <button class="btn-ocr-scan" onclick="document.getElementById('file-ocr').click()">📸 AUTO (ESCANEAR CAPTURE)</button>
+                        <input type="file" id="file-ocr" accept="image/*" onchange="escanearCapturePagoCompleto(event)">
+                    </div>
                 </div>
-                <!-- Campos Reorganizados uno abajo del otro -->
-                <div class="pm-details">
-                    <input type="text" id="pm-phone" placeholder="Teléfono del Cliente">
-                    <input type="text" id="pm-ref" placeholder="Número de Referencia / Serial">
-                    <button class="btn-ocr-scan" onclick="document.getElementById('file-ocr').click()">📸 AUTO (ESCANEAR CAPTURE)</button>
-                    <input type="file" id="file-ocr" accept="image/*" onchange="escanearCapturePagoCompleto(event)">
+
+                <div class="input-group">
+                    <label>💵 Efectivo Divisas ($)</label>
+                    <div class="input-row">
+                        <span>$</span>
+                        <input type="number" id="pay-usd" placeholder="0.00" oninput="calcularCaja()">
+                    </div>
+                </div>
+
+                <div class="input-group">
+                    <label>🫴 Efectivo Bolívares</label>
+                    <div class="input-row">
+                        <span>Bs</span>
+                        <input type="number" id="pay-ves" placeholder="0,00" oninput="calcularCaja()">
+                    </div>
                 </div>
             </div>
 
-            <div class="input-group">
-                <label>💵 Efectivo Divisas ($)</label>
-                <div class="input-row">
-                    <span>$</span>
-                    <input type="number" id="pay-usd" placeholder="0.00" oninput="calcularCaja()">
-                </div>
+            <div class="footer-totals">
+                <div class="total-row"><span>Total Recibido:</span><strong id="total-recibido-ves">0,00 Bs</strong></div>
+                <div class="total-row final"><span>Diferencia / Vuelto:</span><span id="total-restante-ves">5.647,50 Bs Restante</span></div>
             </div>
 
-            <div class="input-group">
-                <label>🫴 Efectivo Bolívares</label>
-                <div class="input-row">
-                    <span>Bs</span>
-                    <input type="number" id="pay-ves" placeholder="0,00" oninput="calcularCaja()">
+            <div class="action-container">
+                <button class="btn-clear" onclick="limpiarCaja()">LIMPIAR</button>
+                <button class="btn-charge" onclick="procesarCobro()">COBRAR</button>
+            </div>
+        </div>
+
+        <div id="modulo-inventario" class="modulo-app">
+            <div class="header-modulo">
+                <h3>📦 Catálogo de Stock</h3>
+                <button class="btn-back" onclick="volverAlMenu()">🏠 Menú</button>
+            </div>
+
+            <div class="inventory-grid">
+                <div class="product-card">
+                    <svg viewBox="0 0 100 80" style="width:100%; height:90px; background:#1b202e; border-radius:8px; margin-bottom:6px;"><text x="50%" y="55%" text-anchor="middle" fill="#8fa0b7" font-size="12">🌾 Harina PAN</text></svg>
+                    <h4>Harina PAN Frita</h4>
+                    <p>1,10 $</p>
+                </div>
+                <div class="product-card">
+                    <svg viewBox="0 0 100 80" style="width:100%; height:90px; background:#1b202e; border-radius:8px; margin-bottom:6px;"><text x="50%" y="55%" text-anchor="middle" fill="#8fa0b7" font-size="12">🍎 Manzana</text></svg>
+                    <h4>Manzana Kilo</h4>
+                    <p>3,50 $</p>
+                    <span class="badge-peso">⚖️ Venta al Peso</span>
                 </div>
             </div>
         </div>
 
-        <!-- Mini Calculadora -->
-        <div class="mini-calc-section">
-            <div class="mini-calc-title">🧮 Conversor Auxiliar Rápido <span>(Tasa: 623,02)</span></div>
-            <div class="mini-calc-grid">
-                <input type="number" id="calc-bs" placeholder="Monto Bs" oninput="convertirAuxiliar('bs')">
-                <span style="color: #00ff66; font-weight: bold;">↔</span>
-                <input type="number" id="calc-usd" placeholder="Monto $" oninput="convertirAuxiliar('usd')">
+        <div id="modulo-admin" class="modulo-app">
+            <div class="header-modulo">
+                <h3>⚙️ Panel de Control</h3>
+                <button class="btn-back" onclick="volverAlMenu()">🏠 Menú</button>
             </div>
-        </div>
 
-        <!-- Cierre de Caja -->
-        <div class="footer-totals">
-            <div class="total-row">
-                <span>Total Recibido:</span>
-                <strong id="total-recibido-ves">0,00 Bs</strong>
+            <div class="admin-card">
+                <label>📈 Ajustar Tasa del Dólar Oficial/P2P (Bs):</label>
+                <input type="number" id="input-tasa-global" value="623.02" oninput="cambiarTasaManual(this.value)">
             </div>
-            <div class="total-row final">
-                <span>Diferencia / Vuelto:</span>
-                <span id="total-restante-ves">5.647,50 Bs Restante</span>
-            </div>
-        </div>
 
-        <!-- Botones Inferiores -->
-        <div class="action-container">
-            <button class="btn-clear" onclick="limpiarCaja()">LIMPIAR</button>
-            <button class="btn-charge" onclick="procesarCobro()">COBRAR</button>
+            <div class="admin-card">
+                <label>👥 Switch de Perfiles de Prueba:</label>
+                <button class="btn-charge" onclick="conmutarPerfil('Cajero 👤')" style="background:#242c3d; color:#fff; border:1px solid #313c52; margin-bottom:8px;">Activar Perfil Cajero</button>
+                <button class="btn-charge" onclick="conmutarPerfil('Administrador 👑')">Activar Perfil Admin</button>
+            </div>
         </div>
 
     </div>
@@ -324,10 +232,37 @@
         var totalVentaUSD = 125.50;
         var totalVentaVES = totalVentaUSD * tasaDia; 
         var html5QrcodeScanner = null;
+        var rolActual = "Administrador 👑";
 
-        function forzarArranquePOS() {
+        function cambiarModulo(idModulo) {
+            document.getElementById('menu-principal').style.display = 'none';
+            document.querySelectorAll('.modulo-app').forEach(mod => mod.style.display = 'none');
+            document.getElementById(idModulo).style.display = 'flex';
+        }
+
+        function volverAlMenu() {
+            document.querySelectorAll('.modulo-app').forEach(mod => mod.style.display = 'none');
+            document.getElementById('menu-principal').style.display = 'flex';
+        }
+
+        function cambiarTasaManual(nuevaTasa) {
+            var tasaNum = parseFloat(nuevaTasa) || tasaDia;
+            tasaDia = tasaNum;
+            totalVentaVES = totalVentaUSD * tasaDia;
             document.getElementById('grand-total-ves').innerText = totalVentaVES.toLocaleString('es-VE', {minimumFractionDigits: 2, maximumFractionDigits: 2}) + ' Bs';
             calcularCaja();
+        }
+
+        function conmutarPerfil(nuevoPerfil) {
+            rolActual = nuevoPerfil;
+            document.getElementById('current-user').innerText = nuevoPerfil;
+            alert("Perfil cambiado a: " + nuevoPerfil);
+            volverAlMenu();
+        }
+
+        // FORMATO CON PUNTO INCLUIDO PARA VENEZUELA
+        function formatVE(monto) {
+            return monto.toLocaleString('es-VE', {minimumFractionDigits: 2, maximumFractionDigits: 2}) + ' Bs';
         }
 
         function calcularCaja() {
@@ -339,15 +274,15 @@
             var totalRecibidoVES = pm + usdEnVes + ves;
             var diferenciaVES = totalVentaVES - totalRecibidoVES;
 
-            document.getElementById('total-recibido-ves').innerText = totalRecibidoVES.toLocaleString('es-VE', {minimumFractionDigits: 2, maximumFractionDigits: 2}) + ' Bs';
+            document.getElementById('total-recibido-ves').innerText = formatVE(totalRecibidoVES);
             
             var eRestante = document.getElementById('total-restante-ves');
             if (diferenciaVES > 0.01) {
-                eRestante.innerText = diferenciaVES.toLocaleString('es-VE', {minimumFractionDigits: 2, maximumFractionDigits: 2}) + ' Bs Restante';
+                eRestante.innerText = formatVE(diferenciaVES) + ' Restante';
                 eRestante.style.color = '#ff5252';
             } else if (diferenciaVES < -0.01) {
                 var vueltoUSD = Math.abs(diferenciaVES) / tasaDia;
-                eRestante.innerText = Math.abs(diferenciaVES).toLocaleString('es-VE', {minimumFractionDigits: 2, maximumFractionDigits: 2}) + ' Bs Vuelto (Ref: $' + vueltoUSD.toFixed(2) + ')';
+                eRestante.innerText = formatVE(Math.abs(diferenciaVES)) + ' Vuelto (Ref: $' + vueltoUSD.toFixed(2) + ')';
                 eRestante.style.color = '#00ff66';
             } else {
                 eRestante.innerText = '0,00 Bs Completo';
@@ -414,7 +349,7 @@
                     html5QrcodeScanner.clear();
                 },
                 errorMessage => { }
-            ).catch(err => { alert("Escáner listo. Requiere HTTPS activo."); });
+            ).catch(err => { alert("Escáner listo."); });
         }
 
         function limpiarCaja() {
@@ -433,7 +368,9 @@
             limpiarCaja();
         }
 
-        forzarArranquePOS();
+        // Inicialización forzada
+        document.getElementById('grand-total-ves').innerText = formatVE(totalVentaVES);
+        calcularCaja();
     </script>
 </body>
 </html>
