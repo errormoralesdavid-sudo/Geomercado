@@ -4,8 +4,14 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>GEOMERCADO - Sistema Comercial Pro</title>
-    <script src="https://cdn.jsdelivr.net/npm/tesseract.js@5/dist/tesseract.min.js"></script>
-    <script src="https://unpkg.com/html5-qrcode"></script>
+    
+    <script>
+        window.onerror = function(msg, url, line) {
+            alert("⚠️ Alerta (Línea " + line + "):\n" + msg);
+            return true; 
+        };
+    </script>
+
     <style>
         body { background-color: #0b0e14; color: #ffffff; font-family: 'Segoe UI', Arial, sans-serif; margin: 0; padding: 15px; box-sizing: border-box; display: flex; flex-direction: column; align-items: center; min-height: 100vh; }
         .app-container { width: 100%; max-width: 450px; display: flex; flex-direction: column; gap: 16px; }
@@ -89,7 +95,6 @@
     <div class="app-container">
         <div id="hidden-qr-reader"></div>
 
-        <!-- MENÚ PRINCIPAL -->
         <div id="menu-principal">
             <div class="logo-grande">
                 <svg viewBox="0 0 100 100" xmlns="http://www.w3.org/2000/svg">
@@ -100,7 +105,7 @@
                 </svg>
             </div>
             <div class="main-title">GEO<span>MERCADO</span></div>
-            <div class="version-tag">VERSIÓN 13.0 CIERRE PRO</div>
+            <div class="version-tag">VERSIÓN 14.0 ANTI-CONGELAMIENTO</div>
             <div class="role-badge">Usuario: <span id="txt-rol">Administrador 👑</span></div>
 
             <div class="menu-grid">
@@ -111,7 +116,6 @@
             </div>
         </div>
 
-        <!-- MÓDULO 1: CAJA DE COBRO -->
         <div id="modulo-caja" class="modulo-app">
             <div class="header-modulo">
                 <h3>🛒 Caja de Facturación</h3>
@@ -125,7 +129,6 @@
                 </div>
             </div>
 
-            <!-- BUSCADOR INTELIGENTE EN CAJA -->
             <div class="input-group" style="padding:10px;">
                 <label>🔍 Buscar Artículo Manual</label>
                 <input type="text" id="buscador-caja" class="search-input" placeholder="Escribe el nombre aquí..." oninput="window.filtrarBuscadorCaja(this.value)">
@@ -194,7 +197,6 @@
             </div>
         </div>
 
-        <!-- MÓDULO 2: CONTROL DE INVENTARIO -->
         <div id="modulo-inventario" class="modulo-app">
             <div class="header-modulo">
                 <h3>📦 Catálogo de Mercancía</h3>
@@ -227,7 +229,6 @@
             <div class="inventory-grid" id="lista-productos"></div>
         </div>
 
-        <!-- MÓDULO 3: CIERRE DE CAJA -->
         <div id="modulo-cierre" class="modulo-app">
             <div class="header-modulo">
                 <h3>📊 Cierre de Caja</h3>
@@ -249,7 +250,7 @@
                 <div class="cierre-item" style="color:#8fa0b7;">Fondo Inicial (Sencillo) $: <span id="cierre-fondo-usd">0.00 $</span></div>
                 <div class="cierre-item" style="color:#8fa0b7;">Fondo Inicial (Sencillo) Bs: <span id="cierre-fondo-ves">0,00 Bs</span></div>
                 <hr style="border-top:1px dashed #313c52; margin:8px 0;">
-                <div style="font-size:12px; color:#8fa0b7; margin-bottom:5px;">El dinero físico total que debes tener en la caja registradora ahora mismo es:</div>
+                <div style="font-size:12px; color:#8fa0b7; margin-bottom:5px;">Dinero físico exacto que debe haber en caja:</div>
                 <div class="cierre-item" style="color:#00ff66;">Efectivo Esperado ($): <span id="esperado-usd">0.00 $</span></div>
                 <div class="cierre-item" style="color:#00ff66;">Efectivo Esperado (Bs): <span id="esperado-ves">0,00 Bs</span></div>
             </div>
@@ -259,7 +260,6 @@
             <button class="btn-clear" style="margin-top:15px; width:100%; background:#ff5252; color:#fff;" onclick="window.borrarHistorial()">BORRAR HISTORIAL Y REINICIAR DÍA</button>
         </div>
 
-        <!-- MÓDULO 4: AJUSTES Y FONDO -->
         <div id="modulo-admin" class="modulo-app">
             <div class="header-modulo">
                 <h3>⚙️ Ajustes Contables</h3>
@@ -279,4 +279,474 @@
                 <label>👤 Configurar Perfil de Operación:</label>
                 <button class="btn-charge" style="background:#242c3d; color:#fff; margin-bottom:6px;" onclick="window.conmutarPerfil('Cajero 👤')">Modo Cajero</button>
                 <button class="btn-charge" onclick="window.conmutarPerfil('Administrador 👑')">Modo Administrador</button>
+            </div>
+        </div>
+
+    </div>
+
+    <script>
+        var tasaDia = 623.02;
+        var totalVentaUSD = 0.00;
+        var totalVentaVES = 0.00; 
+        var rolActual = "Administrador 👑";
+        var carrito = [];
+        var productos = [];
+        var ventasHistorico = [];
+        var fondoCaja = { usd: 0, ves: 0 };
         
+        try {
+            var db = window.localStorage ? window.localStorage.getItem('geomercado_db_v14') : null;
+            productos = db ? JSON.parse(db) : [
+                { id: 101, nombre: "Harina PAN", precio: 1.10, tipo: "unidad", qty: 15, serial: "7591", emoji: "🌽" },
+                { id: 102, nombre: "Vinagre tiquire", precio: 0.80, tipo: "unidad", qty: 12, serial: "1234", emoji: "🍶" }
+            ];
+
+            var dbVentas = window.localStorage ? window.localStorage.getItem('geomercado_ventas_v14') : null;
+            ventasHistorico = dbVentas ? JSON.parse(dbVentas) : [];
+
+            var dbFondo = window.localStorage ? window.localStorage.getItem('geomercado_fondo_v14') : null;
+            if(dbFondo) fondoCaja = JSON.parse(dbFondo);
+        } catch(e) { }
+
+        window.cambiarModulo = function(idModulo) {
+            if((idModulo === 'modulo-admin' || idModulo === 'modulo-cierre') && rolActual !== "Administrador 👑") {
+                alert("Bloqueado: Solo el Administrador."); return;
+            }
+            document.getElementById('menu-principal').style.display = 'none';
+            var modulos = document.querySelectorAll('.modulo-app');
+            for(var i=0; i<modulos.length; i++) modulos[i].style.display = 'none';
+            
+            var target = document.getElementById(idModulo);
+            if(target) target.style.display = 'flex';
+            
+            if(idModulo === 'modulo-inventario') {
+                document.getElementById('buscador-inventario').value = "";
+                window.renderizarInventario("");
+            }
+            if(idModulo === 'modulo-caja') {
+                document.getElementById('buscador-caja').value = "";
+                document.getElementById('resultados-busqueda-caja').innerHTML = "";
+            }
+            if(idModulo === 'modulo-cierre') window.renderizarCierreDeCaja();
+        };
+
+        window.volverAlMenu = function() {
+            var modulos = document.querySelectorAll('.modulo-app');
+            for(var i=0; i<modulos.length; i++) modulos[i].style.display = 'none';
+            document.getElementById('menu-principal').style.display = 'flex';
+        };
+
+        window.mascaraMoneda = function(input) {
+            var valor = input.value.replace(/\D/g, "");
+            if(valor === "") { input.value = ""; return; }
+            var numero = (parseFloat(valor) / 100).toFixed(2);
+            var partes = numero.split('.');
+            partes[0] = partes[0].replace(/\B(?=(\d{3})+(?!\d))/g, ".");
+            input.value = partes.join(',');
+        };
+
+        window.extraerNumeroLimpio = function(idInput) {
+            var el = document.getElementById(idInput);
+            if(!el || !el.value) return 0;
+            return parseFloat(el.value.replace(/\./g, '').replace(',', '.')) || 0;
+        };
+
+        window.formatVE = function(monto) {
+            return monto.toLocaleString('es-VE', {minimumFractionDigits: 2, maximumFractionDigits: 2}) + ' Bs';
+        };
+
+        window.conmutarCampoCantidad = function(tipo) {
+            var eQty = document.getElementById('prod-qty');
+            if(eQty) eQty.style.display = (tipo === 'peso') ? 'none' : 'block';
+        };
+
+        window.guardarFondoCaja = function() {
+            fondoCaja.usd = parseFloat(document.getElementById('input-fondo-usd').value) || 0;
+            fondoCaja.ves = parseFloat(document.getElementById('input-fondo-ves').value) || 0;
+            if (window.localStorage) window.localStorage.setItem('geomercado_fondo_v14', JSON.stringify(fondoCaja));
+        };
+
+        window.cambiarTasaManual = function(nuevaTasa) {
+            tasaDia = parseFloat(nuevaTasa) || 623.02;
+            totalVentaVES = totalVentaUSD * tasaDia;
+            window.renderizarCarritoCaja();
+        };
+
+        window.renderizarInventario = function(filtro) {
+            var contenedor = document.getElementById('lista-productos');
+            var formBox = document.getElementById('form-registro-prod');
+            if(formBox) formBox.style.display = (rolActual === "Administrador 👑") ? "flex" : "none";
+
+            if(!contenedor) return;
+            var html = "";
+            var textoFiltro = filtro ? filtro.toLowerCase() : "";
+
+            for(var i=0; i<productos.length; i++) {
+                var p = productos[i];
+                if(textoFiltro && p.nombre.toLowerCase().indexOf(textoFiltro) === -1) continue;
+
+                var indicadorStock = p.tipo === 'peso' ? '<span class="badge-peso">⚖️ Al Peso</span>' : '<span class="stock-indicator">Stock: ' + p.qty + ' unds</span>';
+                var iconoRender = p.emoji ? p.emoji : (p.tipo === 'peso' ? '🍎' : '📦');
+                var precioBs = p.precio * tasaDia; 
+                
+                html += '<div class="product-card">';
+                html += '<div style="background:#1b202e; padding:12px; border-radius:8px; font-size:24px;">' + iconoRender + '</div>';
+                html += '<h4>' + p.nombre + '</h4>';
+                html += '<p style="color:#00ff66;">' + p.precio.toFixed(2) + ' $</p>';
+                html += '<p style="font-size:12px; color:#8fa0b7; margin-bottom:4px;">' + window.formatVE(precioBs) + '</p>';
+                html += indicadorStock;
+                html += '<button style="background:#00ff66; border:none; padding:6px; border-radius:6px; width:100%; font-weight:bold; margin-top:8px; cursor:pointer;" onclick="window.agregarAlCarritoDesdeCaja(' + p.id + ')">➕ Facturar</button>';
+                html += '</div>';
+            }
+            contenedor.innerHTML = html;
+        };
+
+        window.agregarProductoNuevo = function() {
+            var name = document.getElementById('prod-name').value;
+            var price = parseFloat(document.getElementById('prod-price').value);
+            var serial = document.getElementById('prod-serial').value || "0000";
+            var type = document.getElementById('prod-type').value;
+            var qty = parseInt(document.getElementById('prod-qty').value) || 0;
+            var emj = document.getElementById('prod-emoji').value || (type === 'peso' ? '🍎' : '📦');
+
+            if(!name || isNaN(price)) { alert("Ingresa nombre y precio."); return; }
+
+            productos.push({ id: new Date().getTime(), nombre: name, precio: price, tipo: type, qty: qty, serial: serial, emoji: emj });
+            if (window.localStorage) window.localStorage.setItem('geomercado_db_v14', JSON.stringify(productos));
+            alert("Guardado completado.");
+            
+            document.getElementById('prod-name').value = "";
+            document.getElementById('prod-price').value = "";
+            document.getElementById('prod-serial').value = "";
+            document.getElementById('prod-qty').value = "";
+            document.getElementById('prod-emoji').value = "";
+            window.renderizarInventario("");
+        };
+
+        window.filtrarBuscadorCaja = function(texto) {
+            var contenedor = document.getElementById('resultados-busqueda-caja');
+            if(!texto || texto.length === 0) {
+                contenedor.innerHTML = "";
+                return;
+            }
+            var textoFiltro = texto.toLowerCase();
+            var html = "";
+            var encontrados = 0;
+
+            for(var i=0; i<productos.length; i++) {
+                var p = productos[i];
+                if((p.tipo === 'peso' || p.qty > 0) && p.nombre.toLowerCase().indexOf(textoFiltro) !== -1) {
+                    var icono = p.emoji ? p.emoji : '📦';
+                    html += '<button class="btn-search-result" onclick="window.agregarAlCarritoDesdeCaja(' + p.id + ')">';
+                    html += '<span>' + icono + ' ' + p.nombre + '</span>';
+                    html += '<span style="color:#00ff66; font-weight:bold;">$' + p.precio.toFixed(2) + '</span>';
+                    html += '</button>';
+                    encontrados++;
+                }
+            }
+            
+            if(encontrados === 0) html = '<div style="color:#8fa0b7; font-size:12px; text-align:center;">No hay resultados</div>';
+            contenedor.innerHTML = html;
+        };
+
+        window.agregarAlCarritoDesdeCaja = function(idProd) {
+            var p = null;
+            for(var i=0; i<productos.length; i++) {
+                if(productos[i].id == idProd) { p = productos[i]; break; }
+            }
+            if(!p) return;
+
+            var precioUSD = p.precio;
+            var cantidadVendida = 1;
+
+            if(p.tipo === 'peso') {
+                var kilos = prompt("⚖️ Balanza Virtual\nCantidad en Kilos para " + p.nombre + ":", "1.0");
+                cantidadVendida = parseFloat(kilos);
+                if(isNaN(cantidadVendida) || cantidadVendida <= 0) return;
+                precioUSD = p.precio * cantidadVendida;
+            } else {
+                if(p.qty < 1) { alert("Sin stock de " + p.nombre); return; }
+                p.qty -= 1;
+                if (window.localStorage) window.localStorage.setItem('geomercado_db_v14', JSON.stringify(productos));
+            }
+
+            var detalle = p.tipo === 'peso' ? cantidadVendida + ' kg' : '1 und';
+            var iconoRender = p.emoji ? p.emoji : '📦';
+            
+            carrito.push({ id: p.id, nombre: p.nombre, totalUSD: precioUSD, detalle: detalle, emoji: iconoRender, tipo: p.tipo });
+            totalVentaUSD += precioUSD;
+            totalVentaVES = totalVentaUSD * tasaDia;
+            
+            window.renderizarCarritoCaja();
+            
+            document.getElementById('buscador-caja').value = "";
+            document.getElementById('resultados-busqueda-caja').innerHTML = "";
+            
+            if(document.getElementById('modulo-inventario').style.display === 'flex') {
+                window.renderizarInventario(document.getElementById('buscador-inventario').value); 
+            }
+        };
+
+        window.eliminarDelCarrito = function(index) {
+            var item = carrito[index];
+            if(item.tipo !== 'peso') {
+                for(var i=0; i<productos.length; i++) {
+                    if(productos[i].id === item.id) {
+                        productos[i].qty += 1;
+                        break;
+                    }
+                }
+            }
+            totalVentaUSD -= item.totalUSD;
+            if(totalVentaUSD < 0) totalVentaUSD = 0;
+            totalVentaVES = totalVentaUSD * tasaDia;
+            
+            carrito.splice(index, 1);
+            if (window.localStorage) window.localStorage.setItem('geomercado_db_v14', JSON.stringify(productos));
+            window.renderizarCarritoCaja();
+        };
+
+        window.renderizarCarritoCaja = function() {
+            var container = document.getElementById('items-carrito-factura');
+            if(!container) return;
+            
+            if(carrito.length === 0) {
+                container.innerHTML = '<div style="color:#57687e; text-align:center; font-size:13px; padding:6px;">Ningún artículo en cuenta.</div>';
+            } else {
+                var html = "";
+                for(var i=0; i<carrito.length; i++) {
+                    var item = carrito[i];
+                    var precioBsItem = item.totalUSD * tasaDia;
+                    html += '<div class="cart-item">';
+                    html += '<div style="flex:1;">' + item.emoji + ' ' + item.nombre + '<br><small style="color:#8fa0b7;">' + item.detalle + ' | ' + window.formatVE(precioBsItem) + '</small></div>';
+                    html += '<div style="display:flex; align-items:center;">';
+                    html += '<strong>$' + item.totalUSD.toFixed(2) + '</strong>';
+                    html += '<button class="btn-remove-item" onclick="window.eliminarDelCarrito(' + i + ')">X</button>';
+                    html += '</div></div>';
+                }
+                container.innerHTML = html;
+            }
+
+            document.getElementById('grand-total-ves').innerText = window.formatVE(totalVentaVES);
+            document.getElementById('sub-total-usd').innerText = "Ref: $ " + totalVentaUSD.toFixed(2);
+            window.calcularCaja();
+        };
+
+        window.calcularCaja = function() {
+            var ptv = window.extraerNumeroLimpio('pay-ptv');
+            var pm = window.extraerNumeroLimpio('pay-pm');
+            var usdFisicoIngresado = parseFloat(document.getElementById('pay-usd').value) || 0; 
+            var ves = window.extraerNumeroLimpio('pay-ves');
+
+            var totalRecibidoVES = ptv + pm + (usdFisicoIngresado * tasaDia) + ves;
+            var diferenciaVES = totalVentaVES - totalRecibidoVES;
+
+            document.getElementById('total-recibido-ves').innerText = window.formatVE(totalRecibidoVES);
+            var eRestante = document.getElementById('total-restante-ves');
+            if(!eRestante) return;
+
+            if (diferenciaVES > 0.01) {
+                eRestante.innerText = window.formatVE(diferenciaVES) + ' Restante';
+                eRestante.style.color = '#ff5252';
+            } else if (diferenciaVES < -0.01) {
+                var vueltoTotalUSD = Math.abs(diferenciaVES) / tasaDia;
+                var dolaresAEntregar = Math.min(Math.floor(vueltoTotalUSD), Math.floor(usdFisicoIngresado));
+                var fraccionBolivares = (vueltoTotalUSD - dolaresAEntregar) * tasaDia;
+
+                if(dolaresAEntregar > 0) {
+                    eRestante.innerText = 'Vuelto: $ ' + dolaresAEntregar + ' + ' + fraccionBolivares.toLocaleString('es-VE', {maximumFractionDigits:2}) + ' Bs';
+                } else {
+                    eRestante.innerText = 'Vuelto: ' + fraccionBolivares.toLocaleString('es-VE', {maximumFractionDigits:2}) + ' Bs';
+                }
+                eRestante.style.color = '#00ff66';
+            } else {
+                eRestante.innerText = '0,00 Bs Completo';
+                eRestante.style.color = '#00ff66';
+            }
+        };
+
+        window.escanearBarcodeFoto = function(event, modo) {
+            if (typeof Html5Qrcode === 'undefined') {
+                alert("El sistema láser aún se está conectando por internet. Espera unos segundos y vuelve a intentar.");
+                return;
+            }
+            var file = event.target.files[0];
+            if(!file) return;
+            var html5QrCode = new Html5Qrcode("hidden-qr-reader");
+            html5QrCode.scanFile(file, true)
+            .then(function(decodedText) {
+                if(modo === 'registro') {
+                    var eSerial = document.getElementById('prod-serial');
+                    if(eSerial) eSerial.value = decodedText;
+                    alert("Serial detectado: " + decodedText);
+                } else if (modo === 'caja') {
+                    var match = null;
+                    for(var i=0; i<productos.length; i++) {
+                        if(productos[i].serial === decodedText) { match = productos[i]; break; }
+                    }
+                    if(match) window.agregarAlCarritoDesdeCaja(match.id);
+                    else alert("El código no está en el inventario.");
+                }
+            })
+            .catch(function(err) { alert("No se detectó un código legible. Enfoca mejor o mejora la luz."); });
+        };
+
+        window.escanearCapturePagoCompleto = function(event) {
+            if (typeof Tesseract === 'undefined') {
+                alert("El motor de lectura aún se está conectando por internet. Espera unos segundos e intenta de nuevo.");
+                return;
+            }
+            var input = event.target;
+            if (!input.files || !input.files[0]) return;
+            var eRef = document.getElementById('pm-ref');
+            if(eRef) eRef.value = "Leyendo Capture...";
+            
+            Tesseract.recognize(input.files[0], 'spa').then(function(result) {
+                var text = result.data.text;
+                var ref = text.match(/\d{6,12}/);
+                var monto = text.match(/(?:bs|monto|pagado|ref)?[:.\s]*([\d.]+,\d{2})/i);
+                if(eRef) eRef.value = ref ? ref[0] : "Manual";
+                if(monto) {
+                    var limpio = monto[1] || monto[0];
+                    var numeroParaInput = parseFloat(limpio.replace(/\./g, '').replace(',', '.'));
+                    var inputPm = document.getElementById('pay-pm');
+                    if(inputPm) {
+                        inputPm.value = (numeroParaInput * 100).toString();
+                        window.mascaraMoneda(inputPm);
+                    }
+                }
+                window.calcularCaja();
+            });
+        };
+
+        window.procesarCobro = function() {
+            if(carrito.length === 0) { alert("El carrito está vacío."); return; }
+            var ptv = window.extraerNumeroLimpio('pay-ptv');
+            var pm = window.extraerNumeroLimpio('pay-pm');
+            var usd = parseFloat(document.getElementById('pay-usd').value) || 0; 
+            var ves = window.extraerNumeroLimpio('pay-ves');
+            var now = new Date();
+            
+            var venta = {
+                fecha: now.toLocaleDateString() + ' ' + now.toLocaleTimeString(),
+                items: carrito.slice(),
+                totalUSD: totalVentaUSD,
+                ptv: ptv, pm: pm, usd: usd, ves: ves
+            };
+            ventasHistorico.push(venta);
+            if (window.localStorage) window.localStorage.setItem('geomercado_ventas_v14', JSON.stringify(ventasHistorico));
+            
+            alert("Venta registrada con éxito.");
+            
+            totalVentaUSD = 0.00; totalVentaVES = 0.00; carrito = [];
+            document.getElementById('pay-ptv').value = '';
+            document.getElementById('pay-pm').value = '';
+            document.getElementById('pay-usd').value = '';
+            document.getElementById('pay-ves').value = '';
+            var ePhone = document.getElementById('pm-phone');
+            var eRef = document.getElementById('pm-ref');
+            if(ePhone) ePhone.value = '';
+            if(eRef) eRef.value = '';
+            window.renderizarCarritoCaja();
+        };
+
+        window.limpiarCaja = function() {
+            for(var i=0; i<carrito.length; i++) {
+                if(carrito[i].tipo !== 'peso') {
+                    for(var j=0; j<productos.length; j++) {
+                        if(productos[j].id === carrito[i].id) {
+                            productos[j].qty += 1;
+                            break;
+                        }
+                    }
+                }
+            }
+            if (window.localStorage) window.localStorage.setItem('geomercado_db_v14', JSON.stringify(productos));
+
+            totalVentaUSD = 0.00; totalVentaVES = 0.00; carrito = [];
+            document.getElementById('pay-ptv').value = '';
+            document.getElementById('pay-pm').value = '';
+            document.getElementById('pay-usd').value = '';
+            document.getElementById('pay-ves').value = '';
+            var ePhone = document.getElementById('pm-phone');
+            var eRef = document.getElementById('pm-ref');
+            if(ePhone) ePhone.value = '';
+            if(eRef) eRef.value = '';
+            window.renderizarCarritoCaja();
+            alert("Venta cancelada. Stock devuelto a los estantes.");
+        };
+
+        window.renderizarCierreDeCaja = function() {
+            var totalPM = 0; var totalUSD = 0; var totalVES = 0; var totalPTV = 0; var gananciaTotalUSD = 0;
+            var container = document.getElementById('lista-historial-ventas');
+            var html = "";
+
+            for(var i=0; i<ventasHistorico.length; i++) {
+                var v = ventasHistorico[i];
+                totalPM += v.pm; totalUSD += v.usd; totalVES += v.ves; totalPTV += v.ptv; gananciaTotalUSD += v.totalUSD;
+                
+                var itemsStr = v.items.map(function(it){ return it.nombre; }).join(', ');
+                html += '<div class="cierre-card">';
+                html += '<h4>🛒 ' + v.fecha + '</h4>';
+                html += '<div class="cierre-item">Artículos: <span>' + itemsStr + '</span></div>';
+                html += '<div class="cierre-item">Total: <span>$' + v.totalUSD.toFixed(2) + '</span></div>';
+                if(v.ptv > 0) html += '<div class="cierre-item" style="color:#00ff66;">Punto Venta: <span>' + window.formatVE(v.ptv) + '</span></div>';
+                if(v.pm > 0) html += '<div class="cierre-item" style="color:#00ff66;">Pago Móvil: <span>' + window.formatVE(v.pm) + '</span></div>';
+                if(v.usd > 0) html += '<div class="cierre-item" style="color:#00ff66;">US$: <span>$' + v.usd.toFixed(2) + '</span></div>';
+                if(v.ves > 0) html += '<div class="cierre-item" style="color:#00ff66;">Bs Físico: <span>' + window.formatVE(v.ves) + '</span></div>';
+                html += '</div>';
+            }
+
+            if(ventasHistorico.length === 0) html = '<div style="text-align:center; color:#57687e; font-size:13px;">No hay ventas hoy.</div>';
+            container.innerHTML = html;
+
+            document.getElementById('resumen-ptv').innerText = window.formatVE(totalPTV);
+            document.getElementById('resumen-pm').innerText = window.formatVE(totalPM);
+            document.getElementById('resumen-usd').innerText = "$" + totalUSD.toFixed(2);
+            document.getElementById('resumen-ves').innerText = window.formatVE(totalVES);
+            document.getElementById('resumen-ganancia-usd').innerText = "$" + gananciaTotalUSD.toFixed(2);
+
+            document.getElementById('cierre-fondo-usd').innerText = "$" + fondoCaja.usd.toFixed(2);
+            document.getElementById('cierre-fondo-ves').innerText = window.formatVE(fondoCaja.ves);
+
+            var esperadoUSD = fondoCaja.usd + totalUSD;
+            var esperadoVES = fondoCaja.ves + totalVES;
+
+            document.getElementById('esperado-usd').innerText = "$" + esperadoUSD.toFixed(2);
+            document.getElementById('esperado-ves').innerText = window.formatVE(esperadoVES);
+        };
+
+        window.borrarHistorial = function() {
+            if(confirm("¿Seguro que deseas borrar las ventas de hoy?")) {
+                ventasHistorico = [];
+                if (window.localStorage) window.localStorage.setItem('geomercado_ventas_v14', JSON.stringify(ventasHistorico));
+                window.renderizarCierreDeCaja();
+            }
+        };
+
+        window.conmutarPerfil = function(perfil) {
+            rolActual = perfil;
+            var eRol = document.getElementById('txt-rol');
+            if(eRol) eRol.innerText = perfil;
+            var btnAdminMenu = document.querySelectorAll('.btn-menu');
+            if(btnAdminMenu.length >= 4) {
+                btnAdminMenu[2].style.display = (rolActual === 'Cajero 👤') ? 'none' : 'flex'; 
+                btnAdminMenu[3].style.display = (rolActual === 'Cajero 👤') ? 'none' : 'flex'; 
+            }
+            window.volverAlMenu();
+        };
+
+        window.onload = function() {
+            var totalEl = document.getElementById('grand-total-ves');
+            if (totalEl) totalEl.innerText = window.formatVE(totalVentaVES);
+
+            if(document.getElementById('input-fondo-usd')) document.getElementById('input-fondo-usd').value = fondoCaja.usd;
+            if(document.getElementById('input-fondo-ves')) document.getElementById('input-fondo-ves').value = fondoCaja.ves;
+        };
+    </script>
+
+    <script defer src="https://cdn.jsdelivr.net/npm/tesseract.js@5/dist/tesseract.min.js"></script>
+    <script defer src="https://unpkg.com/html5-qrcode"></script>
+
+</body>
+</html>
