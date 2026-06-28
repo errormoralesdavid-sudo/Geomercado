@@ -4,7 +4,6 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>GEOMERCADO - Sistema Comercial Pro</title>
-    <!-- Motores Integrados -->
     <script src="https://cdn.jsdelivr.net/npm/tesseract.js@5/dist/tesseract.min.js"></script>
     <script src="https://unpkg.com/html5-qrcode"></script>
     <style>
@@ -73,8 +72,7 @@
         .btn-charge { flex: 1.5; background-color: #00ff66; color: #000000; border: none; padding: 14px; border-radius: 12px; font-weight: bold; cursor: pointer; text-align: center; }
         
         #file-ocr { display: none; }
-        /* El escáner láser usa un div para mostrar la cámara en vivo */
-        #reader-laser { width: 100%; margin-bottom: 10px; border-radius: 12px; overflow: hidden; display: none; border: 2px solid #00ff66;}
+        #reader-laser { width: 100%; margin-bottom: 10px; border-radius: 12px; overflow: hidden; display: none; border: 2px solid #00ff66; background: #000;}
     </style>
 </head>
 <body>
@@ -85,7 +83,6 @@
 
     <div class="app-container">
 
-        <!-- MENÚ PRINCIPAL -->
         <div id="menu-principal">
             <div class="logo-grande">
                 <svg viewBox="0 0 100 100" xmlns="http://www.w3.org/2000/svg">
@@ -96,7 +93,7 @@
                 </svg>
             </div>
             <div class="main-title">GEO<span>MERCADO</span></div>
-            <div class="version-tag">VERSIÓN 9.0 LÁSER</div>
+            <div class="version-tag">VERSIÓN 9.0 LÁSER REPARADO</div>
             <div class="role-badge">Usuario: <span id="txt-rol">Administrador 👑</span></div>
 
             <div class="menu-grid">
@@ -106,7 +103,6 @@
             </div>
         </div>
 
-        <!-- MÓDULO 1: CAJA DE COBRO -->
         <div id="modulo-caja" class="modulo-app">
             <div class="header-modulo">
                 <h3>🛒 Caja de Facturación</h3>
@@ -135,12 +131,11 @@
                 <span id="sub-total-usd" style="color: #8fa0b7; font-size: 14px;">Ref: $ 0.00</span>
             </div>
 
-            <!-- ESCÁNER LÁSER RÁPIDO PARA CAJA -->
             <div id="reader-laser"></div>
             <button class="scanner-trigger" onclick="window.iniciarEscanerLaser('caja')">
                 <span style="font-size:18px;">🔴</span> ESCANEAR CÓDIGO LÁSER
             </button>
-            <button id="btn-cerrar-laser" style="display:none; background:#ff5252; color:#fff; border:none; padding:10px; border-radius:8px; font-weight:bold;" onclick="window.detenerLaser()">Cerrar Cámara</button>
+            <button id="btn-cerrar-laser" style="display:none; background:#ff5252; color:#fff; border:none; padding:10px; border-radius:8px; font-weight:bold; width: 100%; margin-bottom: 10px;" onclick="window.detenerLaser()">Cerrar Cámara</button>
 
             <div class="form-payments">
                 <div class="input-group">
@@ -152,7 +147,6 @@
                     <div class="pm-details">
                         <input type="tel" id="pm-phone" placeholder="Teléfono del Cliente">
                         <input type="tel" id="pm-ref" placeholder="Número de Referencia">
-                        <!-- TESSERACT SE QUEDA SOLO AQUÍ PORQUE ES EL MEJOR PARA LEER LETRAS EN PANTALLA -->
                         <button class="btn-ocr-scan" style="background:#242c3d; border:1px solid #00ff66; color:#00ff66; padding:10px; border-radius:8px; width:100%; font-weight:bold;" onclick="document.getElementById('file-ocr').click()">📸 LEER CAPTURE AUTO</button>
                         <input type="file" id="file-ocr" accept="image/*" onchange="window.escanearCapturePagoCompleto(event)">
                     </div>
@@ -186,7 +180,6 @@
             </div>
         </div>
 
-        <!-- MÓDULO 2: CONTROL DE INVENTARIO -->
         <div id="modulo-inventario" class="modulo-app">
             <div class="header-modulo">
                 <h3>📦 Catálogo de Mercancía</h3>
@@ -199,7 +192,6 @@
                 <input type="number" id="prod-price" placeholder="Precio Base ($)">
                 
                 <input type="tel" id="prod-serial" placeholder="Serial / Código de Barras">
-                <!-- ESCÁNER LÁSER RÁPIDO PARA REGISTRO -->
                 <button style="background:#0b0e14; border:1px solid #00ff66; color:#00ff66; padding:10px; border-radius:8px; font-weight:bold; width:100%; display:flex; align-items:center; justify-content:center; gap:8px;" onclick="window.iniciarEscanerLaser('registro')">
                     <span>🔴</span> LEER CÓDIGO BARRAS RÁPIDO
                 </button>
@@ -216,7 +208,6 @@
             <div class="inventory-grid" id="lista-productos"></div>
         </div>
 
-        <!-- MÓDULO 3: AJUSTES -->
         <div id="modulo-admin" class="modulo-app">
             <div class="header-modulo">
                 <h3>⚙️ Ajustes Contables</h3>
@@ -243,6 +234,7 @@
         var rolActual = "Administrador 👑";
         var carrito = [];
         var html5QrcodeScanner = null; // Motor Láser
+        window.isScanning = false; // Bandera de seguridad para evitar dobles toques
 
         var stockInicial = [
             { id: 101, nombre: "Harina PAN", precio: 1.10, tipo: "unidad", qty: 15, serial: "7591" },
@@ -261,7 +253,8 @@
             if(idModulo === 'modulo-admin' && rolActual !== "Administrador 👑") {
                 alert("Bloqueado: Solo administradores."); return;
             }
-            window.detenerLaser(); // Si cambia de pantalla, apaga la cámara
+            window.detenerLaser(); // Apaga la cámara si se cambia de pantalla
+            
             document.getElementById('menu-principal').style.display = 'none';
             var modulos = document.querySelectorAll('.modulo-app');
             for(var i=0; i<modulos.length; i++) modulos[i].style.display = 'none';
@@ -280,54 +273,74 @@
             document.getElementById('menu-principal').style.display = 'flex';
         };
 
-        // MOTOR LÁSER ULTRARRÁPIDO PARA CÓDIGOS DE BARRA
+        // ==========================================
+        // MOTOR LÁSER ULTRARRÁPIDO REPARADO
+        // ==========================================
         window.iniciarEscanerLaser = function(modo) {
             var camDiv = document.getElementById('reader-laser');
-            if(!camDiv) return;
-            camDiv.style.display = 'block';
-            
             var btnCerrar = document.getElementById('btn-cerrar-laser');
+            if(!camDiv) return;
+
+            // Evitar que un doble toque colapse la memoria
+            if (window.isScanning) return;
+            window.isScanning = true;
+
+            // Mostrar la caja negra
+            camDiv.style.display = 'block';
             if(btnCerrar) btnCerrar.style.display = 'block';
 
-            html5QrcodeScanner = new Html5Qrcode("reader-laser");
-            html5QrcodeScanner.start(
-                { facingMode: "environment" },
-                { fps: 10, qrbox: { width: 250, height: 100 } },
-                function(decodedText, decodedResult) {
-                    // ¡Encontró un código!
-                    window.detenerLaser();
-                    
-                    if(modo === 'registro') {
-                        document.getElementById('prod-serial').value = decodedText;
-                        alert("Código leído: " + decodedText);
-                    } else if (modo === 'caja') {
-                        var match = null;
-                        for(var i=0; i<productos.length; i++) {
-                            if(productos[i].serial === decodedText) { match = productos[i]; break; }
-                        }
-                        if(match) {
-                            window.agregarAlCarritoDesdeCaja(match.id);
-                        } else {
-                            alert("El código " + decodedText + " no está en el sistema.");
-                        }
-                    }
-                },
-                function(errorMessage) {
-                    // Ignorar errores de lectura en vivo
+            // EL SECRETO: Darle 300ms al teléfono para que procese los gráficos antes de prender el láser
+            setTimeout(function() {
+                if(!html5QrcodeScanner) {
+                    html5QrcodeScanner = new Html5Qrcode("reader-laser");
                 }
-            ).catch(function(err) {
-                alert("Error de cámara. Asegúrate de dar permisos o usar WebIntoApp.");
-                camDiv.style.display = 'none';
-            });
+
+                html5QrcodeScanner.start(
+                    { facingMode: "environment" },
+                    { fps: 10, qrbox: { width: 250, height: 100 } },
+                    function(decodedText, decodedResult) {
+                        // ÉXITO: Detectó un código
+                        window.detenerLaser();
+                        
+                        if(modo === 'registro') {
+                            var eSerial = document.getElementById('prod-serial');
+                            if(eSerial) eSerial.value = decodedText;
+                            alert("Código leído exitosamente: " + decodedText);
+                        } else if (modo === 'caja') {
+                            var match = null;
+                            for(var i=0; i<productos.length; i++) {
+                                if(productos[i].serial === decodedText) { match = productos[i]; break; }
+                            }
+                            if(match) {
+                                window.agregarAlCarritoDesdeCaja(match.id);
+                            } else {
+                                alert("El código " + decodedText + " no está en tu inventario.");
+                            }
+                        }
+                    },
+                    function(errorMessage) {
+                        // Se silencia para no saturar al usuario, está escaneando frame a frame
+                    }
+                ).catch(function(err) {
+                    alert("Error de cámara. Asegúrate de dar permisos de cámara o usar WebIntoApp.");
+                    window.detenerLaser();
+                });
+            }, 300); 
         };
 
         window.detenerLaser = function() {
-            if(html5QrcodeScanner) {
-                html5QrcodeScanner.stop().catch(function(err){});
-                html5QrcodeScanner.clear();
-            }
+            window.isScanning = false;
             var camDiv = document.getElementById('reader-laser');
             var btnCerrar = document.getElementById('btn-cerrar-laser');
+            
+            if(html5QrcodeScanner) {
+                try {
+                    html5QrcodeScanner.stop().then(function() {
+                        html5QrcodeScanner.clear();
+                    }).catch(function(err) { console.log(err); });
+                } catch(e) { console.log(e); }
+            }
+            
             if(camDiv) camDiv.style.display = 'none';
             if(btnCerrar) btnCerrar.style.display = 'none';
         };
@@ -490,7 +503,6 @@
             } else if (diferenciaVES < -0.01) {
                 var vueltoTotalUSD = Math.abs(diferenciaVES) / tasaDia;
                 
-                // LÓGICA CRUCIAL: Nunca devolver más dólares físicos de los que el cliente entregó
                 var dolaresAEntregar = Math.min(Math.floor(vueltoTotalUSD), Math.floor(usdFisicoIngresado));
                 var fraccionBolivares = (vueltoTotalUSD - dolaresAEntregar) * tasaDia;
 
