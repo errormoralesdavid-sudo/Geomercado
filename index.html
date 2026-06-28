@@ -12,55 +12,97 @@
             color: #ffffff; 
             font-family: 'Segoe UI', Arial, sans-serif; 
             margin: 0; 
-            padding: 15px;
+            padding: 20px;
             box-sizing: border-box;
             display: flex;
             flex-direction: column;
+            align-items: center;
             min-height: 100vh;
         }
-        .header-pos { text-align: center; margin-bottom: 15px; }
-        .logo-container { width: 70px; height: 70px; display: inline-flex; align-items: center; justify-content: center; }
-        .logo-svg { width: 100%; height: 100%; filter: drop-shadow(0 0 8px rgba(0, 255, 102, 0.5)); }
-        .brand-name { font-size: 18px; font-weight: 900; letter-spacing: 2px; color: #ffffff; margin-top: 5px; text-shadow: 0 0 10px rgba(0, 255, 102, 0.3); }
+
+        /* Contenedor central restrictivo para pantallas altas */
+        .app-container {
+            width: 100%;
+            max-width: 420px;
+            display: flex;
+            flex-direction: column;
+            gap: 16px;
+        }
+
+        /* Cabecera Centrada */
+        .header-pos { 
+            text-align: center; 
+        }
+        .logo-container { 
+            width: 75px; 
+            height: 75px; 
+            display: inline-flex; 
+            align-items: center; 
+            justify-content: center; 
+        }
+        .logo-svg { 
+            width: 100%; 
+            height: 100%; 
+            filter: drop-shadow(0 0 8px rgba(0, 255, 102, 0.5)); 
+        }
+        .brand-name { 
+            font-size: 20px; 
+            font-weight: 900; 
+            letter-spacing: 2px; 
+            color: #ffffff; 
+            margin-top: 6px; 
+            text-align: center;
+            text-shadow: 0 0 10px rgba(0, 255, 102, 0.3); 
+        }
         .brand-name span { color: #00ff66; }
+
+        /* Pantalla de Totales */
         .display-card {
             background: linear-gradient(135deg, #161a23 0%, #0d1017 100%);
             border: 1px solid #242c3d;
             border-radius: 16px;
-            padding: 15px;
+            padding: 18px;
             text-align: center;
-            margin-bottom: 15px;
             box-shadow: 0 6px 20px rgba(0,0,0,0.5);
         }
-        .display-card h2 { font-size: 38px; margin: 5px 0; color: #ffffff; font-weight: 700; }
-        .display-card p { margin: 0; color: #00ff66; font-size: 14px; font-weight: 600; letter-spacing: 1px; }
-        .pos-grid { display: flex; gap: 15px; margin-bottom: 15px; }
+        .display-card h2 { font-size: 36px; margin: 6px 0; color: #ffffff; font-weight: 700; text-align: center; }
+        .display-card p { margin: 0; color: #00ff66; font-size: 13px; font-weight: 600; letter-spacing: 1px; text-align: center; }
+
+        /* NUEVO: Botón de Escáner Superior Centrado y Fluido */
         .scanner-trigger {
-            flex: 0 0 32%;
-            background: linear-gradient(135deg, #00b347 0%, #00ff66 100%);
+            background: linear-gradient(90deg, #00b347 0%, #00ff66 100%);
             border: none;
-            border-radius: 16px;
+            border-radius: 14px;
             display: flex;
-            flex-direction: column;
             align-items: center;
             justify-content: center;
-            padding: 10px;
+            gap: 12px;
+            padding: 14px;
             color: #000000;
             font-weight: bold;
-            font-size: 13px;
+            font-size: 15px;
             cursor: pointer;
             box-shadow: 0 4px 15px rgba(0, 255, 102, 0.2);
-            text-align: center;
+            width: 100%;
+            box-sizing: border-box;
         }
-        .scanner-trigger svg { width: 35px; height: 35px; margin-bottom: 8px; fill: #000000; }
-        .form-payments { flex: 1; display: flex; flex-direction: column; gap: 10px; }
+        .scanner-trigger svg { width: 24px; height: 24px; fill: #000000; }
+
+        /* Formulario Unificado Vertical y Centrado */
+        .form-payments { 
+            display: flex; 
+            flex-direction: column; 
+            gap: 12px; 
+            width: 100%;
+        }
         .input-group {
             background-color: #161a23;
             border: 1px solid #242c3d;
-            border-radius: 12px;
-            padding: 10px 12px;
+            border-radius: 14px;
+            padding: 12px 16px;
             display: flex;
             flex-direction: column;
+            align-items: center;
             transition: all 0.3s ease;
         }
         .input-group:focus-within {
@@ -68,107 +110,185 @@
             box-shadow: 0 0 12px rgba(0, 255, 102, 0.4);
             background-color: #1a212f;
         }
-        .input-group label { font-size: 10px; color: #8fa0b7; text-transform: uppercase; letter-spacing: 0.5px; margin-bottom: 4px; }
-        .input-row { display: flex; align-items: center; gap: 8px; }
-        .input-row span { font-size: 15px; font-weight: bold; color: #00ff66; }
-        .input-row input { width: 100%; background: transparent; border: none; color: #ffffff; font-size: 15px; font-weight: bold; outline: none; }
-        .pm-details { display: flex; gap: 6px; margin-top: 6px; align-items: center; }
+        .input-group label { 
+            font-size: 11px; 
+            color: #8fa0b7; 
+            text-transform: uppercase; 
+            letter-spacing: 0.5px; 
+            margin-bottom: 6px; 
+            text-align: center;
+        }
+        .input-row { 
+            display: flex; 
+            align-items: center; 
+            justify-content: center;
+            gap: 10px; 
+            width: 100%;
+            max-width: 280px;
+        }
+        .input-row span { font-size: 18px; font-weight: bold; color: #00ff66; }
+        .input-row input { 
+            width: 100%; 
+            background: transparent; 
+            border: none; 
+            color: #ffffff; 
+            font-size: 18px; 
+            font-weight: bold; 
+            outline: none; 
+            text-align: center;
+        }
+        
+        /* Subcampos de Pago Móvil Centrados */
+        .pm-details { 
+            display: flex; 
+            gap: 8px; 
+            margin-top: 10px; 
+            align-items: center; 
+            width: 100%;
+        }
         .pm-details input {
             flex: 1;
             background-color: #0f121a;
             border: 1px solid #242c3d;
-            border-radius: 6px;
-            padding: 6px;
+            border-radius: 8px;
+            padding: 8px;
             color: #ffffff;
-            font-size: 11px;
+            font-size: 12px;
             outline: none;
+            text-align: center;
         }
         .pm-details input:focus { border-color: #00ff66; }
         .btn-ocr-scan {
             background-color: #242c3d;
             border: 1px solid #00ff66;
             color: #00ff66;
-            border-radius: 6px;
-            padding: 5px 10px;
-            font-size: 11px;
+            border-radius: 8px;
+            padding: 7px 12px;
+            font-size: 12px;
             font-weight: bold;
             cursor: pointer;
         }
+
+        /* Mini Calculadora Centrada */
         .mini-calc-section {
             background-color: #11151d;
             border: 1px dashed #313c52;
-            border-radius: 12px;
-            padding: 10px;
-            margin-bottom: 15px;
+            border-radius: 14px;
+            padding: 12px;
+            text-align: center;
         }
-        .mini-calc-title { font-size: 11px; color: #8fa0b7; font-weight: bold; text-transform: uppercase; margin-bottom: 6px; display: flex; justify-content: space-between; }
-        .mini-calc-grid { display: flex; gap: 10px; align-items: center; }
-        .mini-calc-grid input { flex: 1; background-color: #161a23; border: 1px solid #242c3d; border-radius: 8px; padding: 8px; color: #fff; font-size: 13px; font-weight: bold; outline: none; }
+        .mini-calc-title { 
+            font-size: 11px; 
+            color: #8fa0b7; 
+            font-weight: bold; 
+            text-transform: uppercase; 
+            margin-bottom: 8px; 
+            display: flex; 
+            justify-content: center; 
+            gap: 10px;
+        }
+        .mini-calc-grid { display: flex; gap: 10px; align-items: center; justify-content: center; }
+        .mini-calc-grid input { 
+            width: 40%;
+            background-color: #161a23; 
+            border: 1px solid #242c3d; 
+            border-radius: 8px; 
+            padding: 8px; 
+            color: #fff; 
+            font-size: 14px; 
+            font-weight: bold; 
+            outline: none; 
+            text-align: center;
+        }
         .mini-calc-grid input:focus { border-color: #00ff66; }
-        .footer-totals { background-color: #11151d; border: 1px solid #242c3d; border-radius: 14px; padding: 12px; margin-bottom: 15px; }
+
+        /* Totales del Cierre */
+        .footer-totals { 
+            background-color: #11151d; 
+            border: 1px solid #242c3d; 
+            border-radius: 14px; 
+            padding: 14px; 
+        }
         .total-row { display: flex; justify-content: space-between; padding: 4px 0; font-size: 14px; color: #8fa0b7; }
         .total-row strong { color: #ffffff; }
-        .total-row.final { border-top: 1px dashed #242c3d; margin-top: 6px; padding-top: 8px; font-size: 16px; font-weight: bold; color: #00ff66; }
-        .action-container { display: flex; gap: 12px; margin-top: auto; }
+        .total-row.final { 
+            border-top: 1px dashed #242c3d; 
+            margin-top: 6px; 
+            padding-top: 8px; 
+            font-size: 16px; 
+            font-weight: bold; 
+            color: #00ff66; 
+            justify-content: space-between;
+        }
+
+        /* Botones de Acción */
+        .action-container { display: flex; gap: 12px; margin-top: 10px; }
         .btn-clear { flex: 1; background-color: #242c3d; color: #ffffff; border: 1px solid #313c52; padding: 14px; border-radius: 12px; font-weight: bold; font-size: 14px; cursor: pointer; }
         .btn-charge { flex: 1.5; background-color: #00ff66; color: #000000; border: none; padding: 14px; border-radius: 12px; font-weight: bold; font-size: 14px; cursor: pointer; box-shadow: 0 4px 12px rgba(0, 255, 102, 0.2); text-align: center; }
-        #camera-preview { display: none; width: 100%; background: #000; border-radius: 16px; margin-bottom: 15px; overflow: hidden; border: 2px solid #00ff66; }
+
+        #camera-preview { display: none; width: 100%; background: #000; border-radius: 16px; overflow: hidden; border: 2px solid #00ff66; }
         #file-ocr { display: none; }
     </style>
 </head>
 <body>
 
-    <div class="header-pos">
-        <div class="logo-container">
-            <svg class="logo-svg" viewBox="0 0 100 100" xmlns="http://www.w3.org/2000/svg">
-                <path d="M15 25 h15 l12 32 h33 l10 -22 h-50" fill="none" stroke="#00ff66" stroke-width="3.5" stroke-linecap="round" stroke-linejoin="round"/>
-                <circle cx="45" cy="70" r="6" fill="none" stroke="#00ff66" stroke-width="2.5"/>
-                <circle cx="70" cy="70" r="6" fill="none" stroke="#00ff66" stroke-width="2.5"/>
-                <circle cx="58" cy="44" r="7" fill="#ffffff"/>
-                <path d="M58 37 c1 -3 3 -2 3 -2" fill="none" stroke="#00ff66" stroke-width="2"/>
-            </svg>
+    <div class="app-container">
+
+        <!-- Cabecera -->
+        <div class="header-pos">
+            <div class="logo-container">
+                <svg class="logo-svg" viewBox="0 0 100 100" xmlns="http://www.w3.org/2000/svg">
+                    <path d="M15 25 h15 l12 32 h33 l10 -22 h-50" fill="none" stroke="#00ff66" stroke-width="3.5" stroke-linecap="round" stroke-linejoin="round"/>
+                    <circle cx="45" cy="70" r="6" fill="none" stroke="#00ff66" stroke-width="2.5"/>
+                    <circle cx="70" cy="70" r="6" fill="none" stroke="#00ff66" stroke-width="2.5"/>
+                    <circle cx="58" cy="44" r="7" fill="#ffffff"/>
+                    <path d="M58 37 c1 -3 3 -2 3 -2" fill="none" stroke="#00ff66" stroke-width="2"/>
+                </svg>
+            </div>
+            <div class="brand-name">GEO<span>MERCADO</span></div>
         </div>
-        <div class="brand-name">GEO<span>MERCADO</span></div>
-    </div>
 
-    <div class="display-card">
-        <p>TOTAL FACTURA (SENIAT)</p>
-        <h2 id="grand-total-ves">5.647,50 Bs</h2>
-        <span id="sub-total-usd" style="color: #8fa0b7; font-size: 14px;">Ref: $ 125.50</span>
-    </div>
+        <!-- Pantalla de Montos -->
+        <div class="display-card">
+            <p>TOTAL FACTURA (SENIAT)</p>
+            <h2 id="grand-total-ves">5.647,50 Bs</h2>
+            <span id="sub-total-usd" style="color: #8fa0b7; font-size: 14px;">Ref: $ 125.50</span>
+        </div>
 
-    <div id="camera-preview">
-        <div id="interactive-reader" style="width: 100%;"></div>
-    </div>
+        <!-- Visor de la Cámara -->
+        <div id="camera-preview">
+            <div id="interactive-reader" style="width: 100%;"></div>
+        </div>
 
-    <div class="pos-grid">
+        <!-- Botón Escáner Superior Centrado -->
         <button class="scanner-trigger" onclick="encenderEscaner()">
             <svg viewBox="0 0 24 24">
                 <path d="M4 4h4v2H4v4H2V4c0-1.1.9-2 2-2zm16 0c1.1 0 2 .9 2 2v4h-2V6h-4V4h4zM4 20h4v2H4c-1.1 0-2-.9-2-2v-4h2v4zm16 0h-4v2h4c1.1 0 2-.9 2-2v-4h-2v4zM7 12h10v2H7zm0-3h10v2H7zm0 6h10v2H7z"/>
             </svg>
-            ESCANEAR<br>QR / IMAGEN
+            ESCANEAR QR / IMAGEN DEL PRODUCTO
         </button>
 
+        <!-- Formulario Vertical Balanceado -->
         <div class="form-payments">
             <div class="input-group">
-                <label>📲 Pago Móvil</label>
+                <label>📲 Pago Móvil Recibido</label>
                 <div class="input-row">
                     <span>Bs</span>
-                    <input type="number" id="pay-pm" placeholder="Monto Recibido" oninput="calcularCaja()">
+                    <input type="number" id="pay-pm" placeholder="0,00" oninput="calcularCaja()">
                 </div>
                 <div class="pm-details">
-                    <input type="text" id="pm-phone" placeholder="Teléfono del Cliente">
-                    <input type="text" id="pm-ref" placeholder="Nro de Referencia">
+                    <input type="text" id="pm-phone" placeholder="Teléfono Cliente">
+                    <input type="text" id="pm-ref" placeholder="Referencia / Serial">
                     <button class="btn-ocr-scan" onclick="document.getElementById('file-ocr').click()">📸 AUTO</button>
                     <input type="file" id="file-ocr" accept="image/*" onchange="escanearCapturePagoCompleto(event)">
                 </div>
             </div>
 
             <div class="input-group">
-                <label>💵 Efectivo Divisas</label>
+                <label>💵 Efectivo Divisas ($)</label>
                 <div class="input-row">
                     <span>$</span>
-                    <input type="number" id="pay-usd" placeholder="Monto Recibido" oninput="calcularCaja()">
+                    <input type="number" id="pay-usd" placeholder="0.00" oninput="calcularCaja()">
                 </div>
             </div>
 
@@ -176,35 +296,39 @@
                 <label>🫴 Efectivo Bolívares</label>
                 <div class="input-row">
                     <span>Bs</span>
-                    <input type="number" id="pay-ves" placeholder="Monto Recibido" oninput="calcularCaja()">
+                    <input type="number" id="pay-ves" placeholder="0,00" oninput="calcularCaja()">
                 </div>
             </div>
         </div>
-    </div>
 
-    <div class="mini-calc-section">
-        <div class="mini-calc-title">🧮 Conversor Auxiliar Rápido <span>(Tasa: 623,02)</span></div>
-        <div class="mini-calc-grid">
-            <input type="number" id="calc-bs" placeholder="Monto en Bs" oninput="convertirAuxiliar('bs')">
-            <span style="color: #00ff66; font-weight: bold;">↔</span>
-            <input type="number" id="calc-usd" placeholder="Monto en $" oninput="convertirAuxiliar('usd')">
+        <!-- Mini Calculadora Centrada -->
+        <div class="mini-calc-section">
+            <div class="mini-calc-title">🧮 Conversor Auxiliar Rápido <span>(Tasa: 623,02)</span></div>
+            <div class="mini-calc-grid">
+                <input type="number" id="calc-bs" placeholder="Monto Bs" oninput="convertirAuxiliar('bs')">
+                <span style="color: #00ff66; font-weight: bold;">↔</span>
+                <input type="number" id="calc-usd" placeholder="Monto $" oninput="convertirAuxiliar('usd')">
+            </div>
         </div>
-    </div>
 
-    <div class="footer-totals">
-        <div class="total-row">
-            <span>Total Recibido:</span>
-            <strong id="total-recibido-ves">0,00 Bs</strong>
+        <!-- Cierre de Caja -->
+        <div class="footer-totals">
+            <div class="total-row">
+                <span>Total Recibido:</span>
+                <strong id="total-recibido-ves">0,00 Bs</strong>
+            </div>
+            <div class="total-row final">
+                <span>Diferencia / Vuelto:</span>
+                <span id="total-restante-ves">5.647,50 Bs Restante</span>
+            </div>
         </div>
-        <div class="total-row final">
-            <span>Diferencia / Vuelto:</span>
-            <span id="total-restante-ves">5.647,50 Bs Restante</span>
-        </div>
-    </div>
 
-    <div class="action-container">
-        <button class="btn-clear" onclick="limpiarCaja()">LIMPIAR</button>
-        <button class="btn-charge" onclick="procesarCobro()">COBRAR</button>
+        <!-- Botones Inferiores -->
+        <div class="action-container">
+            <button class="btn-clear" onclick="limpiarCaja()">LIMPIAR</button>
+            <button class="btn-charge" onclick="procesarCobro()">COBRAR</button>
+        </div>
+
     </div>
 
     <script>
@@ -213,18 +337,9 @@
         var totalVentaVES = totalVentaUSD * tasaDia; 
         var html5QrcodeScanner = null;
 
-        // SISTEMA DE SEGURIDAD DE ARRANQUE DIRECTO (Sin window.onload para saltar bloqueos)
         function forzarArranquePOS() {
-            var eTasaCompra = document.getElementById('arb-tasa-compra'); // Por si se requiere
             document.getElementById('grand-total-ves').innerText = totalVentaVES.toLocaleString('es-VE', {minimumFractionDigits: 2, maximumFractionDigits: 2}) + ' Bs';
-            document.getElementById('rate-bcv'); // Asegura lectura
-            pintarPizarrasLocales();
             calcularCaja();
-        }
-
-        function pintarPizarrasLocales() {
-            // Elimina dependencias externas lentas
-            console.log("Pizarras sincronizadas con la tasa: " + tasaDia);
         }
 
         function calcularCaja() {
@@ -258,8 +373,7 @@
 
             var eRef = document.getElementById('pm-ref');
             var eMonto = document.getElementById('pay-pm');
-            
-            eRef.value = "Leyendo capture...";
+            eRef.value = "Leyendo...";
 
             Tesseract.recognize(input.files[0], 'spa')
             .then(({ data: { text } }) => {
@@ -273,7 +387,7 @@
                     var montoLimpio = montoTexto.replace(/\./g, '').replace(',', '.');
                     eMonto.value = parseFloat(montoLimpio);
                 } else {
-                    alert("Referencia copiada. Por favor ingresa el monto.");
+                    alert("Referencia leída. Completa el monto.");
                 }
                 calcularCaja();
             }).catch(err => {
@@ -312,7 +426,7 @@
                     html5QrcodeScanner.clear();
                 },
                 errorMessage => { }
-            ).catch(err => { alert("Por seguridad, el escáner requiere hosting HTTPS o la app compilada final."); });
+            ).catch(err => { alert("Escáner listo. Requiere HTTPS activo."); });
         }
 
         function limpiarCaja() {
@@ -331,7 +445,6 @@
             limpiarCaja();
         }
 
-        // Ejecutar forzado inmediato al leer el script
         forzarArranquePOS();
     </script>
 </body>
