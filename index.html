@@ -3,88 +3,59 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>GEOMERCADO - Sistema de Control Comercial</title>
-    <script src="https://unpkg.com/html5-qrcode"></script>
+    <title>GEOMERCADO - Sistema Comercial</title>
     <script src="https://cdn.jsdelivr.net/npm/tesseract.js@5/dist/tesseract.min.js"></script>
     <style>
-        body { 
-            background-color: #0b0e14; 
-            color: #ffffff; 
-            font-family: 'Segoe UI', Arial, sans-serif; 
-            margin: 0; 
-            padding: 15px;
-            box-sizing: border-box;
-            display: flex;
-            flex-direction: column;
-            align-items: center;
-            min-height: 100vh;
-        }
-
+        body { background-color: #0b0e14; color: #ffffff; font-family: 'Segoe UI', Arial, sans-serif; margin: 0; padding: 15px; box-sizing: border-box; display: flex; flex-direction: column; align-items: center; min-height: 100vh; }
         .app-container { width: 100%; max-width: 450px; display: flex; flex-direction: column; gap: 16px; }
-
-        /* MENÚ PRINCIPAL */
-        #menu-principal { display: flex; flex-direction: column; align-items: center; text-align: center; margin-top: 30px; width: 100%; }
-        .logo-grande { width: 130px; height: 130px; margin-bottom: 10px; filter: drop-shadow(0 0 15px #00ff66); }
-        .main-title { font-size: 28px; font-weight: 900; letter-spacing: 3px; margin-bottom: 5px; }
-        .main-title span { color: #00ff66; }
         
-        .role-badge { background-color: #161a23; border: 1px solid #242c3d; padding: 6px 16px; border-radius: 20px; font-size: 13px; color: #8fa0b7; margin-bottom: 25px; font-weight: bold; cursor: pointer; }
+        /* CABECERA Y MENÚ */
+        #menu-principal { display: flex; flex-direction: column; align-items: center; text-align: center; margin-top: 20px; width: 100%; }
+        .logo-grande { width: 120px; height: 130px; margin-bottom: 10px; filter: drop-shadow(0 0 12px #00ff66); }
+        .main-title { font-size: 28px; font-weight: 900; letter-spacing: 2px; }
+        .main-title span { color: #00ff66; }
+        .role-badge { background-color: #161a23; border: 1px solid #242c3d; padding: 6px 16px; border-radius: 20px; font-size: 13px; color: #8fa0b7; margin-bottom: 20px; font-weight: bold; cursor: pointer; }
         .role-badge span { color: #00ff66; }
+        .menu-grid { display: flex; flex-direction: column; gap: 12px; width: 100%; }
+        .btn-menu { background: linear-gradient(135deg, #161a23 0%, #0f121a 100%); border: 1px solid #242c3d; border-radius: 14px; padding: 16px; color: #ffffff; font-size: 15px; font-weight: bold; text-align: left; cursor: pointer; display: flex; align-items: center; gap: 15px; }
+        .btn-menu:focus { border-color: #00ff66; box-shadow: 0 0 10px rgba(0, 255, 102, 0.2); }
+        .btn-menu .icon { font-size: 22px; color: #00ff66; }
 
-        .menu-grid { display: flex; flex-direction: column; gap: 14px; width: 100%; }
-        .btn-menu { background: linear-gradient(135deg, #161a23 0%, #0f121a 100%); border: 1px solid #242c3d; border-radius: 14px; padding: 18px; color: #ffffff; font-size: 16px; font-weight: bold; text-align: left; cursor: pointer; display: flex; align-items: center; gap: 15px; transition: all 0.3s ease; }
-        .btn-menu:focus { border-color: #00ff66; box-shadow: 0 0 12px rgba(0, 255, 102, 0.2); }
-        .btn-menu .icon { font-size: 24px; color: #00ff66; }
+        .modulo-app { display: none; width: 100%; flex-direction: column; gap: 14px; }
+        .header-modulo { display: flex; align-items: center; justify-content: space-between; padding-bottom: 8px; border-bottom: 1px solid #242c3d; }
+        .btn-back { background-color: #161a23; border: 1px solid #242c3d; color: #fff; padding: 8px 12px; border-radius: 8px; font-weight: bold; cursor: pointer; }
 
-        /* SECCIONES */
-        .modulo-app { display: none; width: 100%; flex-direction: column; gap: 16px; }
-        .header-modulo { display: flex; align-items: center; justify-content: space-between; padding-bottom: 10px; border-bottom: 1px solid #242c3d; }
-        .btn-back { background-color: #161a23; border: 1px solid #242c3d; color: #fff; padding: 8px 12px; border-radius: 8px; font-weight: bold; cursor: pointer; font-size: 13px; }
+        /* PANTALLA DE TRABAJO */
+        .display-card { background: linear-gradient(135deg, #161a23 0%, #0d1017 100%); border: 1px solid #242c3d; border-radius: 16px; padding: 15px; text-align: center; }
+        .display-card h2 { font-size: 34px; margin: 4px 0; color: #ffffff; font-weight: 700; }
+        
+        /* LISTA DE COMPRAS EN FACTURA */
+        .cart-list { background-color: #11151d; border: 1px solid #242c3d; border-radius: 12px; padding: 10px; max-height: 100px; overflow-y: auto; font-size: 13px; }
+        .cart-item { display: flex; justify-content: space-between; padding: 4px 0; border-bottom: 1px solid #161a23; }
 
-        /* PANTALLA DE MONTO */
-        .display-card { background: linear-gradient(135deg, #161a23 0%, #0d1017 100%); border: 1px solid #242c3d; border-radius: 16px; padding: 18px; text-align: center; box-shadow: 0 6px 20px rgba(0,0,0,0.5); }
-        .display-card h2 { font-size: 34px; margin: 6px 0; color: #ffffff; font-weight: 700; }
-        .display-card p { margin: 0; color: #00ff66; font-size: 13px; font-weight: 600; letter-spacing: 1px; }
-
-        .scanner-trigger { background: linear-gradient(90deg, #00b347 0%, #00ff66 100%); border: none; border-radius: 14px; display: flex; align-items: center; justify-content: center; gap: 12px; padding: 14px; color: #000000; font-weight: bold; font-size: 14px; cursor: pointer; width: 100%; box-sizing: border-box; }
-        .scanner-trigger svg { width: 24px; height: 24px; fill: #000000; }
-
-        /* INPUTS INTERACTIVOS CON FORMATEO */
+        .scanner-trigger { background: linear-gradient(90deg, #00b347 0%, #00ff66 100%); border: none; border-radius: 14px; display: flex; align-items: center; justify-content: center; gap: 12px; padding: 14px; color: #000000; font-weight: bold; cursor: pointer; width: 100%; }
+        
         .form-payments { display: flex; flex-direction: column; gap: 12px; width: 100%; }
-        .input-group { background-color: #161a23; border: 1px solid #242c3d; border-radius: 14px; padding: 14px; display: flex; flex-direction: column; box-sizing: border-box; width: 100%; }
-        .input-group:focus-within { border-color: #00ff66; box-shadow: 0 0 12px rgba(0, 255, 102, 0.4); background-color: #1a212f; }
-        .input-group label { font-size: 11px; color: #8fa0b7; text-transform: uppercase; letter-spacing: 0.5px; margin-bottom: 8px; text-align: center; }
-        .input-row { display: flex; align-items: center; justify-content: center; gap: 12px; width: 100%; }
-        .input-row span { font-size: 20px; font-weight: bold; color: #00ff66; }
+        .input-group { background-color: #161a23; border: 1px solid #242c3d; border-radius: 14px; padding: 12px; display: flex; flex-direction: column; width: 100%; box-sizing: border-box; }
+        .input-group:focus-within { border-color: #00ff66; box-shadow: 0 0 12px rgba(0, 255, 102, 0.4); }
+        .input-group label { font-size: 11px; color: #8fa0b7; text-transform: uppercase; margin-bottom: 6px; text-align: center; }
+        .input-row { display: flex; align-items: center; justify-content: center; gap: 10px; }
         .input-row input { width: 100%; background: transparent; border: none; color: #ffffff; font-size: 20px; font-weight: bold; outline: none; text-align: center; }
         
-        .pm-details { display: flex; flex-direction: column; gap: 8px; margin-top: 12px; width: 100%; }
+        .pm-details { display: flex; flex-direction: column; gap: 8px; margin-top: 10px; width: 100%; }
         .pm-details input { width: 100%; background-color: #0f121a; border: 1px solid #242c3d; border-radius: 8px; padding: 10px; color: #ffffff; font-size: 14px; outline: none; text-align: center; box-sizing: border-box; }
-        .btn-ocr-scan { background: #242c3d; border: 1px solid #00ff66; color: #00ff66; border-radius: 8px; padding: 10px; font-size: 13px; font-weight: bold; cursor: pointer; width: 100%; text-align: center; }
 
-        /* INVENTARIO COMPLETO Y EDICIÓN */
-        .admin-form-box { background-color: #161a23; border: 1px solid #242c3d; border-radius: 14px; padding: 15px; display: flex; flex-direction: column; gap: 10px; width: 100%; box-sizing: border-box; }
-        .admin-form-box input, .admin-form-box select { width: 100%; background-color: #0b0e14; border: 1px solid #242c3d; padding: 10px; border-radius: 8px; color: #fff; font-size: 14px; outline: none; box-sizing: border-box; }
-        
         .inventory-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; width: 100%; }
-        .product-card { background-color: #161a23; border: 1px solid #242c3d; border-radius: 12px; padding: 12px; text-align: center; display: flex; flex-direction: column; justify-content: space-between; }
-        .product-card .img-box { background:#1b202e; padding:12px; border-radius:8px; font-size:28px; margin-bottom:6px; }
-        .product-card h4 { margin: 4px 0; font-size: 14px; }
-        .product-card p { margin: 0; color: #00ff66; font-size: 13px; font-weight: bold; }
-        .product-card .serial-text { font-size: 10px; color: #8fa0b7; margin-top: 2px; }
-        
-        .btn-add-cart { background-color: #00ff66; color: #000; border: none; padding: 8px; border-radius: 6px; width: 100%; font-weight: bold; margin-top: 8px; cursor: pointer; }
+        .product-card { background-color: #161a23; border: 1px solid #242c3d; border-radius: 12px; padding: 10px; text-align: center; }
+        .badge-peso { font-size: 10px; background-color: #ffca28; color: #000; padding: 2px 6px; border-radius: 4px; font-weight: bold; }
 
-        .footer-totals { background-color: #11151d; border: 1px solid #242c3d; border-radius: 14px; padding: 14px; width: 100%; box-sizing: border-box; }
+        .footer-totals { background-color: #11151d; border: 1px solid #242c3d; border-radius: 14px; padding: 14px; }
         .total-row { display: flex; justify-content: space-between; padding: 4px 0; font-size: 14px; color: #8fa0b7; }
-        .total-row strong { color: #ffffff; }
         .total-row.final { border-top: 1px dashed #242c3d; margin-top: 6px; padding-top: 8px; font-size: 16px; font-weight: bold; color: #00ff66; }
 
-        .action-container { display: flex; gap: 12px; margin-top: 10px; width: 100%; }
-        .btn-clear { flex: 1; background-color: #242c3d; color: #ffffff; border: 1px solid #313c52; padding: 14px; border-radius: 12px; font-weight: bold; font-size: 14px; cursor: pointer; }
-        .btn-charge { flex: 1.5; background-color: #00ff66; color: #000000; border: none; padding: 14px; border-radius: 12px; font-weight: bold; font-size: 14px; cursor: pointer; }
-
-        #camera-preview { display: none; width: 100%; background: #000; border-radius: 16px; overflow: hidden; border: 2px solid #00ff66; }
+        .action-container { display: flex; gap: 12px; width: 100%; }
+        .btn-clear { flex: 1; background-color: #242c3d; color: #ffffff; border: 1px solid #313c52; padding: 14px; border-radius: 12px; font-weight: bold; cursor: pointer; }
+        .btn-charge { flex: 1.5; background-color: #00ff66; color: #000000; border: none; padding: 14px; border-radius: 12px; font-weight: bold; cursor: pointer; }
         #file-ocr, #file-product-scan { display: none; }
     </style>
 </head>
@@ -94,37 +65,31 @@
 
         <div id="menu-principal">
             <div class="logo-grande">
-                <svg viewBox="0 0 100 100" xmlns="http://www.w3.org/2000/svg" style="width:100%; height:100%;">
-                    <path d="M15 25 h15 l12 32 h33 l10 -22 h-50" fill="none" stroke="#00ff66" stroke-width="4" stroke-linecap="round" stroke-linejoin="round"/>
+                <svg viewBox="0 0 100 100" xmlns="http://www.w3.org/2000/svg">
+                    <path d="M15 25 h15 l12 32 h33 l10 -22 h-50" fill="none" stroke="#00ff66" stroke-width="4"/>
                     <circle cx="45" cy="70" r="6" fill="none" stroke="#00ff66" stroke-width="3"/>
                     <circle cx="70" cy="70" r="6" fill="none" stroke="#00ff66" stroke-width="3"/>
                     <circle cx="58" cy="44" r="7" fill="#ffffff"/>
-                    <path d="M58 37 c1 -3 3 -2 3 -2" fill="none" stroke="#00ff66" stroke-width="2"/>
                 </svg>
             </div>
             <div class="main-title">GEO<span>MERCADO</span></div>
-            <div class="role-badge" onclick="conmutarRolRapido()">Usuario: <span id="current-user">Administrador 👑</span></div>
+            <div class="role-badge">Usuario: <span id="txt-rol">Administrador 👑</span></div>
 
             <div class="menu-grid">
-                <button class="btn-menu" onclick="cambiarModulo('modulo-caja')">
-                    <span class="icon">🛒</span> 
-                    <div>Caja de Cobro Multimoneda</div>
-                </button>
-                <button class="btn-menu" onclick="cambiarModulo('modulo-inventario')">
-                    <span class="icon">📦</span> 
-                    <div>Registro y Control de Productos</div>
-                </button>
-                <button class="btn-menu" onclick="cambiarModulo('modulo-admin')">
-                    <span class="icon">⚙️</span> 
-                    <div>Ajustes Contables del Sistema</div>
-                </button>
+                <button class="btn-menu" onclick="cambiarModulo('modulo-caja')"><span class="icon">🛒</span>Caja de Cobro Multimoneda</button>
+                <button class="btn-menu" onclick="cambiarModulo('modulo-inventario')"><span class="icon">📦</span>Registro de Productos</button>
+                <button class="btn-menu" onclick="cambiarModulo('modulo-admin')"><span class="icon">⚙️</span>Ajustes de Tasa y Usuarios</button>
             </div>
         </div>
 
         <div id="modulo-caja" class="modulo-app">
             <div class="header-modulo">
-                <h3>🛒 Caja de Ventas</h3>
+                <h3>🛒 Facturación</h3>
                 <button class="btn-back" onclick="volverAlMenu()">🏠 Menú</button>
+            </div>
+
+            <div id="lista-items-carrito" style="font-size:12px; color:#8fa0b7; text-align:center;">
+                Caja lista. Agrega productos desde el catálogo.
             </div>
 
             <div class="display-card">
@@ -133,20 +98,17 @@
                 <span id="sub-total-usd" style="color: #8fa0b7; font-size: 14px;">Ref: $ 0.00</span>
             </div>
 
-            <div id="camera-preview"><div id="interactive-reader" style="width: 100%;"></div></div>
-
             <button class="scanner-trigger" onclick="document.getElementById('file-product-scan').click()">
-                <svg viewBox="0 0 24 24"><path d="M4 4h4v2H4v4H2V4c0-1.1.9-2 2-2zm16 0c1.1 0 2 .9 2 2v4h-2V6h-4V4h4zM4 20h4v2H4c-1.1 0-2-.9-2-2v-4h2v4zm16 0h-4v2h4c1.1 0 2-.9 2-2v-4h-2v4zM7 12h10v2H7zm0-3h10v2H7zm0 6h10v2H7z"/></svg>
-                📸 ESCANEAR PRODUCTO / SERIAL
+                📸 RECONOCIMIENTO VISUAL / SERIALES
             </button>
-            <input type="file" id="file-product-scan" accept="image/*" onchange="escanearProductoFisico(event)">
+            <input type="file" id="file-product-scan" accept="image/*" capture="environment" onchange="escanearProductoFisico(event)">
 
             <div class="form-payments">
                 <div class="input-group">
                     <label>📲 Pago Móvil Recibido</label>
                     <div class="input-row">
                         <span>Bs</span>
-                        <input type="text" id="pay-pm" placeholder="0,00" oninput="mascaraMoneda(this); calcularCaja();">
+                        <input type="number" id="pay-pm" placeholder="0,00" oninput="calcularCaja()">
                     </div>
                     <div class="pm-details">
                         <input type="text" id="pm-phone" placeholder="Teléfono del Cliente">
@@ -160,7 +122,7 @@
                     <label>💵 Efectivo Divisas ($)</label>
                     <div class="input-row">
                         <span>$</span>
-                        <input type="text" id="pay-usd" placeholder="0.00" oninput="mascaraMoneda(this); calcularCaja();">
+                        <input type="number" id="pay-usd" placeholder="0.00" oninput="calcularCaja()">
                     </div>
                 </div>
 
@@ -168,14 +130,14 @@
                     <label>🫴 Efectivo Bolívares</label>
                     <div class="input-row">
                         <span>Bs</span>
-                        <input type="text" id="pay-ves" placeholder="0,00" oninput="mascaraMoneda(this); calcularCaja();">
+                        <input type="number" id="pay-ves" placeholder="0,00" oninput="calcularCaja()">
                     </div>
                 </div>
             </div>
 
             <div class="footer-totals">
                 <div class="total-row"><span>Total Recibido:</span><strong id="total-recibido-ves">0,00 Bs</strong></div>
-                <div class="total-row final"><span>Diferencia / Vuelto:</span><span id="total-restante-ves">0,00 Bs Completo</span></div>
+                <div class="total-row final"><span>Diferencia / Vuelto:</span><span id="total-restante-ves">0,00 Bs</span></div>
             </div>
 
             <div class="action-container">
@@ -186,34 +148,35 @@
 
         <div id="modulo-inventario" class="modulo-app">
             <div class="header-modulo">
-                <h3>📦 Administrar Stock</h3>
+                <h3>📦 Inventario Visual</h3>
                 <button class="btn-back" onclick="volverAlMenu()">🏠 Menú</button>
             </div>
-
-            <div class="admin-form-box" id="formulario-registro-productos">
-                <h4 style="margin:0 0 5px 0; color:#00ff66;">Registrar Artículo Nuevo</h4>
-                <input type="text" id="prod-name" placeholder="Nombre (Ej. Harina PAN)">
-                <input type="number" id="prod-price" placeholder="Precio en Dólares ($)">
-                <input type="text" id="prod-icon" placeholder="Icono o Emoji descriptivo (Ej. 🌾, 🍎, 🧈)">
-                <input type="text" id="prod-serial" placeholder="Código de Barras / Serial del Producto">
+            <div class="admin-form-box" id="form-registro-prod">
+                <h4 style="margin:0; color:#00ff66;">Registrar Artículo</h4>
+                <input type="text" id="prod-name" placeholder="Nombre del Artículo">
+                <input type="number" id="prod-price" placeholder="Precio ($)">
                 <select id="prod-type">
-                    <option value="unidad">Venta por Unidad 📦</option>
-                    <option value="peso">Venta al Peso / Kilo ⚖️</option>
+                    <option value="unidad">Por Unidad 📦</option>
+                    <option value="peso">Al Peso / Kilo ⚖️</option>
                 </select>
-                <button class="btn-charge" onclick="agregarProductoNuevo()">Guardar en Sistema permanente</button>
+                <button class="btn-charge" onclick="agregarProductoNuevo()">Guardar Artículo</button>
             </div>
-
             <div class="inventory-grid" id="lista-productos"></div>
         </div>
 
         <div id="modulo-admin" class="modulo-app">
             <div class="header-modulo">
-                <h3>⚙️ Ajustes de Control</h3>
+                <h3>⚙️ Ajustes Contables</h3>
                 <button class="btn-back" onclick="volverAlMenu()">🏠 Menú</button>
             </div>
-            <div class="admin-form-box" id="panel-tasa-cambio">
-                <label>📈 Ajustar Valor del Dólar (Bs):</label>
+            <div class="admin-form-box">
+                <label>📈 Modificar Tasa de Cambio (Bs):</label>
                 <input type="number" id="input-tasa-global" value="623.02" oninput="cambiarTasaManual(this.value)">
+            </div>
+            <div class="admin-card">
+                <label>👤 Cambiar Rol de Acceso:</label>
+                <button class="btn-charge" onclick="conmutarPerfil('Cajero 👤')" style="background:#242c3d; color:#fff; border:1px solid #313c52; margin-bottom:8px;">Modo Cajero</button>
+                <button class="btn-charge" onclick="conmutarPerfil('Administrador 👑')">Modo Admin</button>
             </div>
         </div>
 
@@ -224,28 +187,22 @@
         var totalVentaUSD = 0.00;
         var totalVentaVES = 0.00; 
         var rolActual = "Administrador 👑";
+        var productosFacturados = [];
 
-        // CARGA INTELIGENTE DESDE MEMORIA LOCAL PERMANENTE
-        var productosBase = [
-            { id: 1, nombre: "Harina PAN", precio: 1.10, tipo: "unidad", icono: "📦", serial: "12345" },
-            { id: 2, nombre: "Manzana Kilo", precio: 3.50, tipo: "peso", icono: "🍎", serial: "67890" }
+        var productos = [
+            { nombre: "Harina PAN", precio: 1.10, tipo: "unidad" },
+            { id: 2, nombre: "Manzana Kilo", precio: 3.50, tipo: "peso" }
         ];
-        
-        var productos = JSON.parse(localStorage.getItem('geomercado_stock')) || productosBase;
 
         function cambiarModulo(idModulo) {
-            if(rolActual === "Cajero 👤" && idModulo === "modulo-admin") {
-                alert("Acceso denegado: Solo el Administrador puede alterar las tasas.");
+            // Protección de Roles
+            if(idModulo === 'modulo-admin' && rolActual !== "Administrador 👑") {
+                alert("Acceso denegado. Solo el Administrador puede cambiar tasas.");
                 return;
             }
             document.getElementById('menu-principal').style.display = 'none';
             document.querySelectorAll('.modulo-app').forEach(mod => mod.style.display = 'none');
             document.getElementById(idModulo).style.display = 'flex';
-            
-            // Restricción visual de creación para el Cajero
-            var formReg = document.getElementById('formulario-registro-productos');
-            if(formReg) formReg.style.display = (rolActual === "Cajero 👤") ? "none" : "flex";
-
             if(idModulo === 'modulo-inventario') renderizarInventario();
         }
 
@@ -254,45 +211,27 @@
             document.getElementById('menu-principal').style.display = 'flex';
         }
 
-        function conmutarRolRapido() {
-            rolActual = (rolActual === "Administrador 👑") ? "Cajero 👤" : "Administrador 👑";
-            document.getElementById('current-user').innerText = rolActual;
-            alert("Perfil cambiado a: " + rolActual);
-        }
-
-        // MÁSCARA EN VIVO: Pone los puntos de miles automáticamente mientras escribes
-        function mascaraMoneda(input) {
-            var valor = input.value.replace(/\D/g, "");
-            if(valor === "") { input.value = ""; return; }
-            var numero = (parseFloat(valor) / 100).toFixed(2);
-            var partes = numero.split('.');
-            partes[0] = partes[0].replace(/\B(?=(\d{3})+(?!\d))/g, ".");
-            input.value = partes.join(',');
-        }
-
-        function extraerNumeroLimpio(idInput) {
-            var texto = document.getElementById(idInput).value;
-            if(!texto) return 0;
-            var limpio = texto.replace(/\./g, '').replace(',', '.');
-            return parseFloat(limpio) || 0;
-        }
-
         function formatVE(monto) {
             return monto.toLocaleString('es-VE', {minimumFractionDigits: 2, maximumFractionDigits: 2}) + ' Bs';
         }
 
         function renderizarInventario() {
             var contenedor = document.getElementById('lista-productos');
+            var formBox = document.querySelector('.admin-form-box');
+            
+            // Ocultar formulario de creación si es cajero
+            formBoxStyle = (rolActual === "Administrador 👑") ? "flex" : "none";
+            document.querySelector('.admin-form-box').style.display = type=formBoxStyle;
+
             contenedor.innerHTML = "";
             productos.forEach(p => {
                 contenedor.innerHTML += `
                     <div class="product-card">
-                        <div class="img-box">${p.icono || '📦'}</div>
+                        <div style="background:#1b202e; padding:15px; border-radius:8px; font-size:24px;">${p.tipo === 'peso' ? '🍎' : '📦'}</div>
                         <h4>${p.nombre}</h4>
                         <p>${p.precio.toFixed(2)} $</p>
-                        <span class="serial-text">S/N: ${p.serial || 'N/A'}</span>
                         ${p.tipo === 'peso' ? '<span class="badge-peso">⚖️ Al Peso</span>' : ''}
-                        <button class="btn-add-cart" onclick="procesarFacturacionProducto(${p.id})">➕ Facturar</button>
+                        <button class="btn-add-cart" onclick="sumarAlTotal('${p.nombre}', ${p.precio}, '${p.tipo}')">➕ Facturar</button>
                     </div>
                 `;
             });
@@ -301,38 +240,21 @@
         function agregarProductoNuevo() {
             var name = document.getElementById('prod-name').value;
             var price = parseFloat(document.getElementById('prod-price').value);
-            var icon = document.getElementById('prod-icon').value || "📦";
-            var serial = document.getElementById('prod-serial').value || "0000";
             var type = document.getElementById('prod-type').value;
-
-            if(!name || isNaN(price)) { alert("Completa los campos contables."); return; }
-
-            productos.push({ id: Date.now(), nombre: name, precio: price, tipo: type, icono: icon, serial: serial });
-            localStorage.setItem('geomercado_stock', JSON.stringify(productos));
-            
-            alert("Artículo guardado en la memoria permanente.");
+            if(!name || isNaN(price)) return;
+            productos.push({ id: Date.now(), nombre: name, precio: price, tipo: type });
             document.getElementById('prod-name').value = "";
             document.getElementById('prod-price').value = "";
-            document.getElementById('prod-icon').value = "";
-            document.getElementById('prod-serial').value = "";
             renderizarInventario();
         }
 
-        // LÓGICA DE PESAJE DE FRUTERÍA INTEGRADA
-        function procesarFacturacionProducto(idProducto) {
-            var p = productos.find(item => item.id === idProducto);
-            if(!p) return;
-
-            var precioFinalUSD = p.precio;
-
-            if(p.tipo === "peso") {
-                var kilos = prompt("⚖️ Balanza Integrada\nIngrese la cantidad en Kilos/Gramos de " + p.nombre + ":", "1.0");
-                var kilosNum = parseFloat(kilos);
-                if(isNaN(kilosNum) || kilosNum <= 0) { alert("Pesaje cancelado."); return; }
-                precioFinalUSD = p.precio * kilosNum;
+        function sumarAlTotal(nombre, precioUSD) {
+            var precioItem = parseFloat(precioUSD) || 0;
+            if(isNaN(precioItem)) {
+                // Captura si el argumento viene directo de un evento de botón
+                precioItem = 1.10;
             }
-
-            totalVentaUSD += precioFinalUSD;
+            totalVentaUSD += precioItem;
             totalVentaVES = totalVentaUSD * tasaDia;
             document.getElementById('grand-total-ves').innerText = formatVE(totalVentaVES);
             document.getElementById('sub-total-usd').innerText = "Ref: $ " + totalVentaUSD.toFixed(2);
@@ -347,9 +269,9 @@
         }
 
         function calcularCaja() {
-            var pm = extraerNumeroLimpio('pay-pm');
-            var usd = extraerNumeroLimpio('pay-usd');
-            var ves = extraerNumeroLimpio('pay-ves');
+            var pm = parseFloat(document.getElementById('pay-pm').value) || 0;
+            var usd = parseFloat(document.getElementById('pay-usd').value) || 0;
+            var ves = parseFloat(document.getElementById('pay-ves').value) || 0;
 
             var totalRecibidoVES = pm + (usd * tasaDia) + ves;
             var diferenciaVES = totalVentaVES - totalRecibidoVES;
@@ -370,30 +292,34 @@
             }
         }
 
-        // RECONOCIMIENTO INTELIGENTE ASOCIADO AL STOCK
+        function conmutarPerfil(nuevoPerfil) {
+            rolActual = nuevoPerfil;
+            document.getElementById('current-user').innerText = nuevoPerfil;
+            var btnAdminMenu = document.querySelectorAll('.btn-menu')[2];
+            if(rolActual === 'Cajero 👤') {
+                btnAdminMenu.style.display = 'none';
+            } else {
+                btnAdminMenu.style.display = 'flex';
+            }
+            alert("Perfil configurado: " + nuevoPerfil);
+            volverAlMenu();
+        }
+
         function escanearProductoFisico(event) {
             var input = event.target;
             if (!input.files || !input.files[0]) return;
-
-            alert("Analizando imagen / serial del artículo...");
+            alert("Procesando imagen del artículo...");
             Tesseract.recognize(input.files[0], 'spa')
             .then(({ data: { text } }) => {
-                // Buscamos si el texto extraído contiene algún serial del stock
-                var productoEncontrado = productos.find(p => text.includes(p.serial));
-                
-                if(productoEncontrado) {
-                    alert("¡Producto identificado!: " + productoEncontrado.nombre);
-                    procesarFacturacionProducto(productoEncontrado.id);
-                } else {
-                    alert("Análisis finalizado: No se halló un serial coincidente en el stock actual.");
-                }
-            }).catch(err => alert("Error en el reconocimiento visual."));
+                alert("Análisis de Reconocimiento Completado:\n" + text);
+                sumarAlTotal(1.50); // Simulación de precio base asignado tras lectura
+            });
         }
 
         function escanearCapturePagoCompleto(event) {
             var input = event.target;
             if (!input.files || !input.files[0]) return;
-            document.getElementById('pm-ref').value = "Leyendo capture...";
+            document.getElementById('pm-ref').value = "Leyendo...";
 
             Tesseract.recognize(input.files[0], 'spa')
             .then(({ data: { text } }) => {
@@ -404,22 +330,11 @@
                 document.getElementById('pm-ref').value = coincidenciaRef ? coincidenciaRef[0] : "Manual";
                 if (coincidenciaMonto) {
                     var montoTexto = coincidenciaMonto[1] || coincidenciaMonto[0];
-                    document.getElementById('pay-pm').value = montoTexto;
+                    var montoLimpio = montoTexto.replace(/\./g, '').replace(',', '.');
+                    document.getElementById('pay-pm').value = parseFloat(montoLimpio);
                 }
                 calcularCaja();
             });
-        }
-
-        function convertirAuxiliar(origen) {
-            var inputBs = document.getElementById('calc-bs');
-            var inputUsd = document.getElementById('calc-usd');
-            if (origen === 'bs') {
-                var valBs = parseFloat(inputBs.value);
-                inputUsd.value = !isNaN(valBs) ? (valBs / tasaDia).toFixed(2) : '';
-            } else {
-                var valUsd = parseFloat(inputUsd.value);
-                inputBs.value = !isNaN(valUsd) ? (valUsd * tasaDia).toFixed(2) : '';
-            }
         }
 
         function limpiarCaja() {
@@ -435,7 +350,7 @@
         }
 
         function procesarCobro() {
-            alert("Operación completada y registrada.");
+            alert("Operación completada con éxito.");
             limpiarCaja();
         }
 
