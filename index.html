@@ -12,7 +12,7 @@
             color: #ffffff; 
             font-family: 'Segoe UI', Arial, sans-serif; 
             margin: 0; 
-            padding: 20px;
+            padding: 15px;
             box-sizing: border-box;
             display: flex;
             flex-direction: column;
@@ -20,40 +20,19 @@
             min-height: 100vh;
         }
 
-        /* Contenedor central restrictivo para pantallas altas */
+        /* Contenedor expandido al 100% del ancho del celular */
         .app-container {
             width: 100%;
-            max-width: 420px;
             display: flex;
             flex-direction: column;
             gap: 16px;
         }
 
         /* Cabecera Centrada */
-        .header-pos { 
-            text-align: center; 
-        }
-        .logo-container { 
-            width: 75px; 
-            height: 75px; 
-            display: inline-flex; 
-            align-items: center; 
-            justify-content: center; 
-        }
-        .logo-svg { 
-            width: 100%; 
-            height: 100%; 
-            filter: drop-shadow(0 0 8px rgba(0, 255, 102, 0.5)); 
-        }
-        .brand-name { 
-            font-size: 20px; 
-            font-weight: 900; 
-            letter-spacing: 2px; 
-            color: #ffffff; 
-            margin-top: 6px; 
-            text-align: center;
-            text-shadow: 0 0 10px rgba(0, 255, 102, 0.3); 
-        }
+        .header-pos { text-align: center; }
+        .logo-container { width: 75px; height: 75px; display: inline-flex; align-items: center; justify-content: center; }
+        .logo-svg { width: 100%; height: 100%; filter: drop-shadow(0 0 8px rgba(0, 255, 102, 0.5)); }
+        .brand-name { font-size: 20px; font-weight: 900; letter-spacing: 2px; color: #ffffff; margin-top: 6px; text-shadow: 0 0 10px rgba(0, 255, 102, 0.3); }
         .brand-name span { color: #00ff66; }
 
         /* Pantalla de Totales */
@@ -65,10 +44,10 @@
             text-align: center;
             box-shadow: 0 6px 20px rgba(0,0,0,0.5);
         }
-        .display-card h2 { font-size: 36px; margin: 6px 0; color: #ffffff; font-weight: 700; text-align: center; }
-        .display-card p { margin: 0; color: #00ff66; font-size: 13px; font-weight: 600; letter-spacing: 1px; text-align: center; }
+        .display-card h2 { font-size: 36px; margin: 6px 0; color: #ffffff; font-weight: 700; }
+        .display-card p { margin: 0; color: #00ff66; font-size: 13px; font-weight: 600; letter-spacing: 1px; }
 
-        /* NUEVO: Botón de Escáner Superior Centrado y Fluido */
+        /* Botón de Escáner Superior Centrado y de Ancho Completo */
         .scanner-trigger {
             background: linear-gradient(90deg, #00b347 0%, #00ff66 100%);
             border: none;
@@ -80,7 +59,7 @@
             padding: 14px;
             color: #000000;
             font-weight: bold;
-            font-size: 15px;
+            font-size: 14px;
             cursor: pointer;
             box-shadow: 0 4px 15px rgba(0, 255, 102, 0.2);
             width: 100%;
@@ -88,7 +67,7 @@
         }
         .scanner-trigger svg { width: 24px; height: 24px; fill: #000000; }
 
-        /* Formulario Unificado Vertical y Centrado */
+        /* Formulario unificado a lo ancho de la pantalla */
         .form-payments { 
             display: flex; 
             flex-direction: column; 
@@ -99,11 +78,12 @@
             background-color: #161a23;
             border: 1px solid #242c3d;
             border-radius: 14px;
-            padding: 12px 16px;
+            padding: 14px;
             display: flex;
             flex-direction: column;
-            align-items: center;
+            box-sizing: border-box;
             transition: all 0.3s ease;
+            width: 100%;
         }
         .input-group:focus-within {
             border-color: #00ff66;
@@ -115,92 +95,98 @@
             color: #8fa0b7; 
             text-transform: uppercase; 
             letter-spacing: 0.5px; 
-            margin-bottom: 6px; 
+            margin-bottom: 8px; 
             text-align: center;
         }
         .input-row { 
             display: flex; 
             align-items: center; 
             justify-content: center;
-            gap: 10px; 
+            gap: 12px; 
             width: 100%;
-            max-width: 280px;
         }
-        .input-row span { font-size: 18px; font-weight: bold; color: #00ff66; }
+        .input-row span { font-size: 20px; font-weight: bold; color: #00ff66; }
         .input-row input { 
             width: 100%; 
             background: transparent; 
             border: none; 
             color: #ffffff; 
-            font-size: 18px; 
+            font-size: 20px; 
             font-weight: bold; 
             outline: none; 
             text-align: center;
         }
         
-        /* Subcampos de Pago Móvil Centrados */
+        /* SOLUCIÓN: Subcampos de Pago Móvil Organizados Verticalmente a Ancho Completo */
         .pm-details { 
             display: flex; 
+            flex-direction: column;
             gap: 8px; 
-            margin-top: 10px; 
-            align-items: center; 
+            margin-top: 12px; 
             width: 100%;
         }
         .pm-details input {
-            flex: 1;
+            width: 100%;
             background-color: #0f121a;
             border: 1px solid #242c3d;
             border-radius: 8px;
-            padding: 8px;
+            padding: 10px;
             color: #ffffff;
-            font-size: 12px;
+            font-size: 14px;
             outline: none;
             text-align: center;
+            box-sizing: border-box;
         }
         .pm-details input:focus { border-color: #00ff66; }
+        
+        /* Botón AUTO que ocupa todo el ancho abajo */
         .btn-ocr-scan {
-            background-color: #242c3d;
+            background: #242c3d;
             border: 1px solid #00ff66;
             color: #00ff66;
             border-radius: 8px;
-            padding: 7px 12px;
-            font-size: 12px;
+            padding: 10px;
+            font-size: 13px;
             font-weight: bold;
             cursor: pointer;
+            width: 100%;
+            box-sizing: border-box;
+            text-align: center;
         }
 
-        /* Mini Calculadora Centrada */
+        /* Mini Calculadora Ajustada */
         .mini-calc-section {
             background-color: #11151d;
             border: 1px dashed #313c52;
             border-radius: 14px;
-            padding: 12px;
+            padding: 14px;
             text-align: center;
+            width: 100%;
+            box-sizing: border-box;
         }
         .mini-calc-title { 
             font-size: 11px; 
             color: #8fa0b7; 
             font-weight: bold; 
             text-transform: uppercase; 
-            margin-bottom: 8px; 
+            margin-bottom: 10px; 
             display: flex; 
             justify-content: center; 
             gap: 10px;
         }
-        .mini-calc-grid { display: flex; gap: 10px; align-items: center; justify-content: center; }
+        .mini-calc-grid { display: flex; gap: 10px; align-items: center; justify-content: center; width: 100%; }
         .mini-calc-grid input { 
-            width: 40%;
+            width: 45%;
             background-color: #161a23; 
             border: 1px solid #242c3d; 
             border-radius: 8px; 
-            padding: 8px; 
+            padding: 10px; 
             color: #fff; 
-            font-size: 14px; 
+            font-size: 15px; 
             font-weight: bold; 
             outline: none; 
             text-align: center;
         }
-        .mini-calc-grid input:focus { border-color: #00ff66; }
 
         /* Totales del Cierre */
         .footer-totals { 
@@ -208,6 +194,8 @@
             border: 1px solid #242c3d; 
             border-radius: 14px; 
             padding: 14px; 
+            width: 100%;
+            box-sizing: border-box;
         }
         .total-row { display: flex; justify-content: space-between; padding: 4px 0; font-size: 14px; color: #8fa0b7; }
         .total-row strong { color: #ffffff; }
@@ -218,11 +206,10 @@
             font-size: 16px; 
             font-weight: bold; 
             color: #00ff66; 
-            justify-content: space-between;
         }
 
-        /* Botones de Acción */
-        .action-container { display: flex; gap: 12px; margin-top: 10px; }
+        /* Botones Inferiores */
+        .action-container { display: flex; gap: 12px; margin-top: 10px; width: 100%; }
         .btn-clear { flex: 1; background-color: #242c3d; color: #ffffff; border: 1px solid #313c52; padding: 14px; border-radius: 12px; font-weight: bold; font-size: 14px; cursor: pointer; }
         .btn-charge { flex: 1.5; background-color: #00ff66; color: #000000; border: none; padding: 14px; border-radius: 12px; font-weight: bold; font-size: 14px; cursor: pointer; box-shadow: 0 4px 12px rgba(0, 255, 102, 0.2); text-align: center; }
 
@@ -268,7 +255,7 @@
             ESCANEAR QR / IMAGEN DEL PRODUCTO
         </button>
 
-        <!-- Formulario Vertical Balanceado -->
+        <!-- Formulario Súper Adaptado -->
         <div class="form-payments">
             <div class="input-group">
                 <label>📲 Pago Móvil Recibido</label>
@@ -276,10 +263,11 @@
                     <span>Bs</span>
                     <input type="number" id="pay-pm" placeholder="0,00" oninput="calcularCaja()">
                 </div>
+                <!-- Campos Reorganizados uno abajo del otro -->
                 <div class="pm-details">
-                    <input type="text" id="pm-phone" placeholder="Teléfono Cliente">
-                    <input type="text" id="pm-ref" placeholder="Referencia / Serial">
-                    <button class="btn-ocr-scan" onclick="document.getElementById('file-ocr').click()">📸 AUTO</button>
+                    <input type="text" id="pm-phone" placeholder="Teléfono del Cliente">
+                    <input type="text" id="pm-ref" placeholder="Número de Referencia / Serial">
+                    <button class="btn-ocr-scan" onclick="document.getElementById('file-ocr').click()">📸 AUTO (ESCANEAR CAPTURE)</button>
                     <input type="file" id="file-ocr" accept="image/*" onchange="escanearCapturePagoCompleto(event)">
                 </div>
             </div>
@@ -301,7 +289,7 @@
             </div>
         </div>
 
-        <!-- Mini Calculadora Centrada -->
+        <!-- Mini Calculadora -->
         <div class="mini-calc-section">
             <div class="mini-calc-title">🧮 Conversor Auxiliar Rápido <span>(Tasa: 623,02)</span></div>
             <div class="mini-calc-grid">
