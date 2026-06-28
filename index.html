@@ -2,80 +2,573 @@
 <html lang="es">
 <head>
     <meta charset="UTF-8">
-    <title>GEOMERCADO - Versión Completa 10.5</title>
-    <script src="https://unpkg.com/html5-qrcode"></script>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>GEOMERCADO - Sistema Comercial Pro</title>
+    <!-- Motores Integrados -->
     <script src="https://cdn.jsdelivr.net/npm/tesseract.js@5/dist/tesseract.min.js"></script>
+    <script src="https://unpkg.com/html5-qrcode"></script>
     <style>
-        /* Estilos optimizados para alto rendimiento */
-        body { background-color: #0b0e14; color: #ffffff; font-family: sans-serif; margin: 0; padding: 15px; box-sizing: border-box; display: flex; flex-direction: column; align-items: center; min-height: 100vh; }
-        .app-container { width: 100%; max-width: 450px; display: flex; flex-direction: column; gap: 15px; }
+        body { background-color: #0b0e14; color: #ffffff; font-family: 'Segoe UI', Arial, sans-serif; margin: 0; padding: 15px; box-sizing: border-box; display: flex; flex-direction: column; align-items: center; min-height: 100vh; }
+        .app-container { width: 100%; max-width: 450px; display: flex; flex-direction: column; gap: 16px; }
         
-        /* Estilos visuales de la interfaz completa que tanto te gustaba */
-        #menu-principal { display: flex; flex-direction: column; align-items: center; width: 100%; }
-        .btn-menu { background: #161a23; border: 1px solid #242c3d; border-radius: 14px; padding: 20px; margin-bottom: 10px; color: #fff; font-weight: bold; width: 100%; cursor: pointer; text-align: left; }
-        .modulo-app { display: none; width: 100%; flex-direction: column; gap: 10px; }
-        .scanner-trigger { background: linear-gradient(90deg, #00b347 0%, #00ff66 100%); padding: 15px; border-radius: 12px; border: none; font-weight: bold; width: 100%; cursor: pointer; }
-        .display-card { background: #161a23; padding: 15px; border-radius: 12px; text-align: center; }
-        .input-group { background: #161a23; padding: 10px; border-radius: 10px; margin-bottom: 5px; }
-        input { width: 100%; background: #0b0e14; border: 1px solid #242c3d; color: #fff; padding: 10px; border-radius: 8px; box-sizing: border-box; text-align: center; font-size: 16px; }
-        .btn-charge { background: #00ff66; color: #000; padding: 15px; border-radius: 10px; border: none; font-weight: bold; width: 100%; cursor: pointer; }
+        /* HEADER Y MENÚ PRINCIPAL */
+        #menu-principal { display: flex; flex-direction: column; align-items: center; text-align: center; margin-top: 20px; width: 100%; }
+        .logo-grande { width: 120px; height: 120px; margin-bottom: 10px; filter: drop-shadow(0 0 12px #00ff66); }
+        .main-title { font-size: 28px; font-weight: 900; letter-spacing: 2px; }
+        .main-title span { color: #00ff66; }
+        .version-tag { font-size: 11px; color: #8fa0b7; font-weight: bold; letter-spacing: 1px; margin-bottom: 15px; }
+        .role-badge { background-color: #161a23; border: 1px solid #242c3d; padding: 6px 16px; border-radius: 20px; font-size: 13px; color: #8fa0b7; margin-bottom: 20px; font-weight: bold; }
+        
+        .menu-grid { display: flex; flex-direction: column; gap: 12px; width: 100%; }
+        .btn-menu { background: linear-gradient(135deg, #161a23 0%, #0f121a 100%); border: 1px solid #242c3d; border-radius: 14px; padding: 16px; color: #ffffff; font-size: 15px; font-weight: bold; text-align: left; cursor: pointer; display: flex; align-items: center; gap: 15px; }
+        .btn-menu:focus, .btn-menu:active { border-color: #00ff66; box-shadow: 0 0 10px rgba(0, 255, 102, 0.2); }
+        .btn-menu .icon { font-size: 22px; color: #00ff66; }
+
+        /* MÓDULOS DEL SISTEMA */
+        .modulo-app { display: none; width: 100%; flex-direction: column; gap: 14px; box-sizing: border-box; }
+        .header-modulo { display: flex; align-items: center; justify-content: space-between; padding-bottom: 8px; border-bottom: 1px solid #242c3d; }
+        .btn-back { background-color: #161a23; border: 1px solid #242c3d; color: #fff; padding: 8px 12px; border-radius: 8px; font-weight: bold; cursor: pointer; }
+
+        /* CARRITO DE COMPRAS */
+        .cart-card { background-color: #11151d; border: 1px dashed #242c3d; border-radius: 14px; padding: 12px; width: 100%; box-sizing: border-box; }
+        .cart-title { font-size: 11px; color: #8fa0b7; text-transform: uppercase; margin-bottom: 6px; font-weight: bold; text-align: center; }
+        .cart-items-container { display: flex; flex-direction: column; gap: 6px; max-height: 120px; overflow-y: auto; }
+        .cart-item { display: flex; justify-content: space-between; font-size: 14px; border-bottom: 1px solid #161a23; padding-bottom: 4px; }
+
+        /* TOTALES DE FACTURA */
+        .display-card { background: linear-gradient(135deg, #161a23 0%, #0d1017 100%); border: 1px solid #242c3d; border-radius: 16px; padding: 15px; text-align: center; width: 100%; box-sizing: border-box; }
+        .display-card h2 { font-size: 34px; margin: 4px 0; color: #ffffff; font-weight: 700; }
+        .display-card p { margin: 0; color: #00ff66; font-size: 13px; font-weight: 600; letter-spacing: 1px; }
+
+        .scanner-trigger { background: linear-gradient(90deg, #00b347 0%, #00ff66 100%); border: none; border-radius: 14px; display: flex; align-items: center; justify-content: center; gap: 12px; padding: 14px; color: #000000; font-weight: bold; cursor: pointer; width: 100%; box-sizing: border-box; }
+        
+        /* FORMULARIOS VERTICALES AJUSTADOS */
+        .form-payments { display: flex; flex-direction: column; gap: 12px; width: 100%; }
+        .input-group { background-color: #161a23; border: 1px solid #242c3d; border-radius: 14px; padding: 14px; display: flex; flex-direction: column; width: 100%; box-sizing: border-box; }
+        .input-group:focus-within { border-color: #00ff66; box-shadow: 0 0 12px rgba(0, 255, 102, 0.4); }
+        .input-group label { font-size: 11px; color: #8fa0b7; text-transform: uppercase; margin-bottom: 6px; text-align: center; }
+        .input-row { display: flex; align-items: center; justify-content: center; gap: 10px; width: 100%; }
+        .input-row input, .input-row select { width: 100%; background: transparent; border: none; color: #ffffff; font-size: 18px; font-weight: bold; outline: none; text-align: center; }
+        
+        .pm-details { display: flex; flex-direction: column; gap: 8px; margin-top: 10px; width: 100%; }
+        .pm-details input { width: 100%; background-color: #0f121a; border: 1px solid #242c3d; border-radius: 8px; padding: 10px; color: #ffffff; font-size: 14px; outline: none; text-align: center; box-sizing: border-box; }
+
+        /* INVENTARIO */
+        .admin-form-box { background-color: #161a23; border: 1px solid #242c3d; border-radius: 14px; padding: 15px; display: flex; flex-direction: column; gap: 10px; width: 100%; box-sizing: border-box; }
+        .admin-form-box input, .admin-form-box select { width: 100%; background-color: #0b0e14; border: 1px solid #242c3d; padding: 12px; border-radius: 8px; color: #fff; font-size: 14px; outline: none; box-sizing: border-box; text-align: center; }
+
+        .inventory-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; width: 100%; box-sizing: border-box; }
+        .product-card { background-color: #161a23; border: 1px solid #242c3d; border-radius: 12px; padding: 12px; text-align: center; display: flex; flex-direction: column; justify-content: space-between; }
+        .product-card h4 { margin: 6px 0 2px 0; font-size: 14px; }
+        .product-card p { margin: 0; color: #00ff66; font-size: 13px; font-weight: bold; }
+        .stock-indicator { font-size: 11px; color: #8fa0b7; margin-top: 4px; font-weight: bold; }
+
+        .footer-totals { background-color: #11151d; border: 1px solid #242c3d; border-radius: 14px; padding: 14px; width: 100%; box-sizing: border-box; }
+        .total-row { display: flex; justify-content: space-between; padding: 4px 0; font-size: 14px; color: #8fa0b7; }
+        .total-row strong { color: #ffffff; }
+        .total-row.final { border-top: 1px dashed #242c3d; margin-top: 6px; padding-top: 8px; font-size: 16px; font-weight: bold; color: #00ff66; }
+
+        .action-container { display: flex; gap: 12px; width: 100%; }
+        .btn-clear { flex: 1; background-color: #242c3d; color: #ffffff; border: 1px solid #313c52; padding: 14px; border-radius: 12px; font-weight: bold; cursor: pointer; }
+        .btn-charge { flex: 1.5; background-color: #00ff66; color: #000000; border: none; padding: 14px; border-radius: 12px; font-weight: bold; cursor: pointer; text-align: center; }
+        
+        #file-ocr { display: none; }
+        /* El escáner láser usa un div para mostrar la cámara en vivo */
+        #reader-laser { width: 100%; margin-bottom: 10px; border-radius: 12px; overflow: hidden; display: none; border: 2px solid #00ff66;}
     </style>
 </head>
 <body>
 
-<div class="app-container">
-    <div id="menu-principal">
-        <h1>GEO<span>MERCADO</span></h1>
-        <button class="btn-menu" onclick="cambiarModulo('modulo-caja')">🛒 Caja de Cobro</button>
-        <button class="btn-menu" onclick="cambiarModulo('modulo-inventario')">📦 Inventario</button>
-    </div>
+    <script>
+        window.onerror = function(msg, url, line) { return true; };
+    </script>
 
-    <div id="modulo-caja" class="modulo-app">
-        <button class="btn-back" onclick="cambiarModulo('menu-principal')">⬅ Volver</button>
-        <div class="display-card">
-            <h2 id="total-display">0,00 Bs</h2>
+    <div class="app-container">
+
+        <!-- MENÚ PRINCIPAL -->
+        <div id="menu-principal">
+            <div class="logo-grande">
+                <svg viewBox="0 0 100 100" xmlns="http://www.w3.org/2000/svg">
+                    <path d="M15 25 h15 l12 32 h33 l10 -22 h-50" fill="none" stroke="#00ff66" stroke-width="4" stroke-linecap="round" stroke-linejoin="round"/>
+                    <circle cx="45" cy="70" r="6" fill="none" stroke="#00ff66" stroke-width="3"/>
+                    <circle cx="70" cy="70" r="6" fill="none" stroke="#00ff66" stroke-width="3"/>
+                    <circle cx="58" cy="44" r="7" fill="#ffffff"/>
+                </svg>
+            </div>
+            <div class="main-title">GEO<span>MERCADO</span></div>
+            <div class="version-tag">VERSIÓN 9.0 LÁSER</div>
+            <div class="role-badge">Usuario: <span id="txt-rol">Administrador 👑</span></div>
+
+            <div class="menu-grid">
+                <button class="btn-menu" onclick="window.cambiarModulo('modulo-caja')"><span class="icon">🛒</span>Caja de Cobro Multimoneda</button>
+                <button class="btn-menu" onclick="window.cambiarModulo('modulo-inventario')"><span class="icon">📦</span>Registro de Productos (Stock)</button>
+                <button class="btn-menu" onclick="window.cambiarModulo('modulo-admin')"><span class="icon">⚙️</span>Ajustes de Tasa y Usuarios</button>
+            </div>
         </div>
-        <button class="scanner-trigger" onclick="iniciarEscaner()">📸 ESCANEAR LÁSER</button>
-        <div id="reader" style="width: 100%; display:none;"></div>
-        <input type="number" id="pay-pm" placeholder="Pago Móvil (Bs)">
-        <button class="btn-charge" onclick="cobrar()">COBRAR</button>
+
+        <!-- MÓDULO 1: CAJA DE COBRO -->
+        <div id="modulo-caja" class="modulo-app">
+            <div class="header-modulo">
+                <h3>🛒 Caja de Facturación</h3>
+                <button class="btn-back" onclick="window.volverAlMenu()">🏠 Menú</button>
+            </div>
+
+            <div class="cart-card">
+                <div class="cart-title">📝 Artículos en esta Venta</div>
+                <div class="cart-items-container" id="items-carrito-factura">
+                    <div style="color:#57687e; text-align:center; font-size:13px; padding:6px;">Ningún artículo en cuenta.</div>
+                </div>
+            </div>
+
+            <div class="input-group">
+                <label>➕ Seleccionar Artículo Manual</label>
+                <div class="input-row">
+                    <select id="select-item-caja" onchange="window.agregarAlCarritoDesdeCaja(this.value)">
+                        <option value="">-- Toca para buscar --</option>
+                    </select>
+                </div>
+            </div>
+
+            <div class="display-card">
+                <p>TOTAL FACTURA (SENIAT)</p>
+                <h2 id="grand-total-ves">0,00 Bs</h2>
+                <span id="sub-total-usd" style="color: #8fa0b7; font-size: 14px;">Ref: $ 0.00</span>
+            </div>
+
+            <!-- ESCÁNER LÁSER RÁPIDO PARA CAJA -->
+            <div id="reader-laser"></div>
+            <button class="scanner-trigger" onclick="window.iniciarEscanerLaser('caja')">
+                <span style="font-size:18px;">🔴</span> ESCANEAR CÓDIGO LÁSER
+            </button>
+            <button id="btn-cerrar-laser" style="display:none; background:#ff5252; color:#fff; border:none; padding:10px; border-radius:8px; font-weight:bold;" onclick="window.detenerLaser()">Cerrar Cámara</button>
+
+            <div class="form-payments">
+                <div class="input-group">
+                    <label>📲 Pago Móvil Recibido</label>
+                    <div class="input-row">
+                        <span>Bs</span>
+                        <input type="tel" id="pay-pm" placeholder="0,00" oninput="window.mascaraMoneda(this); window.calcularCaja();">
+                    </div>
+                    <div class="pm-details">
+                        <input type="tel" id="pm-phone" placeholder="Teléfono del Cliente">
+                        <input type="tel" id="pm-ref" placeholder="Número de Referencia">
+                        <!-- TESSERACT SE QUEDA SOLO AQUÍ PORQUE ES EL MEJOR PARA LEER LETRAS EN PANTALLA -->
+                        <button class="btn-ocr-scan" style="background:#242c3d; border:1px solid #00ff66; color:#00ff66; padding:10px; border-radius:8px; width:100%; font-weight:bold;" onclick="document.getElementById('file-ocr').click()">📸 LEER CAPTURE AUTO</button>
+                        <input type="file" id="file-ocr" accept="image/*" onchange="window.escanearCapturePagoCompleto(event)">
+                    </div>
+                </div>
+
+                <div class="input-group">
+                    <label>💵 Efectivo Divisas ($)</label>
+                    <div class="input-row">
+                        <span>$</span>
+                        <input type="tel" id="pay-usd" placeholder="0" oninput="window.calcularCaja()">
+                    </div>
+                </div>
+
+                <div class="input-group">
+                    <label>🫴 Efectivo Bolívares</label>
+                    <div class="input-row">
+                        <span>Bs</span>
+                        <input type="tel" id="pay-ves" placeholder="0,00" oninput="window.mascaraMoneda(this); window.calcularCaja();">
+                    </div>
+                </div>
+            </div>
+
+            <div class="footer-totals">
+                <div class="total-row"><span>Total Recibido:</span><strong id="total-recibido-ves">0,00 Bs</strong></div>
+                <div class="total-row final"><span>Diferencia / Vuelto:</span><span id="total-restante-ves">0,00 Bs</span></div>
+            </div>
+
+            <div class="action-container">
+                <button class="btn-clear" onclick="window.limpiarCaja()">LIMPIAR</button>
+                <button class="btn-charge" onclick="window.procesarCobro()">COBRAR</button>
+            </div>
+        </div>
+
+        <!-- MÓDULO 2: CONTROL DE INVENTARIO -->
+        <div id="modulo-inventario" class="modulo-app">
+            <div class="header-modulo">
+                <h3>📦 Catálogo de Mercancía</h3>
+                <button class="btn-back" onclick="window.volverAlMenu()">🏠 Menú</button>
+            </div>
+
+            <div class="admin-form-box" id="form-registro-prod">
+                <h4 style="margin:0; color:#00ff66; text-align:center;">Registrar Artículo</h4>
+                <input type="text" id="prod-name" placeholder="Nombre (Ej. Mantequilla Nelly)">
+                <input type="number" id="prod-price" placeholder="Precio Base ($)">
+                
+                <input type="tel" id="prod-serial" placeholder="Serial / Código de Barras">
+                <!-- ESCÁNER LÁSER RÁPIDO PARA REGISTRO -->
+                <button style="background:#0b0e14; border:1px solid #00ff66; color:#00ff66; padding:10px; border-radius:8px; font-weight:bold; width:100%; display:flex; align-items:center; justify-content:center; gap:8px;" onclick="window.iniciarEscanerLaser('registro')">
+                    <span>🔴</span> LEER CÓDIGO BARRAS RÁPIDO
+                </button>
+
+                <select id="prod-type" onchange="window.conmutarCampoCantidad(this.value)">
+                    <option value="unidad">Venta por Unidad 📦</option>
+                    <option value="peso">Venta al Peso / Kilo ⚖️</option>
+                </select>
+                <input type="number" id="prod-qty" placeholder="Cantidad Disponible en Tienda">
+                
+                <button class="btn-charge" style="width:100%; background:#00ff66; color:#000; border:none; padding:12px; border-radius:8px; font-weight:bold;" onclick="window.agregarProductoNuevo()">Guardar en Memoria</button>
+            </div>
+
+            <div class="inventory-grid" id="lista-productos"></div>
+        </div>
+
+        <!-- MÓDULO 3: AJUSTES -->
+        <div id="modulo-admin" class="modulo-app">
+            <div class="header-modulo">
+                <h3>⚙️ Ajustes Contables</h3>
+                <button class="btn-back" onclick="window.volverAlMenu()">🏠 Menú</button>
+            </div>
+            <div class="admin-form-box">
+                <label>📈 Modificar Tasa del Dólar (Bs):</label>
+                <input type="number" id="input-tasa-global" value="623.02" oninput="window.cambiarTasaManual(this.value)">
+            </div>
+            <div class="admin-form-box">
+                <label>👤 Configurar Perfil de Operación:</label>
+                <button class="btn-charge" style="background:#242c3d; color:#fff; margin-bottom:6px; border:none; padding:12px; border-radius:8px;" onclick="window.conmutarPerfil('Cajero 👤')">Modo Cajero</button>
+                <button class="btn-charge" style="background:#00ff66; color:#000; border:none; padding:12px; border-radius:8px; font-weight:bold;" onclick="window.conmutarPerfil('Administrador 👑')">Modo Administrador</button>
+            </div>
+        </div>
+
     </div>
 
-    <div id="modulo-inventario" class="modulo-app">
-        <button class="btn-back" onclick="cambiarModulo('menu-principal')">⬅ Volver</button>
-        <input type="text" id="prod-nombre" placeholder="Nombre">
-        <input type="number" id="prod-precio" placeholder="Precio ($)">
-        <button class="btn-charge" onclick="guardarProducto()">Guardar</button>
-        <div id="lista-inventario"></div>
-    </div>
-</div>
+    <script>
+        // VARIABLES GLOBALES
+        var tasaDia = 623.02;
+        var totalVentaUSD = 0.00;
+        var totalVentaVES = 0.00; 
+        var rolActual = "Administrador 👑";
+        var carrito = [];
+        var html5QrcodeScanner = null; // Motor Láser
 
-<script>
-    // ARRANQUE SEGURO: Usamos esta estructura para evitar el "not defined"
-    var productos = JSON.parse(localStorage.getItem('db')) || [];
+        var stockInicial = [
+            { id: 101, nombre: "Harina PAN", precio: 1.10, tipo: "unidad", qty: 15, serial: "7591" },
+            { id: 102, nombre: "Mantequilla Nelly", precio: 1.50, tipo: "unidad", qty: 10, serial: "7590006200540" }
+        ];
+        var productos = [];
+        
+        try {
+            var db = window.localStorage ? window.localStorage.getItem('geomercado_db_v9') : null;
+            productos = db ? JSON.parse(db) : stockInicial;
+        } catch(e) {
+            productos = stockInicial;
+        }
 
-    function cambiarModulo(id) {
-        document.getElementById('menu-principal').style.display = 'none';
-        document.getElementById('modulo-caja').style.display = 'none';
-        document.getElementById('modulo-inventario').style.display = 'none';
-        var el = document.getElementById(id);
-        if(el) el.style.display = 'flex';
-    }
+        window.cambiarModulo = function(idModulo) {
+            if(idModulo === 'modulo-admin' && rolActual !== "Administrador 👑") {
+                alert("Bloqueado: Solo administradores."); return;
+            }
+            window.detenerLaser(); // Si cambia de pantalla, apaga la cámara
+            document.getElementById('menu-principal').style.display = 'none';
+            var modulos = document.querySelectorAll('.modulo-app');
+            for(var i=0; i<modulos.length; i++) modulos[i].style.display = 'none';
+            
+            var target = document.getElementById(idModulo);
+            if(target) target.style.display = 'flex';
+            
+            if(idModulo === 'modulo-inventario') window.renderizarInventario();
+            if(idModulo === 'modulo-caja') window.actualizarSelectorCaja();
+        };
 
-    function guardarProducto() {
-        var n = document.getElementById('prod-nombre').value;
-        var p = document.getElementById('prod-precio').value;
-        productos.push({nombre: n, precio: p});
-        localStorage.setItem('db', JSON.stringify(productos));
-        alert("Producto guardado");
-    }
+        window.volverAlMenu = function() {
+            window.detenerLaser();
+            var modulos = document.querySelectorAll('.modulo-app');
+            for(var i=0; i<modulos.length; i++) modulos[i].style.display = 'none';
+            document.getElementById('menu-principal').style.display = 'flex';
+        };
 
-    function iniciarEscaner() {
-        document.getElementById('reader').style.display = 'block';
-        var html5QrCode = new Html5Qrcode("reader");
-        html5QrCode.start({ facingMode: "environment" }, { fps: 10, qrbox: 250 }, 
-            function(text) { alert("Detectado: " + text); html5QrCode.stop(); });
-    }
-</script>
+        // MOTOR LÁSER ULTRARRÁPIDO PARA CÓDIGOS DE BARRA
+        window.iniciarEscanerLaser = function(modo) {
+            var camDiv = document.getElementById('reader-laser');
+            if(!camDiv) return;
+            camDiv.style.display = 'block';
+            
+            var btnCerrar = document.getElementById('btn-cerrar-laser');
+            if(btnCerrar) btnCerrar.style.display = 'block';
+
+            html5QrcodeScanner = new Html5Qrcode("reader-laser");
+            html5QrcodeScanner.start(
+                { facingMode: "environment" },
+                { fps: 10, qrbox: { width: 250, height: 100 } },
+                function(decodedText, decodedResult) {
+                    // ¡Encontró un código!
+                    window.detenerLaser();
+                    
+                    if(modo === 'registro') {
+                        document.getElementById('prod-serial').value = decodedText;
+                        alert("Código leído: " + decodedText);
+                    } else if (modo === 'caja') {
+                        var match = null;
+                        for(var i=0; i<productos.length; i++) {
+                            if(productos[i].serial === decodedText) { match = productos[i]; break; }
+                        }
+                        if(match) {
+                            window.agregarAlCarritoDesdeCaja(match.id);
+                        } else {
+                            alert("El código " + decodedText + " no está en el sistema.");
+                        }
+                    }
+                },
+                function(errorMessage) {
+                    // Ignorar errores de lectura en vivo
+                }
+            ).catch(function(err) {
+                alert("Error de cámara. Asegúrate de dar permisos o usar WebIntoApp.");
+                camDiv.style.display = 'none';
+            });
+        };
+
+        window.detenerLaser = function() {
+            if(html5QrcodeScanner) {
+                html5QrcodeScanner.stop().catch(function(err){});
+                html5QrcodeScanner.clear();
+            }
+            var camDiv = document.getElementById('reader-laser');
+            var btnCerrar = document.getElementById('btn-cerrar-laser');
+            if(camDiv) camDiv.style.display = 'none';
+            if(btnCerrar) btnCerrar.style.display = 'none';
+        };
+
+        // MATEMÁTICA Y FORMATEO
+        window.mascaraMoneda = function(input) {
+            var valor = input.value.replace(/\D/g, "");
+            if(valor === "") { input.value = ""; return; }
+            var numero = (parseFloat(valor) / 100).toFixed(2);
+            var partes = numero.split('.');
+            partes[0] = partes[0].replace(/\B(?=(\d{3})+(?!\d))/g, ".");
+            input.value = partes.join(',');
+        };
+
+        window.extraerNumeroLimpio = function(idInput) {
+            var el = document.getElementById(idInput);
+            if(!el || !el.value) return 0;
+            return parseFloat(el.value.replace(/\./g, '').replace(',', '.')) || 0;
+        };
+
+        window.formatVE = function(monto) {
+            return monto.toLocaleString('es-VE', {minimumFractionDigits: 2, maximumFractionDigits: 2}) + ' Bs';
+        };
+
+        window.conmutarCampoCantidad = function(tipo) {
+            var eQty = document.getElementById('prod-qty');
+            if(eQty) eQty.style.display = (tipo === 'peso') ? 'none' : 'block';
+        };
+
+        // INVENTARIO
+        window.renderizarInventario = function() {
+            var contenedor = document.getElementById('lista-productos');
+            var formBox = document.getElementById('form-registro-prod');
+            if(formBox) formBox.style.display = (rolActual === "Administrador 👑") ? "flex" : "none";
+
+            if(!contenedor) return;
+            var html = "";
+            for(var i=0; i<productos.length; i++) {
+                var p = productos[i];
+                var indicadorStock = p.tipo === 'peso' ? '<span class="badge-peso">⚖️ Al Peso</span>' : '<span class="stock-indicator">Stock: ' + p.qty + ' unds</span>';
+                var emoji = p.tipo === 'peso' ? '🍎' : '📦';
+                
+                html += '<div class="product-card">';
+                html += '<div style="background:#1b202e; padding:12px; border-radius:8px; font-size:24px;">' + emoji + '</div>';
+                html += '<h4>' + p.nombre + '</h4>';
+                html += '<p>' + p.precio.toFixed(2) + ' $</p>';
+                html += '<span style="font-size:10px; color:#8fa0b7;">S/N: ' + p.serial + '</span>';
+                html += indicadorStock;
+                html += '<button style="background:#00ff66; border:none; padding:6px; border-radius:6px; width:100%; font-weight:bold; margin-top:8px; cursor:pointer;" onclick="window.agregarAlCarritoDesdeCaja(' + p.id + ')">➕ Facturar</button>';
+                html += '</div>';
+            }
+            contenedor.innerHTML = html;
+        };
+
+        window.actualizarSelectorCaja = function() {
+            var select = document.getElementById('select-item-caja');
+            if(!select) return;
+            var html = '<option value="">-- Toca para buscar --</option>';
+            for(var i=0; i<productos.length; i++) {
+                var p = productos[i];
+                if(p.tipo === 'peso' || p.qty > 0) {
+                    html += '<option value="' + p.id + '">' + p.nombre + ' (' + p.precio.toFixed(2) + ' $)</option>';
+                }
+            }
+            select.innerHTML = html;
+        };
+
+        window.agregarProductoNuevo = function() {
+            var name = document.getElementById('prod-name').value;
+            var price = parseFloat(document.getElementById('prod-price').value);
+            var serial = document.getElementById('prod-serial').value || "0000";
+            var type = document.getElementById('prod-type').value;
+            var qty = parseInt(document.getElementById('prod-qty').value) || 0;
+
+            if(!name || isNaN(price)) { alert("Ingresa nombre y precio."); return; }
+
+            productos.push({ id: new Date().getTime(), nombre: name, precio: price, tipo: type, qty: qty, serial: serial });
+            if (window.localStorage) window.localStorage.setItem('geomercado_db_v9', JSON.stringify(productos));
+            alert("Guardado completado.");
+            
+            document.getElementById('prod-name').value = "";
+            document.getElementById('prod-price').value = "";
+            document.getElementById('prod-serial').value = "";
+            document.getElementById('prod-qty').value = "";
+            window.renderizarInventario();
+        };
+
+        // CAJA Y LÓGICA DE VUELTO REAL VENEZOLANO
+        window.agregarAlCarritoDesdeCaja = function(idProd) {
+            if(!idProd) return;
+            var p = null;
+            for(var i=0; i<productos.length; i++) {
+                if(productos[i].id == idProd) { p = productos[i]; break; }
+            }
+            if(!p) return;
+
+            var precioUSD = p.precio;
+            var cantidadVendida = 1;
+
+            if(p.tipo === 'peso') {
+                var kilos = prompt("⚖️ Balanza Virtual\nCantidad en Kilos para " + p.nombre + ":", "1.0");
+                cantidadVendida = parseFloat(kilos);
+                if(isNaN(cantidadVendida) || cantidadVendida <= 0) return;
+                precioUSD = p.precio * cantidadVendida;
+            } else {
+                if(p.qty < 1) { alert("Sin stock de " + p.nombre); return; }
+                p.qty -= 1;
+                if (window.localStorage) window.localStorage.setItem('geomercado_db_v9', JSON.stringify(productos));
+            }
+
+            var detalle = p.tipo === 'peso' ? cantidadVendida + ' kg' : '1 und';
+            carrito.push({ nombre: p.nombre, totalUSD: precioUSD, detalle: detalle });
+            totalVentaUSD += precioUSD;
+            totalVentaVES = totalVentaUSD * tasaDia;
+            
+            window.renderizarCarritoCaja();
+            var eSelect = document.getElementById('select-item-caja');
+            if(eSelect) eSelect.value = "";
+            
+            if(document.getElementById('modulo-inventario').style.display === 'flex') {
+                window.renderizarInventario(); 
+            }
+        };
+
+        window.renderizarCarritoCaja = function() {
+            var container = document.getElementById('items-carrito-factura');
+            if(!container) return;
+            
+            if(carrito.length === 0) {
+                container.innerHTML = '<div style="color:#57687e; text-align:center; font-size:13px; padding:6px;">Ningún artículo en cuenta.</div>';
+            } else {
+                var html = "";
+                for(var i=0; i<carrito.length; i++) {
+                    var item = carrito[i];
+                    html += '<div class="cart-item"><span>🍏 ' + item.nombre + ' (' + item.detalle + ')</span><strong>$ ' + item.totalUSD.toFixed(2) + '</strong></div>';
+                }
+                container.innerHTML = html;
+            }
+
+            document.getElementById('grand-total-ves').innerText = window.formatVE(totalVentaVES);
+            document.getElementById('sub-total-usd').innerText = "Ref: $ " + totalVentaUSD.toFixed(2);
+            window.calcularCaja();
+        };
+
+        window.calcularCaja = function() {
+            var pm = window.extraerNumeroLimpio('pay-pm');
+            var usdFisicoIngresado = parseFloat(document.getElementById('pay-usd').value) || 0; 
+            var ves = window.extraerNumeroLimpio('pay-ves');
+
+            var totalRecibidoVES = pm + (usdFisicoIngresado * tasaDia) + ves;
+            var diferenciaVES = totalVentaVES - totalRecibidoVES;
+
+            document.getElementById('total-recibido-ves').innerText = window.formatVE(totalRecibidoVES);
+            var eRestante = document.getElementById('total-restante-ves');
+            if(!eRestante) return;
+
+            if (diferenciaVES > 0.01) {
+                eRestante.innerText = window.formatVE(diferenciaVES) + ' Restante';
+                eRestante.style.color = '#ff5252';
+            } else if (diferenciaVES < -0.01) {
+                var vueltoTotalUSD = Math.abs(diferenciaVES) / tasaDia;
+                
+                // LÓGICA CRUCIAL: Nunca devolver más dólares físicos de los que el cliente entregó
+                var dolaresAEntregar = Math.min(Math.floor(vueltoTotalUSD), Math.floor(usdFisicoIngresado));
+                var fraccionBolivares = (vueltoTotalUSD - dolaresAEntregar) * tasaDia;
+
+                if(dolaresAEntregar > 0) {
+                    eRestante.innerText = 'Vuelto: $ ' + dolaresAEntregar + ' + ' + fraccionBolivares.toLocaleString('es-VE', {maximumFractionDigits:2}) + ' Bs';
+                } else {
+                    eRestante.innerText = 'Vuelto: ' + fraccionBolivares.toLocaleString('es-VE', {maximumFractionDigits:2}) + ' Bs';
+                }
+                eRestante.style.color = '#00ff66';
+            } else {
+                eRestante.innerText = '0,00 Bs Completo';
+                eRestante.style.color = '#00ff66';
+            }
+        };
+
+        // TESSERACT SOLO PARA PAGO MÓVIL
+        window.escanearCapturePagoCompleto = function(event) {
+            var input = event.target;
+            if (!input.files || !input.files[0]) return;
+            var eRef = document.getElementById('pm-ref');
+            if(eRef) eRef.value = "Leyendo Capture...";
+            
+            Tesseract.recognize(input.files[0], 'spa').then(function(result) {
+                var text = result.data.text;
+                var ref = text.match(/\d{6,12}/);
+                var monto = text.match(/(?:bs|monto|pagado|ref)?[:.\s]*([\d.]+,\d{2})/i);
+                if(eRef) eRef.value = ref ? ref[0] : "Manual";
+                if(monto) {
+                    var limpio = monto[1] || monto[0];
+                    var numeroParaInput = parseFloat(limpio.replace(/\./g, '').replace(',', '.'));
+                    var inputPm = document.getElementById('pay-pm');
+                    if(inputPm) {
+                        inputPm.value = (numeroParaInput * 100).toString();
+                        window.mascaraMoneda(inputPm);
+                    }
+                }
+                window.calcularCaja();
+            });
+        };
+
+        window.cambiarTasaManual = function(nuevaTasa) {
+            tasaDia = parseFloat(nuevaTasa) || 623.02;
+            totalVentaVES = totalVentaUSD * tasaDia;
+            window.renderizarCarritoCaja();
+        }
+
+        window.conmutarPerfil = function(perfil) {
+            rolActual = perfil;
+            var eRol = document.getElementById('txt-rol');
+            if(eRol) eRol.innerText = perfil;
+            var btnAdminMenu = document.querySelectorAll('.btn-menu')[2];
+            if(btnAdminMenu) btnAdminMenu.style.display = (rolActual === 'Cajero 👤') ? 'none' : 'flex';
+            alert("Perfil cambiado: " + perfil);
+            window.volverAlMenu();
+        };
+
+        window.limpiarCaja = function() {
+            totalVentaUSD = 0.00; totalVentaVES = 0.00; carrito = [];
+            document.getElementById('pay-pm').value = '';
+            document.getElementById('pay-usd').value = '';
+            document.getElementById('pay-ves').value = '';
+            var ePhone = document.getElementById('pm-phone');
+            var eRef = document.getElementById('pm-ref');
+            if(ePhone) ePhone.value = '';
+            if(eRef) eRef.value = '';
+            window.detenerLaser();
+            window.renderizarCarritoCaja();
+        };
+
+        window.procesarCobro = function() {
+            alert("Venta procesada con éxito.");
+            window.limpiarCaja();
+        };
+
+        window.onload = function() {
+            var totalEl = document.getElementById('grand-total-ves');
+            if (totalEl) totalEl.innerText = window.formatVE(totalVentaVES);
+        };
+    </script>
 </body>
 </html>
