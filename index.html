@@ -38,7 +38,7 @@
 
         .scanner-trigger { background: linear-gradient(90deg, #00b347 0%, #00ff66 100%); border: none; border-radius: 14px; display: flex; align-items: center; justify-content: center; gap: 12px; padding: 14px; color: #000000; font-weight: bold; cursor: pointer; width: 100%; box-sizing: border-box; }
         
-        /* FORMULARIOS VERTICALES */
+        /* FORMULARIOS */
         .form-payments { display: flex; flex-direction: column; gap: 12px; width: 100%; }
         .input-group { background-color: #161a23; border: 1px solid #242c3d; border-radius: 14px; padding: 14px; display: flex; flex-direction: column; width: 100%; box-sizing: border-box; }
         .input-group:focus-within { border-color: #00ff66; box-shadow: 0 0 12px rgba(0, 255, 102, 0.4); }
@@ -328,11 +328,12 @@
             }
 
             carrito.push({ nombre: p.nombre, totalUSD: precioUSD, detalle: p.tipo === 'peso' ? `${cantidadVendida} kg` : '1 und' });
-            
             totalVentaUSD += precioUSD;
             totalVentaVES = totalVentaUSD * tasaDia;
             
             renderizarCarritoCaja();
             var eSelect = document.getElementById('select-item-caja');
             if(eSelect) eSelect.value = "";
-    
+        }
+
+        function 
