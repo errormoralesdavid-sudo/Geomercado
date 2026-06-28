@@ -3,70 +3,83 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>GEOMERCADO - Sistema Comercial</title>
+    <title>GEOMERCADO - Sistema Comercial Pro</title>
     <script src="https://cdn.jsdelivr.net/npm/tesseract.js@5/dist/tesseract.min.js"></script>
     <style>
         body { background-color: #0b0e14; color: #ffffff; font-family: 'Segoe UI', Arial, sans-serif; margin: 0; padding: 15px; box-sizing: border-box; display: flex; flex-direction: column; align-items: center; min-height: 100vh; }
         .app-container { width: 100%; max-width: 450px; display: flex; flex-direction: column; gap: 16px; }
         
-        /* CABECERA Y MENÚ */
+        /* HEADER Y MENÚ */
         #menu-principal { display: flex; flex-direction: column; align-items: center; text-align: center; margin-top: 20px; width: 100%; }
-        .logo-grande { width: 120px; height: 130px; margin-bottom: 10px; filter: drop-shadow(0 0 12px #00ff66); }
+        .logo-grande { width: 120px; height: 120px; margin-bottom: 10px; filter: drop-shadow(0 0 12px #00ff66); }
         .main-title { font-size: 28px; font-weight: 900; letter-spacing: 2px; }
         .main-title span { color: #00ff66; }
-        .role-badge { background-color: #161a23; border: 1px solid #242c3d; padding: 6px 16px; border-radius: 20px; font-size: 13px; color: #8fa0b7; margin-bottom: 20px; font-weight: bold; cursor: pointer; }
-        .role-badge span { color: #00ff66; }
+        .role-badge { background-color: #161a23; border: 1px solid #242c3d; padding: 6px 16px; border-radius: 20px; font-size: 13px; color: #8fa0b7; margin-bottom: 20px; font-weight: bold; }
         .menu-grid { display: flex; flex-direction: column; gap: 12px; width: 100%; }
         .btn-menu { background: linear-gradient(135deg, #161a23 0%, #0f121a 100%); border: 1px solid #242c3d; border-radius: 14px; padding: 16px; color: #ffffff; font-size: 15px; font-weight: bold; text-align: left; cursor: pointer; display: flex; align-items: center; gap: 15px; }
         .btn-menu:focus { border-color: #00ff66; box-shadow: 0 0 10px rgba(0, 255, 102, 0.2); }
         .btn-menu .icon { font-size: 22px; color: #00ff66; }
 
-        .modulo-app { display: none; width: 100%; flex-direction: column; gap: 14px; }
+        /* MODULOS CORREGIDOS */
+        .modulo-app { display: none; width: 100%; flex-direction: column; gap: 14px; box-sizing: border-box; }
         .header-modulo { display: flex; align-items: center; justify-content: space-between; padding-bottom: 8px; border-bottom: 1px solid #242c3d; }
         .btn-back { background-color: #161a23; border: 1px solid #242c3d; color: #fff; padding: 8px 12px; border-radius: 8px; font-weight: bold; cursor: pointer; }
 
-        /* PANTALLA DE TRABAJO */
-        .display-card { background: linear-gradient(135deg, #161a23 0%, #0d1017 100%); border: 1px solid #242c3d; border-radius: 16px; padding: 15px; text-align: center; }
-        .display-card h2 { font-size: 34px; margin: 4px 0; color: #ffffff; font-weight: 700; }
-        
-        /* LISTA DE COMPRAS EN FACTURA */
-        .cart-list { background-color: #11151d; border: 1px solid #242c3d; border-radius: 12px; padding: 10px; max-height: 100px; overflow-y: auto; font-size: 13px; }
-        .cart-item { display: flex; justify-content: space-between; padding: 4px 0; border-bottom: 1px solid #161a23; }
+        /* CONTENEDOR DE COMPRA (CARRITO) */
+        .cart-card { background-color: #11151d; border: 1px dashed #242c3d; border-radius: 14px; padding: 12px; width: 100%; box-sizing: border-box; }
+        .cart-title { font-size: 11px; color: #8fa0b7; text-transform: uppercase; margin-bottom: 6px; font-weight: bold; text-align: center; }
+        .cart-items-container { display: flex; flex-direction: column; gap: 6px; max-height: 120px; overflow-y: auto; }
+        .cart-item { display: flex; justify-content: space-between; font-size: 14px; border-bottom: 1px solid #161a23; padding-bottom: 4px; }
 
-        .scanner-trigger { background: linear-gradient(90deg, #00b347 0%, #00ff66 100%); border: none; border-radius: 14px; display: flex; align-items: center; justify-content: center; gap: 12px; padding: 14px; color: #000000; font-weight: bold; cursor: pointer; width: 100%; }
+        /* PANTALLA DE TOTALES */
+        .display-card { background: linear-gradient(135deg, #161a23 0%, #0d1017 100%); border: 1px solid #242c3d; border-radius: 16px; padding: 15px; text-align: center; width: 100%; box-sizing: border-box; }
+        .display-card h2 { font-size: 34px; margin: 4px 0; color: #ffffff; font-weight: 700; }
+        .display-card p { margin: 0; color: #00ff66; font-size: 13px; font-weight: 600; letter-spacing: 1px; }
+
+        .scanner-trigger { background: linear-gradient(90deg, #00b347 0%, #00ff66 100%); border: none; border-radius: 14px; display: flex; align-items: center; justify-content: center; gap: 12px; padding: 14px; color: #000000; font-weight: bold; cursor: pointer; width: 100%; box-sizing: border-box; }
         
+        /* FORMULARIOS VERTICALES SIN DESBORDAMIENTO */
         .form-payments { display: flex; flex-direction: column; gap: 12px; width: 100%; }
-        .input-group { background-color: #161a23; border: 1px solid #242c3d; border-radius: 14px; padding: 12px; display: flex; flex-direction: column; width: 100%; box-sizing: border-box; }
+        .input-group { background-color: #161a23; border: 1px solid #242c3d; border-radius: 14px; padding: 14px; display: flex; flex-direction: column; width: 100%; box-sizing: border-box; }
         .input-group:focus-within { border-color: #00ff66; box-shadow: 0 0 12px rgba(0, 255, 102, 0.4); }
         .input-group label { font-size: 11px; color: #8fa0b7; text-transform: uppercase; margin-bottom: 6px; text-align: center; }
-        .input-row { display: flex; align-items: center; justify-content: center; gap: 10px; }
-        .input-row input { width: 100%; background: transparent; border: none; color: #ffffff; font-size: 20px; font-weight: bold; outline: none; text-align: center; }
+        .input-row { display: flex; align-items: center; justify-content: center; gap: 10px; width: 100%; }
+        .input-row input, .input-row select { width: 100%; background: transparent; border: none; color: #ffffff; font-size: 18px; font-weight: bold; outline: none; text-align: center; }
         
         .pm-details { display: flex; flex-direction: column; gap: 8px; margin-top: 10px; width: 100%; }
         .pm-details input { width: 100%; background-color: #0f121a; border: 1px solid #242c3d; border-radius: 8px; padding: 10px; color: #ffffff; font-size: 14px; outline: none; text-align: center; box-sizing: border-box; }
 
-        .inventory-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; width: 100%; }
-        .product-card { background-color: #161a23; border: 1px solid #242c3d; border-radius: 12px; padding: 10px; text-align: center; }
-        .badge-peso { font-size: 10px; background-color: #ffca28; color: #000; padding: 2px 6px; border-radius: 4px; font-weight: bold; }
+        /* FORMULARIO DE INVENTARIO SEGURO CORREGIDO */
+        .admin-form-box { background-color: #161a23; border: 1px solid #242c3d; border-radius: 14px; padding: 15px; display: flex; flex-direction: column; gap: 10px; width: 100%; box-sizing: border-box; }
+        .admin-form-box input, .admin-form-box select { width: 100%; background-color: #0b0e14; border: 1px solid #242c3d; padding: 12px; border-radius: 8px; color: #fff; font-size: 14px; outline: none; box-sizing: border-box; text-align: center; }
 
-        .footer-totals { background-color: #11151d; border: 1px solid #242c3d; border-radius: 14px; padding: 14px; }
+        .inventory-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; width: 100%; box-sizing: border-box; }
+        .product-card { background-color: #161a23; border: 1px solid #242c3d; border-radius: 12px; padding: 12px; text-align: center; display: flex; flex-direction: column; justify-content: space-between; }
+        .product-card h4 { margin: 6px 0 2px 0; font-size: 14px; }
+        .product-card p { margin: 0; color: #00ff66; font-size: 13px; font-weight: bold; }
+        .stock-indicator { font-size: 11px; color: #8fa0b7; margin-top: 4px; font-weight: bold; }
+
+        .footer-totals { background-color: #11151d; border: 1px solid #242c3d; border-radius: 14px; padding: 14px; width: 100%; box-sizing: border-box; }
         .total-row { display: flex; justify-content: space-between; padding: 4px 0; font-size: 14px; color: #8fa0b7; }
+        .total-row strong { color: #ffffff; }
         .total-row.final { border-top: 1px dashed #242c3d; margin-top: 6px; padding-top: 8px; font-size: 16px; font-weight: bold; color: #00ff66; }
 
         .action-container { display: flex; gap: 12px; width: 100%; }
         .btn-clear { flex: 1; background-color: #242c3d; color: #ffffff; border: 1px solid #313c52; padding: 14px; border-radius: 12px; font-weight: bold; cursor: pointer; }
-        .btn-charge { flex: 1.5; background-color: #00ff66; color: #000000; border: none; padding: 14px; border-radius: 12px; font-weight: bold; cursor: pointer; }
-        #file-ocr, #file-product-scan { display: none; }
+        .btn-charge { flex: 1.5; background-color: #00ff66; color: #000000; border: none; padding: 14px; border-radius: 12px; font-weight: bold; cursor: pointer; text-align: center; }
+        
+        #file-ocr, #file-product-scan, #file-register-scan { display: none; }
     </style>
 </head>
 <body>
 
     <div class="app-container">
 
+        <!-- PANTALLA PRINCIPAL -->
         <div id="menu-principal">
             <div class="logo-grande">
                 <svg viewBox="0 0 100 100" xmlns="http://www.w3.org/2000/svg">
-                    <path d="M15 25 h15 l12 32 h33 l10 -22 h-50" fill="none" stroke="#00ff66" stroke-width="4"/>
+                    <path d="M15 25 h15 l12 32 h33 l10 -22 h-50" fill="none" stroke="#00ff66" stroke-width="4" stroke-linecap="round" stroke-linejoin="round"/>
                     <circle cx="45" cy="70" r="6" fill="none" stroke="#00ff66" stroke-width="3"/>
                     <circle cx="70" cy="70" r="6" fill="none" stroke="#00ff66" stroke-width="3"/>
                     <circle cx="58" cy="44" r="7" fill="#ffffff"/>
@@ -77,19 +90,34 @@
 
             <div class="menu-grid">
                 <button class="btn-menu" onclick="cambiarModulo('modulo-caja')"><span class="icon">🛒</span>Caja de Cobro Multimoneda</button>
-                <button class="btn-menu" onclick="cambiarModulo('modulo-inventario')"><span class="icon">📦</span>Registro de Productos</button>
+                <button class="btn-menu" onclick="cambiarModulo('modulo-inventario')"><span class="icon">📦</span>Registro de Productos (Stock)</button>
                 <button class="btn-menu" onclick="cambiarModulo('modulo-admin')"><span class="icon">⚙️</span>Ajustes de Tasa y Usuarios</button>
             </div>
         </div>
 
+        <!-- MÓDULO 1: CAJA DE COBRO -->
         <div id="modulo-caja" class="modulo-app">
             <div class="header-modulo">
-                <h3>🛒 Facturación</h3>
+                <h3>🛒 Caja de Facturación</h3>
                 <button class="btn-back" onclick="volverAlMenu()">🏠 Menú</button>
             </div>
 
-            <div id="lista-items-carrito" style="font-size:12px; color:#8fa0b7; text-align:center;">
-                Caja lista. Agrega productos desde el catálogo.
+            <!-- NUEVA PANTALLA: Visor del Carrito de Ventas en Vivo -->
+            <div class="cart-card">
+                <div class="cart-title">📝 Artículos en esta Venta</div>
+                <div class="cart-items-container" id="items-carrito-factura">
+                    <div style="color:#57687e; text-align:center; font-size:13px; padding:6px;">Ningún artículo en cuenta. Usa el selector o escáner.</div>
+                </div>
+            </div>
+
+            <!-- Selector Rápido Auxiliar para vender directo en Caja -->
+            <div class="input-group">
+                <label>➕ Seleccionar Artículo para la Cuenta</label>
+                <div class="input-row">
+                    <select id="select-item-caja" onchange="agregarAlCarritoDesdeCaja(this.value)">
+                        <option value="">-- Toca para buscar --</option>
+                    </select>
+                </div>
             </div>
 
             <div class="display-card">
@@ -99,9 +127,9 @@
             </div>
 
             <button class="scanner-trigger" onclick="document.getElementById('file-product-scan').click()">
-                📸 RECONOCIMIENTO VISUAL / SERIALES
+                📸 RECONOCIMIENTO VISUAL / SERIAL EN CAJA
             </button>
-            <input type="file" id="file-product-scan" accept="image/*" capture="environment" onchange="escanearProductoFisico(event)">
+            <input type="file" id="file-product-scan" accept="image/*" onchange="escanearProductoCaja(event)">
 
             <div class="form-payments">
                 <div class="input-group">
@@ -113,7 +141,7 @@
                     <div class="pm-details">
                         <input type="text" id="pm-phone" placeholder="Teléfono del Cliente">
                         <input type="text" id="pm-ref" placeholder="Número de Referencia">
-                        <button class="btn-ocr-scan" onclick="document.getElementById('file-ocr').click()">📸 AUTO (ESCANEAR CAPTURE)</button>
+                        <button class="btn-ocr-scan" onclick="document.getElementById('file-ocr').click()">📸 AUTO (CAPTURE)</button>
                         <input type="file" id="file-ocr" accept="image/*" onchange="escanearCapturePagoCompleto(event)">
                     </div>
                 </div>
@@ -122,7 +150,7 @@
                     <label>💵 Efectivo Divisas ($)</label>
                     <div class="input-row">
                         <span>$</span>
-                        <input type="number" id="pay-usd" placeholder="0.00" oninput="calcularCaja()">
+                        <input type="number" id="pay-usd" placeholder="0" oninput="calcularCaja()">
                     </div>
                 </div>
 
@@ -146,37 +174,51 @@
             </div>
         </div>
 
+        <!-- MÓDULO 2: REGISTRO DE PRODUCTOS (STOCK PERMANENTE) -->
         <div id="modulo-inventario" class="modulo-app">
             <div class="header-modulo">
-                <h3>📦 Inventario Visual</h3>
+                <h3>📦 Catálogo de Mercancía</h3>
                 <button class="btn-back" onclick="volverAlMenu()">🏠 Menú</button>
             </div>
+
+            <!-- Formulario Corregido Vertical Inteligente -->
             <div class="admin-form-box" id="form-registro-prod">
-                <h4 style="margin:0; color:#00ff66;">Registrar Artículo</h4>
-                <input type="text" id="prod-name" placeholder="Nombre del Artículo">
-                <input type="number" id="prod-price" placeholder="Precio ($)">
-                <select id="prod-type">
-                    <option value="unidad">Por Unidad 📦</option>
-                    <option value="peso">Al Peso / Kilo ⚖️</option>
+                <h4 style="margin:0; color:#00ff66; text-align:center;">Registrar Artículo</h4>
+                <input type="text" id="prod-name" placeholder="Nombre (Ej. Mantequilla Nelly)">
+                <input type="number" id="prod-price" placeholder="Precio Base ($)">
+                
+                <!-- NUEVO: Capturador Automático de Seriales para el Producto -->
+                <input type="text" id="prod-serial" placeholder="Serial / Código de Barras">
+                <button class="btn-ocr-scan" style="background:#0b0e14; margin:0;" onclick="document.getElementById('file-register-scan').click()">📸 LER SERIAL POR CÁMARA</button>
+                <input type="file" id="file-register-scan" accept="image/*" onchange="leerSerialRegistro(event)">
+
+                <select id="prod-type" onchange="conmutarCampoCantidad(this.value)">
+                    <option value="unidad">Venta por Unidad 📦</option>
+                    <option value="peso">Venta al Peso / Kilo ⚖️</option>
                 </select>
-                <button class="btn-charge" onclick="agregarProductoNuevo()">Guardar Artículo</button>
+                <!-- NUEVO: Campo de Cantidad Grabable -->
+                <input type="number" id="prod-qty" placeholder="Cantidad Disponible en Tienda">
+                
+                <button class="btn-charge" style="width:100%;" onclick="agregarProductoNuevo()">Guardar en Memoria</button>
             </div>
+
             <div class="inventory-grid" id="lista-productos"></div>
         </div>
 
+        <!-- MÓDULO 3: AJUSTES -->
         <div id="modulo-admin" class="modulo-app">
             <div class="header-modulo">
                 <h3>⚙️ Ajustes Contables</h3>
                 <button class="btn-back" onclick="volverAlMenu()">🏠 Menú</button>
             </div>
             <div class="admin-form-box">
-                <label>📈 Modificar Tasa de Cambio (Bs):</label>
+                <label>📈 Modificar Tasa del Dólar (Bs):</label>
                 <input type="number" id="input-tasa-global" value="623.02" oninput="cambiarTasaManual(this.value)">
             </div>
-            <div class="admin-card">
-                <label>👤 Cambiar Rol de Acceso:</label>
-                <button class="btn-charge" onclick="conmutarPerfil('Cajero 👤')" style="background:#242c3d; color:#fff; border:1px solid #313c52; margin-bottom:8px;">Modo Cajero</button>
-                <button class="btn-charge" onclick="conmutarPerfil('Administrador 👑')">Modo Admin</button>
+            <div class="admin-form-box">
+                <label>👤 Configurar Perfil de Operación:</label>
+                <button class="btn-charge" style="background:#242c3d; color:#fff; margin-bottom:6px;" onclick="conmutarPerfil('Cajero 👤')">Modo Cajero</button>
+                <button class="btn-charge" onclick="conmutarPerfil('Administrador 👑')">Modo Administrador</button>
             </div>
         </div>
 
@@ -187,23 +229,26 @@
         var totalVentaUSD = 0.00;
         var totalVentaVES = 0.00; 
         var rolActual = "Administrador 👑";
-        var productosFacturados = [];
+        var carrito = [];
 
-        var productos = [
-            { nombre: "Harina PAN", precio: 1.10, tipo: "unidad" },
-            { id: 2, nombre: "Manzana Kilo", precio: 3.50, tipo: "peso" }
+        // Base de datos persistente inicial
+        var stockInicial = [
+            { id: 101, nombre: "Harina PAN", precio: 1.10, tipo: "unidad", qty: 15, serial: "7591" },
+            { id: 102, nombre: "Mantequilla Nelly", precio: 1.50, tipo: "unidad", qty: 10, serial: "7590006200540" },
+            { id: 103, nombre: "Manzana Kilo", precio: 3.50, tipo: "peso", qty: 0, serial: "1122" }
         ];
+        var productos = JSON.parse(localStorage.getItem('geomercado_db')) || stockInicial;
 
         function cambiarModulo(idModulo) {
-            // Protección de Roles
             if(idModulo === 'modulo-admin' && rolActual !== "Administrador 👑") {
-                alert("Acceso denegado. Solo el Administrador puede cambiar tasas.");
-                return;
+                alert("Bloqueado: Solo administradores modifican tasas."); return;
             }
             document.getElementById('menu-principal').style.display = 'none';
             document.querySelectorAll('.modulo-app').forEach(mod => mod.style.display = 'none');
             document.getElementById(idModulo).style.display = 'flex';
+            
             if(idModulo === 'modulo-inventario') renderizarInventario();
+            if(idModulo === 'modulo-caja') actualizarSelectorCaja();
         }
 
         function volverAlMenu() {
@@ -211,150 +256,74 @@
             document.getElementById('menu-principal').style.display = 'flex';
         }
 
+        function conmutarCampoCantidad(tipo) {
+            document.getElementById('prod-qty').style.display = (tipo === 'peso') ? 'none' : 'block';
+        }
+
         function formatVE(monto) {
             return monto.toLocaleString('es-VE', {minimumFractionDigits: 2, maximumFractionDigits: 2}) + ' Bs';
         }
 
+        // CONTROL DE MEMORIA E INVENTARIO VISUAL LIMPIO
         function renderizarInventario() {
             var contenedor = document.getElementById('lista-productos');
-            var formBox = document.querySelector('.admin-form-box');
-            
-            // Ocultar formulario de creación si es cajero
-            formBoxStyle = (rolActual === "Administrador 👑") ? "flex" : "none";
-            document.querySelector('.admin-form-box').style.display = type=formBoxStyle;
-
+            document.getElementById('form-registro-prod').style.display = (rolActual === "Administrador 👑") ? "flex" : "none";
             contenedor.innerHTML = "";
             productos.forEach(p => {
+                var indicadorStock = p.tipo === 'peso' ? '<span class="badge-peso">⚖️ Al Peso</span>' : `<span class="stock-indicator">Stock: ${p.qty} unds</span>`;
                 contenedor.innerHTML += `
                     <div class="product-card">
-                        <div style="background:#1b202e; padding:15px; border-radius:8px; font-size:24px;">${p.tipo === 'peso' ? '🍎' : '📦'}</div>
+                        <div style="background:#1b202e; padding:12px; border-radius:8px; font-size:24px;">${p.tipo === 'peso' ? '🍎' : '📦'}</div>
                         <h4>${p.nombre}</h4>
                         <p>${p.precio.toFixed(2)} $</p>
-                        ${p.tipo === 'peso' ? '<span class="badge-peso">⚖️ Al Peso</span>' : ''}
-                        <button class="btn-add-cart" onclick="sumarAlTotal('${p.nombre}', ${p.precio}, '${p.tipo}')">➕ Facturar</button>
+                        ${indicadorStock}
                     </div>
                 `;
+            });
+        }
+
+        function actualizarSelectorCaja() {
+            var select = document.getElementById('select-item-caja');
+            select.innerHTML = '<option value="">-- Toca para buscar --</option>';
+            productos.forEach(p => {
+                if(p.tipo === 'peso' || p.qty > 0) {
+                    select.innerHTML += `<option value="${p.id}">${p.nombre} (${p.precio.toFixed(2)} $)</option>`;
+                }
             });
         }
 
         function agregarProductoNuevo() {
             var name = document.getElementById('prod-name').value;
             var price = parseFloat(document.getElementById('prod-price').value);
+            var serial = document.getElementById('prod-serial').value || "0000";
             var type = document.getElementById('prod-type').value;
-            if(!name || isNaN(price)) return;
-            productos.push({ id: Date.now(), nombre: name, precio: price, tipo: type });
+            var qty = parseInt(document.getElementById('prod-qty').value) || 0;
+
+            if(!name || isNaN(price)) { alert("Ingresa nombre y precio base."); return; }
+
+            productos.push({ id: Date.now(), nombre: name, precio: price, tipo: type, qty: qty, serial: serial });
+            localStorage.setItem('geomercado_db', JSON.stringify(productos));
+            alert("Guardado permanente completado.");
+            
             document.getElementById('prod-name').value = "";
             document.getElementById('prod-price').value = "";
+            document.getElementById('prod-serial').value = "";
+            document.getElementById('prod-qty').value = "";
             renderizarInventario();
         }
 
-        function sumarAlTotal(nombre, precioUSD) {
-            var precioItem = parseFloat(precioUSD) || 0;
-            if(isNaN(precioItem)) {
-                // Captura si el argumento viene directo de un evento de botón
-                precioItem = 1.10;
-            }
-            totalVentaUSD += precioItem;
-            totalVentaVES = totalVentaUSD * tasaDia;
-            document.getElementById('grand-total-ves').innerText = formatVE(totalVentaVES);
-            document.getElementById('sub-total-usd').innerText = "Ref: $ " + totalVentaUSD.toFixed(2);
-            calcularCaja();
-        }
+        // LÓGICA DE FACTURACIÓN ASOCIADA AL CARRITO EN CAJA
+        function agregarAlCarritoDesdeCaja(idProd) {
+            if(!idProd) return;
+            var p = productos.find(item => item.id == idProd);
+            if(!p) return;
 
-        function cambiarTasaManual(nuevaTasa) {
-            tasaDia = parseFloat(nuevaTasa) || 623.02;
-            totalVentaVES = totalVentaUSD * tasaDia;
-            document.getElementById('grand-total-ves').innerText = formatVE(totalVentaVES);
-            calcularCaja();
-        }
+            var precioUSD = p.precio;
+            var cantidadVendida = 1;
 
-        function calcularCaja() {
-            var pm = parseFloat(document.getElementById('pay-pm').value) || 0;
-            var usd = parseFloat(document.getElementById('pay-usd').value) || 0;
-            var ves = parseFloat(document.getElementById('pay-ves').value) || 0;
-
-            var totalRecibidoVES = pm + (usd * tasaDia) + ves;
-            var diferenciaVES = totalVentaVES - totalRecibidoVES;
-
-            document.getElementById('total-recibido-ves').innerText = formatVE(totalRecibidoVES);
-            var eRestante = document.getElementById('total-restante-ves');
-
-            if (diferenciaVES > 0.01) {
-                eRestante.innerText = formatVE(diferenciaVES) + ' Restante';
-                eRestante.style.color = '#ff5252';
-            } else if (diferenciaVES < -0.01) {
-                var vueltoUSD = Math.abs(diferenciaVES) / tasaDia;
-                eRestante.innerText = formatVE(Math.abs(diferenciaVES)) + ' Vuelto (Ref: $' + vueltoUSD.toFixed(2) + ')';
-                eRestante.style.color = '#00ff66';
-            } else {
-                eRestante.innerText = '0,00 Bs Completo';
-                eRestante.style.color = '#00ff66';
-            }
-        }
-
-        function conmutarPerfil(nuevoPerfil) {
-            rolActual = nuevoPerfil;
-            document.getElementById('current-user').innerText = nuevoPerfil;
-            var btnAdminMenu = document.querySelectorAll('.btn-menu')[2];
-            if(rolActual === 'Cajero 👤') {
-                btnAdminMenu.style.display = 'none';
-            } else {
-                btnAdminMenu.style.display = 'flex';
-            }
-            alert("Perfil configurado: " + nuevoPerfil);
-            volverAlMenu();
-        }
-
-        function escanearProductoFisico(event) {
-            var input = event.target;
-            if (!input.files || !input.files[0]) return;
-            alert("Procesando imagen del artículo...");
-            Tesseract.recognize(input.files[0], 'spa')
-            .then(({ data: { text } }) => {
-                alert("Análisis de Reconocimiento Completado:\n" + text);
-                sumarAlTotal(1.50); // Simulación de precio base asignado tras lectura
-            });
-        }
-
-        function escanearCapturePagoCompleto(event) {
-            var input = event.target;
-            if (!input.files || !input.files[0]) return;
-            document.getElementById('pm-ref').value = "Leyendo...";
-
-            Tesseract.recognize(input.files[0], 'spa')
-            .then(({ data: { text } }) => {
-                var coincidenciaRef = text.match(/\d{6,12}/);
-                var coincidenciaMonto = text.match(/(?:bs|monto|pagado|ref)?[:.\s]*([\d.]+,\d{2})/i);
-                if(!coincidenciaMonto) { coincidenciaMonto = text.match(/\b\d+,\d{2}\b/); }
-
-                document.getElementById('pm-ref').value = coincidenciaRef ? coincidenciaRef[0] : "Manual";
-                if (coincidenciaMonto) {
-                    var montoTexto = coincidenciaMonto[1] || coincidenciaMonto[0];
-                    var montoLimpio = montoTexto.replace(/\./g, '').replace(',', '.');
-                    document.getElementById('pay-pm').value = parseFloat(montoLimpio);
-                }
-                calcularCaja();
-            });
-        }
-
-        function limpiarCaja() {
-            totalVentaUSD = 0.00; totalVentaVES = 0.00;
-            document.getElementById('pay-pm').value = '';
-            document.getElementById('pay-usd').value = '';
-            document.getElementById('pay-ves').value = '';
-            document.getElementById('pm-phone').value = '';
-            document.getElementById('pm-ref').value = '';
-            document.getElementById('grand-total-ves').innerText = "0,00 Bs";
-            document.getElementById('sub-total-usd').innerText = "Ref: $ 0.00";
-            calcularCaja();
-        }
-
-        function procesarCobro() {
-            alert("Operación completada con éxito.");
-            limpiarCaja();
-        }
-
-        limpiarCaja();
-    </script>
-</body>
-</html>
+            if(p.tipo === 'peso') {
+                var kilos = prompt("⚖️ Balanza Virtual\nCantidad en Kilos para " + p.nombre + ":", "1.0");
+                cantidadVendida = parseFloat(kilos);
+                if(isNaN(cantidadVendida) || cantidadVendida <= 0) return;
+                precioUSD = p.precio * cantidadVendida;
+            } else
