@@ -20,25 +20,25 @@
         .btn-menu:focus { border-color: #00ff66; box-shadow: 0 0 10px rgba(0, 255, 102, 0.2); }
         .btn-menu .icon { font-size: 22px; color: #00ff66; }
 
-        /* MODULOS CORREGIDOS */
+        /* MODULOS */
         .modulo-app { display: none; width: 100%; flex-direction: column; gap: 14px; box-sizing: border-box; }
         .header-modulo { display: flex; align-items: center; justify-content: space-between; padding-bottom: 8px; border-bottom: 1px solid #242c3d; }
         .btn-back { background-color: #161a23; border: 1px solid #242c3d; color: #fff; padding: 8px 12px; border-radius: 8px; font-weight: bold; cursor: pointer; }
 
-        /* CONTENEDOR DE COMPRA (CARRITO) */
+        /* CARRITO EN CAJA */
         .cart-card { background-color: #11151d; border: 1px dashed #242c3d; border-radius: 14px; padding: 12px; width: 100%; box-sizing: border-box; }
         .cart-title { font-size: 11px; color: #8fa0b7; text-transform: uppercase; margin-bottom: 6px; font-weight: bold; text-align: center; }
         .cart-items-container { display: flex; flex-direction: column; gap: 6px; max-height: 120px; overflow-y: auto; }
         .cart-item { display: flex; justify-content: space-between; font-size: 14px; border-bottom: 1px solid #161a23; padding-bottom: 4px; }
 
-        /* PANTALLA DE TOTALES */
+        /* TOTALES */
         .display-card { background: linear-gradient(135deg, #161a23 0%, #0d1017 100%); border: 1px solid #242c3d; border-radius: 16px; padding: 15px; text-align: center; width: 100%; box-sizing: border-box; }
         .display-card h2 { font-size: 34px; margin: 4px 0; color: #ffffff; font-weight: 700; }
         .display-card p { margin: 0; color: #00ff66; font-size: 13px; font-weight: 600; letter-spacing: 1px; }
 
         .scanner-trigger { background: linear-gradient(90deg, #00b347 0%, #00ff66 100%); border: none; border-radius: 14px; display: flex; align-items: center; justify-content: center; gap: 12px; padding: 14px; color: #000000; font-weight: bold; cursor: pointer; width: 100%; box-sizing: border-box; }
         
-        /* FORMULARIOS VERTICALES SIN DESBORDAMIENTO */
+        /* FORMULARIOS VERTICALES */
         .form-payments { display: flex; flex-direction: column; gap: 12px; width: 100%; }
         .input-group { background-color: #161a23; border: 1px solid #242c3d; border-radius: 14px; padding: 14px; display: flex; flex-direction: column; width: 100%; box-sizing: border-box; }
         .input-group:focus-within { border-color: #00ff66; box-shadow: 0 0 12px rgba(0, 255, 102, 0.4); }
@@ -49,7 +49,7 @@
         .pm-details { display: flex; flex-direction: column; gap: 8px; margin-top: 10px; width: 100%; }
         .pm-details input { width: 100%; background-color: #0f121a; border: 1px solid #242c3d; border-radius: 8px; padding: 10px; color: #ffffff; font-size: 14px; outline: none; text-align: center; box-sizing: border-box; }
 
-        /* FORMULARIO DE INVENTARIO SEGURO CORREGIDO */
+        /* INVENTARIO */
         .admin-form-box { background-color: #161a23; border: 1px solid #242c3d; border-radius: 14px; padding: 15px; display: flex; flex-direction: column; gap: 10px; width: 100%; box-sizing: border-box; }
         .admin-form-box input, .admin-form-box select { width: 100%; background-color: #0b0e14; border: 1px solid #242c3d; padding: 12px; border-radius: 8px; color: #fff; font-size: 14px; outline: none; box-sizing: border-box; text-align: center; }
 
@@ -75,7 +75,6 @@
 
     <div class="app-container">
 
-        <!-- PANTALLA PRINCIPAL -->
         <div id="menu-principal">
             <div class="logo-grande">
                 <svg viewBox="0 0 100 100" xmlns="http://www.w3.org/2000/svg">
@@ -95,14 +94,12 @@
             </div>
         </div>
 
-        <!-- MÓDULO 1: CAJA DE COBRO -->
         <div id="modulo-caja" class="modulo-app">
             <div class="header-modulo">
                 <h3>🛒 Caja de Facturación</h3>
                 <button class="btn-back" onclick="volverAlMenu()">🏠 Menú</button>
             </div>
 
-            <!-- NUEVA PANTALLA: Visor del Carrito de Ventas en Vivo -->
             <div class="cart-card">
                 <div class="cart-title">📝 Artículos en esta Venta</div>
                 <div class="cart-items-container" id="items-carrito-factura">
@@ -110,7 +107,6 @@
                 </div>
             </div>
 
-            <!-- Selector Rápido Auxiliar para vender directo en Caja -->
             <div class="input-group">
                 <label>➕ Seleccionar Artículo para la Cuenta</label>
                 <div class="input-row">
@@ -174,29 +170,25 @@
             </div>
         </div>
 
-        <!-- MÓDULO 2: REGISTRO DE PRODUCTOS (STOCK PERMANENTE) -->
         <div id="modulo-inventario" class="modulo-app">
             <div class="header-modulo">
                 <h3>📦 Catálogo de Mercancía</h3>
                 <button class="btn-back" onclick="volverAlMenu()">🏠 Menú</button>
             </div>
 
-            <!-- Formulario Corregido Vertical Inteligente -->
             <div class="admin-form-box" id="form-registro-prod">
                 <h4 style="margin:0; color:#00ff66; text-align:center;">Registrar Artículo</h4>
                 <input type="text" id="prod-name" placeholder="Nombre (Ej. Mantequilla Nelly)">
                 <input type="number" id="prod-price" placeholder="Precio Base ($)">
                 
-                <!-- NUEVO: Capturador Automático de Seriales para el Producto -->
                 <input type="text" id="prod-serial" placeholder="Serial / Código de Barras">
-                <button class="btn-ocr-scan" style="background:#0b0e14; margin:0;" onclick="document.getElementById('file-register-scan').click()">📸 LER SERIAL POR CÁMARA</button>
+                <button class="btn-ocr-scan" style="background:#0b0e14; margin:0;" onclick="document.getElementById('file-register-scan').click()">📸 LEER SERIAL POR CÁMARA</button>
                 <input type="file" id="file-register-scan" accept="image/*" onchange="leerSerialRegistro(event)">
 
                 <select id="prod-type" onchange="conmutarCampoCantidad(this.value)">
                     <option value="unidad">Venta por Unidad 📦</option>
                     <option value="peso">Venta al Peso / Kilo ⚖️</option>
                 </select>
-                <!-- NUEVO: Campo de Cantidad Grabable -->
                 <input type="number" id="prod-qty" placeholder="Cantidad Disponible en Tienda">
                 
                 <button class="btn-charge" style="width:100%;" onclick="agregarProductoNuevo()">Guardar en Memoria</button>
@@ -205,7 +197,6 @@
             <div class="inventory-grid" id="lista-productos"></div>
         </div>
 
-        <!-- MÓDULO 3: AJUSTES -->
         <div id="modulo-admin" class="modulo-app">
             <div class="header-modulo">
                 <h3>⚙️ Ajustes Contables</h3>
@@ -231,7 +222,6 @@
         var rolActual = "Administrador 👑";
         var carrito = [];
 
-        // Base de datos persistente inicial
         var stockInicial = [
             { id: 101, nombre: "Harina PAN", precio: 1.10, tipo: "unidad", qty: 15, serial: "7591" },
             { id: 102, nombre: "Mantequilla Nelly", precio: 1.50, tipo: "unidad", qty: 10, serial: "7590006200540" },
@@ -241,11 +231,13 @@
 
         function cambiarModulo(idModulo) {
             if(idModulo === 'modulo-admin' && rolActual !== "Administrador 👑") {
-                alert("Bloqueado: Solo administradores modifican tasas."); return;
+                alert("Bloqueado: Solo administradores."); return;
             }
             document.getElementById('menu-principal').style.display = 'none';
             document.querySelectorAll('.modulo-app').forEach(mod => mod.style.display = 'none');
-            document.getElementById(idModulo).style.display = 'flex';
+            
+            var target = document.getElementById(idModulo);
+            if(target) { target.style.display = 'flex'; }
             
             if(idModulo === 'modulo-inventario') renderizarInventario();
             if(idModulo === 'modulo-caja') actualizarSelectorCaja();
@@ -257,17 +249,20 @@
         }
 
         function conmutarCampoCantidad(tipo) {
-            document.getElementById('prod-qty').style.display = (tipo === 'peso') ? 'none' : 'block';
+            var eQty = document.getElementById('prod-qty');
+            if(eQty) eQty.style.display = (tipo === 'peso') ? 'none' : 'block';
         }
 
         function formatVE(monto) {
             return monto.toLocaleString('es-VE', {minimumFractionDigits: 2, maximumFractionDigits: 2}) + ' Bs';
         }
 
-        // CONTROL DE MEMORIA E INVENTARIO VISUAL LIMPIO
         function renderizarInventario() {
             var contenedor = document.getElementById('lista-productos');
-            document.getElementById('form-registro-prod').style.display = (rolActual === "Administrador 👑") ? "flex" : "none";
+            var formBox = document.getElementById('form-registro-prod');
+            if(formBox) formBox.style.display = (rolActual === "Administrador 👑") ? "flex" : "none";
+
+            if(!contenedor) return;
             contenedor.innerHTML = "";
             productos.forEach(p => {
                 var indicadorStock = p.tipo === 'peso' ? '<span class="badge-peso">⚖️ Al Peso</span>' : `<span class="stock-indicator">Stock: ${p.qty} unds</span>`;
@@ -284,6 +279,7 @@
 
         function actualizarSelectorCaja() {
             var select = document.getElementById('select-item-caja');
+            if(!select) return;
             select.innerHTML = '<option value="">-- Toca para buscar --</option>';
             productos.forEach(p => {
                 if(p.tipo === 'peso' || p.qty > 0) {
@@ -299,11 +295,11 @@
             var type = document.getElementById('prod-type').value;
             var qty = parseInt(document.getElementById('prod-qty').value) || 0;
 
-            if(!name || isNaN(price)) { alert("Ingresa nombre y precio base."); return; }
+            if(!name || isNaN(price)) { alert("Ingresa nombre y precio."); return; }
 
             productos.push({ id: Date.now(), nombre: name, precio: price, tipo: type, qty: qty, serial: serial });
             localStorage.setItem('geomercado_db', JSON.stringify(productos));
-            alert("Guardado permanente completado.");
+            alert("Guardado completado.");
             
             document.getElementById('prod-name').value = "";
             document.getElementById('prod-price').value = "";
@@ -312,7 +308,6 @@
             renderizarInventario();
         }
 
-        // LÓGICA DE FACTURACIÓN ASOCIADA AL CARRITO EN CAJA
         function agregarAlCarritoDesdeCaja(idProd) {
             if(!idProd) return;
             var p = productos.find(item => item.id == idProd);
@@ -326,4 +321,18 @@
                 cantidadVendida = parseFloat(kilos);
                 if(isNaN(cantidadVendida) || cantidadVendida <= 0) return;
                 precioUSD = p.precio * cantidadVendida;
-            } else
+            } else {
+                if(p.qty < 1) { alert("Sin stock."); return; }
+                p.qty -= 1;
+                localStorage.setItem('geomercado_db', JSON.stringify(productos));
+            }
+
+            carrito.push({ nombre: p.nombre, totalUSD: precioUSD, detalle: p.tipo === 'peso' ? `${cantidadVendida} kg` : '1 und' });
+            
+            totalVentaUSD += precioUSD;
+            totalVentaVES = totalVentaUSD * tasaDia;
+            
+            renderizarCarritoCaja();
+            var eSelect = document.getElementById('select-item-caja');
+            if(eSelect) eSelect.value = "";
+    
