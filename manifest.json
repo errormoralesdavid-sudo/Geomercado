@@ -1,23 +1,20 @@
 {
-  "short_name": "GeoMercado",
-  "name": "GeoMercado App",
+  "short_name": "Geo Mercado",
+  "name": "Geo Mercado V19.0",
   "icons": [
     {
-      "src": "https://cdn-icons-png.flaticon.com/512/3081/3081559.png",
+      "src": "icon-192.png",
+      "type": "image/png",
+      "sizes": "192x192"
+    },
+    {
+      "src": "icon-512.png",
       "type": "image/png",
       "sizes": "512x512"
     }
   ],
   "start_url": "./index.html",
-  "background_color": "#f8fafc",
-  "theme_color": "#1e293b",
-  "display": "standalone",
-  "orientation": "portrait",
-  "shortcuts": [
-    {
-      "name": "Verificar Pago Móvil",
-      "short_name": "Pago Móvil",
-      "url": "./index.html#pago-movil"
-    }
-  ]
+  "background_color": "#000000",
+  "theme_color": "#000000",
+  "display": "standalone"
 }
