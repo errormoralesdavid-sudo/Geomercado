@@ -3,24 +3,23 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>GeoMercado / Sin Tanto Embrollo PRO</title>
-
-  <link rel="manifest" href="manifest.json">
-  <meta name="theme-color" content="#121212">
-
-  <script src="https://cdn.jsdelivr.net/npm/tesseract.js@4/dist/tesseract.min.js"></script>
-
+  <title>GeoMercado</title>
   <style>
+    /* ==========================================
+       VARIABLES Y ESTILOS GENERALES
+       ========================================== */
     :root {
-      --bg-dark: #121212;
-      --card-bg: #1e1e1e;
-      --input-bg: #2a2a2a;
-      --text-main: #ffffff;
-      --text-muted: #a0a0a0;
-      --accent-green: #00e676;
-      --accent-blue: #00b0ff;
-      --danger-red: #ff5252;
-      --border-color: #333333;
+      --primary: #1e293b;
+      --accent: #2563eb;
+      --accent-hover: #1d4ed8;
+      --success: #16a34a;
+      --danger: #dc2626;
+      --warning: #d97706;
+      --bg: #f8fafc;
+      --card-bg: #ffffff;
+      --text: #0f172a;
+      --text-muted: #64748b;
+      --border: #e2e8f0;
       --radius: 12px;
     }
 
@@ -28,88 +27,118 @@
       box-sizing: border-box;
       margin: 0;
       padding: 0;
-      font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+      font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Oxygen, Ubuntu, Cantarell, sans-serif;
       -webkit-tap-highlight-color: transparent;
     }
 
     body {
-      background-color: var(--bg-dark);
-      color: var(--text-main);
+      background-color: var(--bg);
+      color: var(--text);
       display: flex;
       flex-direction: column;
       height: 100vh;
       overflow: hidden;
     }
 
-    /* Pestañas Inferiores / Navegación */
+    /* ==========================================
+       HEADER Y NAVEGACIÓN (ANIMADA)
+       ========================================== */
+    header {
+      background-color: var(--primary);
+      color: #fff;
+      padding: 16px;
+      text-align: center;
+      font-size: 1.3rem;
+      font-weight: 700;
+      box-shadow: 0 2px 8px rgba(0,0,0,0.15);
+      z-index: 10;
+    }
+
     nav {
       display: flex;
-      background-color: #181818;
-      border-top: 1px solid var(--border-color);
-      position: fixed;
-      bottom: 0;
-      width: 100%;
-      height: 60px;
-      z-index: 100;
+      background-color: var(--card-bg);
+      border-bottom: 1px solid var(--border);
+      z-index: 9;
     }
 
     .nav-btn {
       flex: 1;
-      display: flex;
-      flex-direction: column;
-      align-items: center;
-      justify-content: center;
-      background: none;
+      padding: 12px 4px;
       border: none;
+      background: none;
       color: var(--text-muted);
-      font-size: 0.75rem;
       font-weight: 600;
+      font-size: 0.85rem;
       cursor: pointer;
-      gap: 3px;
+      transition: color 0.25s ease, border-bottom 0.25s ease;
+      border-bottom: 3px solid transparent;
     }
 
     .nav-btn.active {
-      color: var(--accent-green);
+      color: var(--accent);
+      border-bottom-color: var(--accent);
     }
 
-    .nav-btn svg {
-      width: 20px;
-      height: 20px;
-      fill: currentColor;
-    }
-
+    /* ==========================================
+       SECCIONES Y ANIMACIONES DE TRANSICIÓN
+       ========================================== */
     main {
       flex: 1;
       overflow-y: auto;
+      position: relative;
       padding: 16px;
-      padding-bottom: 75px;
     }
 
     .tab-content {
       display: none;
+      opacity: 0;
+      transform: translateY(10px);
+      transition: opacity 0.3s ease, transform 0.3s ease;
     }
 
     .tab-content.active {
       display: block;
+      opacity: 1;
+      transform: translateY(0);
+      animation: fadeInUp 0.3s forwards;
     }
 
-    /* Tarjetas oscuras estilo App */
+    @keyframes fadeInUp {
+      from {
+        opacity: 0;
+        transform: translateY(12px);
+      }
+      to {
+        opacity: 1;
+        transform: translateY(0);
+      }
+    }
+
+    /* ==========================================
+       TARJETAS Y COMPONENTES
+       ========================================== */
     .card {
-      background-color: var(--card-bg);
+      background: var(--card-bg);
       border-radius: var(--radius);
       padding: 16px;
       margin-bottom: 16px;
-      border: 1px solid var(--border-color);
+      border: 1px solid var(--border);
+      box-shadow: 0 2px 4px rgba(0,0,0,0.03);
+      transition: transform 0.2s ease, box-shadow 0.2s ease;
+    }
+
+    .card:active {
+      transform: scale(0.995);
     }
 
     .card-title {
-      font-size: 1.1rem;
+      font-size: 1.05rem;
       font-weight: 700;
-      color: var(--accent-green);
-      margin-bottom: 14px;
+      margin-bottom: 12px;
+      color: var(--primary);
       display: flex;
       align-items: center;
-      gap: 8px;
+      justify-content: space-between;
     }
 
     .form-group {
@@ -119,360 +148,203 @@
     label {
       display: block;
       font-size: 0.8rem;
+      font-weight: 600;
       color: var(--text-muted);
-      margin-bottom: 6px;
+      margin-bottom: 4px;
+      text-transform: uppercase;
     }
 
     input, select {
       width: 100%;
-      padding: 12px;
-      background-color: var(--input-bg);
-      border: 1px solid var(--border-color);
+      padding: 10px 12px;
+      border: 1px solid var(--border);
       border-radius: 8px;
-      color: #fff;
-      font-size: 1rem;
+      font-size: 0.95rem;
       outline: none;
+      transition: border-color 0.2s ease, box-shadow 0.2s ease;
+      background-color: #fff;
     }
 
     input:focus, select:focus {
-      border-color: var(--accent-green);
+      border-color: var(--accent);
+      box-shadow: 0 0 0 3px rgba(37, 99, 235, 0.15);
     }
 
-    /* Botones */
+    /* ==========================================
+       BOTONES CON EFECTO TÁCTIL (RIPPLE / PRESS)
+       ========================================== */
     .btn {
       width: 100%;
       padding: 12px;
       border: none;
       border-radius: 8px;
       font-size: 0.95rem;
-      font-weight: 700;
+      font-weight: 600;
       cursor: pointer;
-      margin-top: 6px;
-      margin-bottom: 6px;
-      display: flex;
+      display: inline-flex;
       align-items: center;
       justify-content: center;
       gap: 8px;
+      transition: background-color 0.2s ease, transform 0.1s ease, box-shadow 0.2s ease;
+      margin-bottom: 8px;
+      text-decoration: none;
     }
 
-    .btn-action { background-color: var(--accent-green); color: #000; }
-    .btn-secondary { background-color: #333; color: #fff; }
-    .btn-danger { background-color: transparent; border: 1px solid var(--danger-red); color: var(--danger-red); }
-
-    /* Bloques de Resultados */
-    .result-box {
-      background-color: #16221c;
-      border-left: 4px solid var(--accent-green);
-      padding: 12px;
-      border-radius: 6px;
-      margin-top: 10px;
+    .btn:active {
+      transform: scale(0.97);
     }
 
-    .result-row {
-      display: flex;
-      justify-content: space-between;
-      margin-bottom: 6px;
-      font-size: 0.9rem;
-    }
+    .btn-primary { background: var(--accent); color: #fff; }
+    .btn-primary:hover { background: var(--accent-hover); }
 
-    .result-row.total {
-      font-size: 1.05rem;
-      font-weight: bold;
-      color: var(--accent-green);
-      border-top: 1px dashed #333;
-      padding-top: 6px;
-      margin-top: 6px;
-    }
+    .btn-success { background: var(--success); color: #fff; }
+    .btn-danger { background: var(--danger); color: #fff; }
+    .btn-secondary { background: #e2e8f0; color: var(--text); }
+    .btn-whatsapp { background: #25d366; color: #fff; }
 
-    /* Buscador y Tabla de Movimientos */
-    .search-box {
-      display: flex;
-      gap: 8px;
-      margin-bottom: 16px;
-    }
-
-    .search-btn {
-      background-color: #00a884;
-      border: none;
-      width: 48px;
-      border-radius: 8px;
-      display: flex;
-      align-items: center;
-      justify-content: center;
-    }
-
-    .mov-group-title {
-      font-size: 0.8rem;
-      color: var(--text-muted);
-      margin: 14px 0 8px 0;
-      font-weight: bold;
-      letter-spacing: 0.5px;
-    }
-
-    .mov-item {
-      display: flex;
-      justify-content: space-between;
-      align-items: center;
-      padding: 12px 0;
-      border-bottom: 1px solid #222;
-    }
-
-    .mov-detail {
-      display: flex;
-      align-items: center;
-      gap: 10px;
-    }
-
-    .mov-icon {
-      color: var(--text-muted);
-      font-size: 0.8rem;
-    }
-
-    .mov-desc {
-      font-size: 0.9rem;
-      font-weight: 600;
-    }
-
-    .mov-sub {
-      font-size: 0.75rem;
-      color: var(--text-muted);
-    }
-
-    .mov-amount {
-      text-align: right;
-      font-weight: bold;
-      font-size: 0.95rem;
-    }
-
-    .mov-time {
-      font-size: 0.75rem;
-      color: var(--text-muted);
-      font-weight: normal;
-    }
-
-    /* Recuadros Antifraude */
+    /* ==========================================
+       ALERTAS ANIMADAS (PAGO MÓVIL)
+       ========================================== */
     .alert-box {
-      padding: 12px;
-      border-radius: 8px;
-      margin-top: 12px;
-      font-size: 0.85rem;
-      font-weight: 600;
-      display: none;
-    }
-
-    .alert-success { background: #1b382b; color: #00e676; border: 1px solid #00e676; }
-    .alert-error { background: #3a1c1c; color: #ff5252; border: 1px solid #ff5252; }
-
-    .upload-box {
-      border: 2px dashed var(--accent-green);
       padding: 14px;
       border-radius: 8px;
-      text-align: center;
-      background: #182820;
-      margin-bottom: 14px;
-      cursor: pointer;
+      margin-top: 12px;
+      font-size: 0.9rem;
+      font-weight: 600;
+      display: none;
+      animation: popIn 0.35s cubic-bezier(0.175, 0.885, 0.32, 1.275);
     }
 
-    #loading-ocr {
-      display: none;
+    @keyframes popIn {
+      0% { transform: scale(0.8); opacity: 0; }
+      100% { transform: scale(1); opacity: 1; }
+    }
+
+    .alert-success {
+      background-color: #dcfce7;
+      color: #15803d;
+      border: 1px solid #bbf7d0;
+    }
+
+    .alert-error {
+      background-color: #fee2e2;
+      color: #b91c1c;
+      border: 1px solid #fecaca;
+    }
+
+    /* ==========================================
+       LISTA DE PRODUCTOS E INVENTARIO
+       ========================================== */
+    .item-row {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      padding: 10px 0;
+      border-bottom: 1px solid var(--border);
+      animation: slideIn 0.25s ease;
+    }
+
+    @keyframes slideIn {
+      from { opacity: 0; transform: translateX(-10px); }
+      to { opacity: 1; transform: translateX(0); }
+    }
+
+    .item-row:last-child { border-bottom: none; }
+
+    /* ==========================================
+       TOAST DE NOTIFICACIÓN FLOTANTE
+       ========================================== */
+    #toast {
+      visibility: hidden;
+      min-width: 240px;
+      background-color: #333;
+      color: #fff;
+      text-align: center;
+      border-radius: 25px;
+      padding: 12px 20px;
+      position: fixed;
+      z-index: 100;
+      left: 50%;
+      bottom: 30px;
+      transform: translateX(-50%);
       font-size: 0.85rem;
-      color: var(--accent-green);
-      margin-top: 8px;
+      opacity: 0;
+      transition: opacity 0.3s ease, bottom 0.3s ease;
+      box-shadow: 0 4px 12px rgba(0,0,0,0.2);
+    }
+
+    #toast.show {
+      visibility: visible;
+      opacity: 1;
+      bottom: 45px;
     }
   </style>
 </head>
 <body>
 
+  <header>GeoMercado</header>
+
+  <nav>
+    <button class="nav-btn active" onclick="switchTab('ventas')">Ventas</button>
+    <button class="nav-btn" onclick="switchTab('pago-movil')">Pago Móvil</button>
+    <button class="nav-btn" onclick="switchTab('cierre')">Cierre</button>
+    <button class="nav-btn" onclick="switchTab('ajustes')">Ajustes</button>
+  </nav>
+
   <main>
-
-    <section id="tab-inicio" class="tab-content active">
-      <div class="search-box">
-        <input type="text" id="buscar-mov" placeholder="Buscar ....">
-        <button class="search-btn">🔍</button>
+    <!-- ==========================================
+         PESTAÑA 1: VENTAS Y PAGO MIXTO
+         ========================================== -->
+    <section id="tab-ventas" class="tab-content active">
+      <div class="card">
+        <div class="card-title">Nueva Venta / Registro</div>
+        <div class="form-group">
+          <label>Producto</label>
+          <input type="text" id="prod-nombre" placeholder="Ej. Harina de Maíz">
+        </div>
+        <div class="form-group">
+          <label>Monto ($ / Bs.)</label>
+          <input type="number" id="prod-monto" placeholder="0.00">
+        </div>
+        <button class="btn btn-primary" onclick="agregarProducto()">Agregar al Carrito</button>
       </div>
-
-      <div class="mov-group-title">HOY</div>
-
-      <div class="mov-item">
-        <div class="mov-detail">
-          <span class="mov-icon">◀</span>
-          <div>
-            <div class="mov-desc">Com trans linea bdvapp</div>
-            <div class="mov-sub">nat nat</div>
-          </div>
-        </div>
-        <div class="mov-amount">
-          176,10 Bs
-          <div class="mov-time">10:03 AM</div>
-        </div>
-      </div>
-
-      <div class="mov-item">
-        <div class="mov-detail">
-          <span class="mov-icon">◀</span>
-          <div>
-            <div class="mov-desc">Transf linea bdvapp nat</div>
-            <div class="mov-sub">nat nat</div>
-          </div>
-        </div>
-        <div class="mov-amount">
-          58.700,00 Bs
-          <div class="mov-time">10:03 AM</div>
-        </div>
-      </div>
-
-      <div class="mov-group-title">AYER</div>
-
-      <div class="mov-item">
-        <div class="mov-detail">
-          <span class="mov-icon">◀</span>
-          <div>
-            <div class="mov-desc">Cobro comision pag movil</div>
-            <div class="mov-sub">bdv a bdv</div>
-          </div>
-        </div>
-        <div class="mov-amount">
-          15,00 Bs
-          <div class="mov-time">05:02 PM</div>
-        </div>
-      </div>
-
-      <div class="mov-item">
-        <div class="mov-detail">
-          <span class="mov-icon">◀</span>
-          <div>
-            <div class="mov-desc">Operacion pagomovil bdv</div>
-          </div>
-        </div>
-        <div class="mov-amount">
-          5.000,00 Bs
-          <div class="mov-time">05:02 PM</div>
-        </div>
-      </div>
-
-      <div class="mov-item">
-        <div class="mov-detail">
-          <span class="mov-icon">◀</span>
-          <div>
-            <div class="mov-desc">Cobro comision pag movil</div>
-            <div class="mov-sub">bdv a bdv</div>
-          </div>
-        </div>
-        <div class="mov-amount">
-          15,00 Bs
-          <div class="mov-time">04:34 PM</div>
-        </div>
-      </div>
-
-      <div class="mov-item">
-        <div class="mov-detail">
-          <span class="mov-icon">◀</span>
-          <div>
-            <div class="mov-desc">Operacion pagomovil bdv</div>
-          </div>
-        </div>
-        <div class="mov-amount">
-          5.000,00 Bs
-          <div class="mov-time">04:34 PM</div>
-        </div>
-      </div>
-
-      <div class="mov-item">
-        <div class="mov-detail">
-          <span class="mov-icon">◀</span>
-          <div>
-            <div class="mov-desc">Com trans linea bdvapp</div>
-            <div class="mov-sub">nat nat</div>
-          </div>
-        </div>
-        <div class="mov-amount">
-          14,00 Bs
-          <div class="mov-time">01:30 PM</div>
-        </div>
-      </div>
-
-      <div class="mov-item">
-        <div class="mov-detail">
-          <span class="mov-icon">◀</span>
-          <div>
-            <div class="mov-desc">Transf linea bdvapp nat</div>
-          </div>
-        </div>
-        <div class="mov-amount">
-          1.500,00 Bs
-          <div class="mov-time">01:30 PM</div>
-        </div>
-      </div>
-    </section>
-
-    <section id="tab-cruzada" class="tab-content">
-      <button class="btn btn-secondary">▶⚙ Actualizar Tasas del Día (Manual)</button>
-      <button class="btn btn-danger" onclick="limpiarCruzada()">🧹 Limpiar Todos los Campos</button>
 
       <div class="card">
-        <div class="card-title" style="justify-content: center;">Calculadora Cruzada</div>
-        <div class="form-group">
-          <label>De:</label>
-          <input type="number" id="cruzada-de-monto" placeholder="Monto" oninput="calcularCruzada()">
+        <div class="card-title">Resumen de Cuenta</div>
+        <div id="lista-carrito">
+          <p style="color: var(--text-muted); font-size: 0.85rem;">No hay productos agregados.</p>
         </div>
+        <hr style="margin: 12px 0; border: none; border-top: 1px solid var(--border);">
+        <div style="display: flex; justify-content: space-between; font-weight: 700; font-size: 1.1rem; margin-bottom: 12px;">
+          <span>Total:</span>
+          <span id="total-monto">$0.00</span>
+        </div>
+
         <div class="form-group">
-          <select id="cruzada-de-tipo" onchange="calcularCruzada()">
-            <option value="usd">Dólares ($)</option>
-            <option value="bs">Bolívares (Bs)</option>
-            <option value="usdt">USDT (Cripto)</option>
+          <label>Método de Pago</label>
+          <select id="metodo-pago">
+            <option value="efectivo">Efectivo</option>
+            <option value="pago-movil">Pago Móvil</option>
+            <option value="mixto">Pago Mixto (Efectivo + Pago Móvil)</option>
           </select>
         </div>
 
-        <div class="form-group">
-          <label>A:</label>
-          <input type="text" id="cruzada-a-resultado" placeholder="Resultado" readonly style="color: var(--accent-green); font-weight: bold;">
-        </div>
-        <div class="form-group">
-          <select id="cruzada-a-tipo" onchange="calcularCruzada()">
-            <option value="usdt">USDT (Cripto)</option>
-            <option value="bs">Bolívares (Bs)</option>
-            <option value="usd">Dólares ($)</option>
-          </select>
-        </div>
-      </div>
-
-      <div class="card">
-        <div class="card-title" style="justify-content: center;">🧾 Impuestos / IGTF (3%)</div>
-        <div class="form-group">
-          <label>Precio del Producto ($):</label>
-          <input type="number" id="igtf-monto" placeholder="Ej. 50" oninput="calcularIGTF()">
-        </div>
-
-        <div class="result-box">
-          <div class="result-row">
-            <span>Monto Base en Bs (BCV):</span>
-            <strong id="igtf-base-bs">0,00 Bs</strong>
-          </div>
-          <div class="result-row">
-            <span>IGTF 3% (Divisa):</span>
-            <strong id="igtf-monto-divisa">0,00 $</strong>
-          </div>
-          <div class="result-row total">
-            <span>Total a Cobrar/Pagar:</span>
-            <strong id="igtf-total">0,00 $ / 0,00 Bs</strong>
-          </div>
-        </div>
+        <button class="btn btn-success" onclick="procesarVenta()">Procesar Cobro</button>
       </div>
     </section>
 
-    <section id="tab-comision" class="tab-content">
+    <!-- ==========================================
+         PESTAÑA 2: ANALIZADOR DE PAGO MÓVIL
+         ========================================== -->
+    <section id="tab-pago-movil" class="tab-content">
       <div class="card">
-        <div class="card-title">🔍 Verificador Antifraude Pago Móvil</div>
-        
-        <div class="upload-box" onclick="document.getElementById('input-captura').click()">
-          <p style="font-weight: bold; color: var(--accent-green);">📷 Cargar Captura de Pago</p>
-          <span style="font-size: 0.75rem; color: var(--text-muted);">Haz clic para leer la imagen automáticamente</span>
-          <input type="file" id="input-captura" accept="image/*" style="display:none" onchange="escanearCaptura(event)">
-          <div id="loading-ocr">⏳ Leyendo comprobante con IA...</div>
-        </div>
+        <div class="card-title">Verificación Antifraude Pago Móvil</div>
+        <p style="font-size: 0.8rem; color: var(--text-muted); margin-bottom: 12px;">
+          Ingresa los datos del comprobante recibido para validar que coincidan con tu cuenta configurada.
+        </p>
 
         <div class="form-group">
-          <label>Banco Receptor</label>
+          <label>Banco Receptor del Pago</label>
           <input type="text" id="pm-banco" placeholder="Ej. Banco de Venezuela / 0102">
         </div>
         <div class="form-group">
@@ -484,30 +356,62 @@
           <input type="text" id="pm-telefono" placeholder="Ej. 04121234567">
         </div>
         <div class="form-group">
-          <label>Monto Transferido</label>
-          <input type="text" id="pm-monto" placeholder="0.00">
+          <label>Monto de la Transferencia</label>
+          <input type="number" id="pm-monto" placeholder="0.00">
         </div>
         <div class="form-group">
           <label>Número de Referencia</label>
           <input type="text" id="pm-referencia" placeholder="Ej. 987654">
         </div>
 
-        <button class="btn btn-action" onclick="validarPagoMovil()">Analizar Comprobante</button>
+        <button class="btn btn-primary" onclick="validarPagoMovil()">Analizar Comprobante</button>
 
+        <!-- Mensajes de Estado Animados -->
         <div id="alert-pm-success" class="alert-box alert-success">
-          ✓ ¡Pago Móvil Válido! Coincide con tu cuenta guardada.
+          ✓ Datos Correctos: El pago coincide perfectamente con tu cuenta guardada.
         </div>
         <div id="alert-pm-error" class="alert-box alert-error">
-          ⚠ Alerta: Los datos del receptor NO coinciden con tu cuenta.
+          ⚠ Atención: Los datos del receptor (Banco, Cédula o Teléfono) no coinciden con tu cuenta guardada.
         </div>
+      </div>
+
+      <!-- Opciones de Exportación -->
+      <div class="card" id="card-exportar" style="display: none;">
+        <div class="card-title">Compartir / Guardar Comprobante</div>
+        <button class="btn btn-whatsapp" onclick="compartirWhatsApp()">Compartir por WhatsApp</button>
+        <button class="btn btn-secondary" onclick="descargarComprobante()">Descargar en Teléfono</button>
+        <button class="btn btn-secondary" onclick="imprimirComprobante()">Imprimir Comprobante</button>
       </div>
     </section>
 
-    <section id="tab-arbitraje" class="tab-content">
+    <!-- ==========================================
+         PESTAÑA 3: CIERRE DE CAJA
+         ========================================== -->
+    <section id="tab-cierre" class="tab-content">
       <div class="card">
-        <div class="card-title">⚙ Configuración de Datos</div>
+        <div class="card-title">Cierre de Caja Diario</div>
+        <div class="item-row">
+          <span>Ventas Realizadas:</span>
+          <strong id="cierre-cant">0</strong>
+        </div>
+        <div class="item-row">
+          <span>Ingreso Total:</span>
+          <strong id="cierre-total">$0.00</strong>
+        </div>
+        <br>
+        <button class="btn btn-primary" onclick="descargarCierre()">Descargar Reporte de Cierre</button>
+        <button class="btn btn-danger" onclick="reiniciarCaja()">Reiniciar Caja del Día</button>
+      </div>
+    </section>
+
+    <!-- ==========================================
+         PESTAÑA 4: AJUSTES (MIS DATOS DE PAGO MÓVIL)
+         ========================================== -->
+    <section id="tab-ajustes" class="tab-content">
+      <div class="card">
+        <div class="card-title">Mis Datos de Pago Móvil</div>
         <p style="font-size: 0.8rem; color: var(--text-muted); margin-bottom: 12px;">
-          Guarda tus datos oficiales para verificar y evitar estafas.
+          Guarda tus datos oficiales aquí. El sistema los usará para comparar y detectar errores o pagos enviados a cuentas incorrectas.
         </p>
 
         <div class="form-group">
@@ -523,92 +427,146 @@
           <input type="text" id="cfg-telefono" placeholder="Ej. 04121234567">
         </div>
 
-        <button class="btn btn-action" onclick="guardarAjustes()">Guardar Mis Datos</button>
+        <button class="btn btn-success" onclick="guardarAjustes()">Guardar Ajustes</button>
+        <button class="btn btn-secondary" onclick="copiarDatosPagoMovil()">Copiar mis Datos para Clientes</button>
       </div>
     </section>
-
   </main>
 
-  <nav>
-    <button class="nav-btn active" id="nav-inicio" onclick="switchTab('inicio')">
-      <svg viewBox="0 0 24 24"><path d="M10 20v-6h4v6h5v-8h3L12 3 2 12h3v8z"/></svg>
-      Inicio
-    </button>
-    <button class="nav-btn" id="nav-cruzada" onclick="switchTab('cruzada')">
-      <svg viewBox="0 0 24 24"><path d="M16 17011l-4 4-4-4h3V3h2v12h3zM8 7l4-4 4 4h-3v12h-2V7H8z"/></svg>
-      Cruzada
-    </button>
-    <button class="nav-btn" id="nav-comision" onclick="switchTab('comision')">
-      <svg viewBox="0 0 24 24"><path d="M19.14 12.94c.04-.3.06-.61.06-.94 0-.33-.02-.64-.07-.94l2.03-1.58c.18-.14.23-.41.12-.61l-1.92-3.32c-.12-.22-.37-.29-.59-.22l-2.39.96c-.5-.38-1.03-.7-1.62-.94l-.36-2.54c-.04-.24-.24-.41-.48-.41h-3.84c-.24 0-.43.17-.47.41l-.36 2.54c-.59.24-1.13.57-1.62.94l-2.39-.96c-.22-.08-.47 0-.59.22L2.74 8.87c-.12.21-.08.47.12.61l2.03 1.58c-.05.3-.09.63-.09.94s.02.64.07.94l-2.03 1.58c-.18.14-.23.41-.12.61l1.92 3.32c.12.22.37.29.59.22l2.39-.96c.5.38 1.03.7 1.62.94l.36 2.54c.05.24.24.41.48.41h3.84c.24 0 .44-.17.47-.41l.36-2.54c.59-.24 1.13-.56 1.62-.94l2.39.96c.22.08.47 0 .59-.22l1.92-3.32c.12-.22.07-.47-.12-.61l-2.01-1.58zM12 15.6c-1.98 0-3.6-1.62-3.6-3.6s1.62-3.6 3.6-3.6 3.6 1.62 3.6 3.6-1.62 3.6-3.6 3.6z"/></svg>
-      Comisión
-    </button>
-    <button class="nav-btn" id="nav-arbitraje" onclick="switchTab('arbitraje')">
-      <svg viewBox="0 0 24 24"><path d="M3.5 18.49l6-6.01 4 4L22 6.92l-1.41-1.41-7.09 7.97-4-4L2 15.66z"/></svg>
-      Arbitraje
-    </button>
-  </nav>
+  <!-- Notificación flotante (Toast) -->
+  <div id="toast">Notificación</div>
 
   <script>
-    const tasaBCV = 36.5; // Tasa referencial para IGTF
+    /* ==========================================
+       ESTADO Y LOGICA PRINCIPAL
+       ========================================== */
+    let carrito = [];
+    let totalAcumulado = 0;
+    let contadorVentas = 0;
+    let ultimoPagoValidado = null;
 
+    // Cargar datos guardados al iniciar
     window.onload = function() {
       if (localStorage.getItem('cfg_banco')) document.getElementById('cfg-banco').value = localStorage.getItem('cfg_banco');
       if (localStorage.getItem('cfg_cedula')) document.getElementById('cfg-cedula').value = localStorage.getItem('cfg_cedula');
       if (localStorage.getItem('cfg_telefono')) document.getElementById('cfg-telefono').value = localStorage.getItem('cfg_telefono');
     };
 
+    // Cambiar entre pestañas con transiciones suaves
     function switchTab(tabId) {
       document.querySelectorAll('.tab-content').forEach(tab => tab.classList.remove('active'));
       document.querySelectorAll('.nav-btn').forEach(btn => btn.classList.remove('active'));
 
       document.getElementById('tab-' + tabId).classList.add('active');
-      document.getElementById('nav-' + tabId).classList.add('active');
+      event.currentTarget.classList.add('active');
     }
 
-    // Calculadora Cruzada
-    function calcularCruzada() {
-      const monto = parseFloat(document.getElementById('cruzada-de-monto').value);
-      if (isNaN(monto) || monto <= 0) {
-        document.getElementById('cruzada-a-resultado').value = '';
+    function showToast(msj) {
+      const toast = document.getElementById('toast');
+      toast.innerText = msj;
+      toast.classList.add('show');
+      setTimeout(() => toast.classList.remove('show'), 2500);
+    }
+
+    /* ==========================================
+       FUNCIONES DE VENTAS
+       ========================================== */
+    function agregarProducto() {
+      const nombre = document.getElementById('prod-nombre').value.trim();
+      const monto = parseFloat(document.getElementById('prod-monto').value);
+
+      if (!nombre || isNaN(monto) || monto <= 0) {
+        showToast("Ingresa un producto y monto válido.");
         return;
       }
-      // Cálculo de ejemplo basado en paridad
-      document.getElementById('cruzada-a-resultado').value = (monto * 1.02).toFixed(2);
+
+      carrito.push({ nombre, monto });
+      document.getElementById('prod-nombre').value = '';
+      document.getElementById('prod-monto').value = '';
+      actualizarCarrito();
+      showToast("Producto agregado.");
     }
 
-    function limpiarCruzada() {
-      document.getElementById('cruzada-de-monto').value = '';
-      document.getElementById('cruzada-a-resultado').value = '';
-      document.getElementById('igtf-monto').value = '';
-      calcularIGTF();
+    function actualizarCarrito() {
+      const lista = document.getElementById('lista-carrito');
+      lista.innerHTML = '';
+      let total = 0;
+
+      carrito.forEach((item, index) => {
+        total += item.monto;
+        lista.innerHTML += `
+          <div class="item-row">
+            <span>${item.nombre}</span>
+            <strong>$${item.monto.toFixed(2)}</strong>
+          </div>
+        `;
+      });
+
+      if (carrito.length === 0) {
+        lista.innerHTML = '<p style="color: var(--text-muted); font-size: 0.85rem;">No hay productos agregados.</p>';
+      }
+
+      document.getElementById('total-monto').innerText = `$${total.toFixed(2)}`;
     }
 
-    // Cálculo IGTF 3%
-    function calcularIGTF() {
-      const montoUSD = parseFloat(document.getElementById('igtf-monto').value) || 0;
-      const baseBs = montoUSD * tasaBCV;
-      const igtfDivisa = montoUSD * 0.03;
-      const totalUSD = montoUSD + igtfDivisa;
-      const totalBs = totalUSD * tasaBCV;
+    function procesarVenta() {
+      if (carrito.length === 0) {
+        showToast("El carrito está vacío.");
+        return;
+      }
 
-      document.getElementById('igtf-base-bs').innerText = baseBs.toFixed(2).replace('.', ',') + ' Bs';
-      document.getElementById('igtf-monto-divisa').innerText = igtfDivisa.toFixed(2).replace('.', ',') + ' $';
-      document.getElementById('igtf-total').innerText = `${totalUSD.toFixed(2)} $ / ${totalBs.toFixed(2)} Bs`;
+      let totalVenta = carrito.reduce((sum, item) => sum + item.monto, 0);
+      totalAcumulado += totalVenta;
+      contadorVentas++;
+
+      document.getElementById('cierre-cant').innerText = contadorVentas;
+      document.getElementById('cierre-total').innerText = `$${totalAcumulado.toFixed(2)}`;
+
+      carrito = [];
+      actualizarCarrito();
+      showToast("Venta procesada con éxito.");
     }
 
-    // Guardar Configuración
+    /* ==========================================
+       AJUSTES Y COPIADO RÁPIDO
+       ========================================== */
     function guardarAjustes() {
-      localStorage.setItem('cfg_banco', document.getElementById('cfg-banco').value.trim());
-      localStorage.setItem('cfg_cedula', document.getElementById('cfg-cedula').value.trim());
-      localStorage.setItem('cfg_telefono', document.getElementById('cfg-telefono').value.trim());
-      alert("¡Datos guardados con éxito!");
+      const banco = document.getElementById('cfg-banco').value.trim();
+      const cedula = document.getElementById('cfg-cedula').value.trim();
+      const telefono = document.getElementById('cfg-telefono').value.trim();
+
+      localStorage.setItem('cfg_banco', banco);
+      localStorage.setItem('cfg_cedula', cedula);
+      localStorage.setItem('cfg_telefono', telefono);
+
+      showToast("Datos de Pago Móvil guardados.");
     }
 
-    // Verificación Antifraude
+    function copiarDatosPagoMovil() {
+      const banco = document.getElementById('cfg-banco').value.trim();
+      const cedula = document.getElementById('cfg-cedula').value.trim();
+      const telefono = document.getElementById('cfg-telefono').value.trim();
+
+      if (!banco || !cedula || !telefono) {
+        showToast("Primero guarda tus datos en Ajustes.");
+        return;
+      }
+
+      const texto = `Datos de Pago Móvil GeoMercado:\nBanco: ${banco}\nCédula/RIF: ${cedula}\nTeléfono: ${telefono}`;
+      navigator.clipboard.writeText(texto).then(() => {
+        showToast("¡Datos copiados al portapapeles!");
+      });
+    }
+
+    /* ==========================================
+       ANALIZADOR Y VALIDACIÓN ANTIFRAUDE PAGO MÓVIL
+       ========================================== */
     function validarPagoMovil() {
       const bancoIngresado = document.getElementById('pm-banco').value.trim().toLowerCase();
       const cedulaIngresada = document.getElementById('pm-cedula').value.trim().toLowerCase();
       const telefonoIngresado = document.getElementById('pm-telefono').value.trim().toLowerCase();
+      const monto = document.getElementById('pm-monto').value;
+      const ref = document.getElementById('pm-referencia').value;
 
       const miBanco = (localStorage.getItem('cfg_banco') || '').toLowerCase();
       const miCedula = (localStorage.getItem('cfg_cedula') || '').toLowerCase();
@@ -616,51 +574,74 @@
 
       const alertSuccess = document.getElementById('alert-pm-success');
       const alertError = document.getElementById('alert-pm-error');
+      const cardExportar = document.getElementById('card-exportar');
 
       alertSuccess.style.display = 'none';
       alertError.style.display = 'none';
 
+      if (!bancoIngresado || !cedulaIngresada || !telefonoIngresado || !monto) {
+        showToast("Completa todos los campos para verificar.");
+        return;
+      }
+
+      // Validación contra tus datos guardados
       const coincideBanco = miBanco === '' || bancoIngresado.includes(miBanco) || miBanco.includes(bancoIngresado);
-      const coincideCedula = miCedula === '' || cedulaIngresada.includes(miCedula) || miCedula.includes(cedulaIngresada);
-      const coincideTelefono = miTelefono === '' || telefonoIngresado.includes(miTelefono) || miTelefono.includes(telefonoIngresado);
+      const coincideCedula = miCedula === '' || cedulaIngresada === miCedula;
+      const coincideTelefono = miTelefono === '' || telefonoIngresado === miTelefono;
 
       if (coincideBanco && coincideCedula && coincideTelefono) {
         alertSuccess.style.display = 'block';
+        cardExportar.style.display = 'block';
+        ultimoPagoValidado = { banco: bancoIngresado, cedula: cedulaIngresada, telefono: telefonoIngresado, monto, ref };
       } else {
         alertError.style.display = 'block';
+        cardExportar.style.display = 'none';
       }
     }
 
-    // Escáner OCR de Capturas
-    function escanearCaptura(event) {
-      const file = event.target.files[0];
-      if (!file) return;
+    /* ==========================================
+       OPCIONES DE COMPARTIR Y DESCARGA
+       ========================================== */
+    function compartirWhatsApp() {
+      if (!ultimoPagoValidado) return;
+      const mensaje = `*Comprobante Validado - GeoMercado*%0A%0A*Monto:* Bs/ $${ultimoPagoValidado.monto}%0A*Referencia:* ${ultimoPagoValidado.ref}%0A*Banco Destino:* ${ultimoPagoValidado.banco}%0A*Estado:* Validado Correctamente ✓`;
+      window.open(`https://api.whatsapp.com/send?text=${mensaje}`, '_blank');
+    }
 
-      const loading = document.getElementById('loading-ocr');
-      loading.style.display = 'block';
+    function descargarComprobante() {
+      if (!ultimoPagoValidado) return;
+      const contenido = `=== COMPROBANTE PAGO MÓVIL GEOMERCADO ===\nMonto: ${ultimoPagoValidado.monto}\nReferencia: ${ultimoPagoValidado.ref}\nBanco: ${ultimoPagoValidado.banco}\nCédula: ${ultimoPagoValidado.cedula}\nEstado: Validado Correctamente`;
+      
+      const blob = new Blob([contenido], { type: 'text/plain' });
+      const a = document.createElement('a');
+      a.href = URL.createObjectURL(blob);
+      a.download = `Comprobante_GeoMercado_${ultimoPagoValidado.ref || 'pago'}.txt`;
+      a.click();
+      showToast("Comprobante descargado.");
+    }
 
-      Tesseract.recognize(file, 'spa')
-        .then(({ data: { text } }) => {
-          loading.style.display = 'none';
+    function imprimirComprobante() {
+      window.print();
+    }
 
-          const refMatch = text.match(/(?:ref|referencia|num|nro|operacion)[:\s]*([0-9]{6,12})/i) || text.match(/\b[0-9]{6,12}\b/);
-          if (refMatch) document.getElementById('pm-referencia').value = refMatch[1] || refMatch[0];
+    function descargarCierre() {
+      const contenido = `=== REPORTE CIERRE DE CAJA GEOMERCADO ===\nTotal Ventas: ${contadorVentas}\nMonto Total Acumulado: $${totalAcumulado.toFixed(2)}`;
+      const blob = new Blob([contenido], { type: 'text/plain' });
+      const a = document.createElement('a');
+      a.href = URL.createObjectURL(blob);
+      a.download = `Cierre_Caja_GeoMercado.txt`;
+      a.click();
+      showToast("Cierre de caja descargado.");
+    }
 
-          const montoMatch = text.match(/(?:bs|monto|importe|total)[:\s]*([0-9.,]+)/i);
-          if (montoMatch) document.getElementById('pm-monto').value = montoMatch[1];
-
-          const cedulaMatch = text.match(/(?:v|j|e)[- ]?[0-9]{7,9}/i);
-          if (cedulaMatch) document.getElementById('pm-cedula').value = cedulaMatch[0];
-
-          const tlfMatch = text.match(/(?:0412|0414|0424|0416|0426)[0-9]{7}/);
-          if (tlfMatch) document.getElementById('pm-telefono').value = tlfMatch[0];
-
-          alert("Captura analizada con éxito.");
-        })
-        .catch(err => {
-          loading.style.display = 'none';
-          alert("No se pudo leer la imagen. Intenta con una imagen más clara.");
-        });
+    function reiniciarCaja() {
+      if (confirm("¿Estás seguro de reiniciar las ventas del día?")) {
+        contadorVentas = 0;
+        totalAcumulado = 0;
+        document.getElementById('cierre-cant').innerText = '0';
+        document.getElementById('cierre-total').innerText = '$0.00';
+        showToast("Caja reiniciada.");
+      }
     }
   </script>
 </body>
