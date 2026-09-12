@@ -1,315 +1,672 @@
 <!DOCTYPE html>
 <html lang="es">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Sin Tanto Embrollo - Sistema de Pagos y Facturación</title>
-    
-    <!-- Librerías externas para PDF y OCR (Lectura de imágenes) -->
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/html2pdf.js/0.10.1/html2pdf.bundle.min.js"></script>
-    <script src="https://cdn.jsdelivr.net/npm/tesseract.js@5/dist/tesseract.min.js"></script>
-    
-    <style>
-        :root {
-            --primary: #2563eb;
-            --success: #16a34a;
-            --bg: #f8fafc;
-            --card: #ffffff;
-            --text: #0f172a;
-        }
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Geo Mercado V19.0 - Sistema Integrado</title>
+  
+  <!-- Bootstrap 5 CSS -->
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+  <!-- FontAwesome Icons -->
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+  
+  <!-- Scripts para OCR y Lector QR/Barra -->
+  <script src="https://cdn.jsdelivr.net/npm/tesseract.js@4/dist/tesseract.min.js"></script>
+  <script src="https://unpkg.com/html5-qrcode"></script>
 
-        * {
-            box-sizing: border-box;
-            margin: 0;
-            padding: 0;
-            font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
-        }
-
-        body {
-            background-color: var(--bg);
-            color: var(--text);
-            padding: 16px;
-            max-width: 500px;
-            margin: 0 auto;
-        }
-
-        /* Encabezado e Icono de Bolsitas */
-        header {
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            padding: 12px 0;
-            border-bottom: 2px solid #e2e8f0;
-            margin-bottom: 20px;
-        }
-
-        .title {
-            font-size: 1.2rem;
-            font-weight: bold;
-        }
-
-        /* Icono de Bolsitas de Compra (Reemplaza al Carrito) */
-        .bags-icon {
-            width: 32px;
-            height: 32px;
-            cursor: pointer;
-            fill: var(--primary);
-        }
-
-        /* Secciones y Tarjetas */
-        .card {
-            background: var(--card);
-            border-radius: 12px;
-            padding: 16px;
-            margin-bottom: 16px;
-            box-shadow: 0 4px 6px -1px rgba(0,0,0,0.1);
-        }
-
-        h2 {
-            font-size: 1rem;
-            margin-bottom: 12px;
-            color: var(--primary);
-        }
-
-        input, select {
-            width: 100%;
-            padding: 10px;
-            margin-bottom: 10px;
-            border: 1px solid #cbd5e1;
-            border-radius: 8px;
-            font-size: 14px;
-        }
-
-        button {
-            width: 100%;
-            padding: 12px;
-            border: none;
-            border-radius: 8px;
-            background: var(--primary);
-            color: white;
-            font-weight: bold;
-            font-size: 14px;
-            cursor: pointer;
-            margin-top: 6px;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            gap: 8px;
-        }
-
-        button.btn-whatsapp {
-            background-color: #25D366;
-        }
-
-        button.btn-success {
-            background-color: var(--success);
-        }
-
-        /* Animación de Pago Móvil Confirmado */
-        #payment-animation {
-            display: none;
-            text-align: center;
-            padding: 20px;
-            background: #dcfce7;
-            border: 2px solid var(--success);
-            border-radius: 12px;
-            margin-bottom: 16px;
-            animation: popIn 0.4s ease-out;
-        }
-
-        .checkmark-circle {
-            width: 60px;
-            height: 60px;
-            background: var(--success);
-            border-radius: 50%;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            margin: 0 auto 12px;
-            color: white;
-            font-size: 30px;
-            animation: pulse 1s infinite alternate;
-        }
-
-        @keyframes popIn {
-            0% { transform: scale(0.8); opacity: 0; }
-            100% { transform: scale(1); opacity: 1; }
-        }
-
-        @keyframes pulse {
-            0% { transform: scale(1); }
-            100% { transform: scale(1.08); }
-        }
-
-        /* Factura Imprimible / Descargable */
-        #invoice-template {
-            background: white;
-            padding: 20px;
-            border-radius: 8px;
-            border: 1px dashed #cbd5e1;
-            margin-top: 10px;
-        }
-
-        .invoice-row {
-            display: flex;
-            justify-content: space-between;
-            margin-bottom: 6px;
-            font-size: 14px;
-        }
-
-        .loading-spinner {
-            display: none;
-            text-align: center;
-            font-size: 12px;
-            color: #64748b;
-            margin-top: 6px;
-        }
-    </style>
+  <style>
+    :root {
+      --primary-color: #2b3a4a;
+      --accent-color: #00b4d8;
+      --bg-light: #f8f9fa;
+    }
+    body {
+      background-color: var(--bg-light);
+      font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+    }
+    .navbar {
+      background-color: var(--primary-color);
+    }
+    .card-custom {
+      border: none;
+      border-radius: 12px;
+      box-shadow: 0 4px 12px rgba(0,0,0,0.05);
+    }
+    .btn-accent {
+      background-color: var(--accent-color);
+      color: white;
+    }
+    .btn-accent:hover {
+      background-color: #0096c7;
+      color: white;
+    }
+    .price-tag {
+      font-size: 1.25rem;
+      font-weight: bold;
+      color: #2b3a4a;
+    }
+    #reader {
+      width: 100%;
+      border-radius: 8px;
+      overflow: hidden;
+    }
+    .accordion-button:not(.collapsed) {
+      background-color: #e0f7fa;
+      color: #0077b6;
+    }
+  </style>
 </head>
 <body>
 
-    <!-- Encabezado con Icono de Bolsitas -->
-    <header>
-        <div class="title">Sin Tanto Embrollo</div>
-        <!-- Icono de Bolsitas de Compra SVG -->
-        <svg class="bags-icon" viewBox="0 0 24 24">
-            <path d="M19 6h-2c0-2.76-2.24-5-5-5S7 3.24 7 6H5c-1.1 0-2 .9-2 2v12c0 1.1.9 2 2 2h14c1.1 0 2-.9 2-2V8c0-1.1-.9-2-2-2zm-7-3c1.66 0 3 1.34 3 3H9c0-1.66 1.34-3 3-3zm7 17H5V8h2v2c0 .55.45 1 1 1s1-.45 1-1V8h6v2c0 .55.45 1 1 1s1-.45 1-1V8h2v12z"/>
-        </svg>
-    </header>
-
-    <!-- 1. PANEL DE CONFIGURACIÓN DE DATOS PROPIOS -->
-    <div class="card">
-        <h2>Mis Datos de Pago Móvil</h2>
-        <input type="text" id="my-ci" placeholder="Cédula o RIF (Ej: V12345678)" value="V12345678">
-        <input type="text" id="my-phone" placeholder="Teléfono (Ej: 04121234567)" value="04121234567">
-        <input type="text" id="my-bank" placeholder="Banco (Ej: Banco de Venezuela)" value="Banco de Venezuela">
-        <button onclick="saveMyData()">Guardar Mis Datos</button>
-        <button class="btn-whatsapp" onclick="sendPaymentDetailsWhatsApp()">Enviar Mis Datos por WhatsApp</button>
+  <!-- Navegación Superior -->
+  <nav class="navbar navbar-expand-lg navbar-dark mb-4">
+    <div class="container-fluid">
+      <a class="navbar-brand fw-bold" href="#"><i class="fa-solid fa-shop me-2"></i>Geo Mercado V19.0</a>
+      <div class="d-flex align-items-center gap-2">
+        <span class="badge bg-light text-dark p-2">Tasa BCV: <strong id="rateDisplay">0.00</strong> VES/USD</span>
+        <button class="btn btn-outline-light btn-sm" data-bs-toggle="modal" data-bs-target="#modalRate"><i class="fa-solid fa-gear"></i></button>
+      </div>
     </div>
+  </nav>
 
-    <!-- 2. LECTURA Y VALIDACIÓN DE COMPROBANTE DE PAGO MÓVIL -->
-    <div class="card">
-        <h2>Validar Pago Móvil</h2>
-        <input type="number" id="expected-amount" placeholder="Monto Esperado (Bs.)" value="150.00">
-        <input type="file" id="payment-img" accept="image/*" onchange="processPaymentImage(event)">
-        <div class="loading-spinner" id="ocr-loading">Analizando capture de Pago Móvil...</div>
+  <div class="container-fluid px-4">
+    <!-- Navegación por pestañas principales -->
+    <ul class="nav nav-pills mb-3 nav-justified" id="mainTab" role="tablist">
+      <li class="nav-item" role="presentation">
+        <button class="nav-link active fw-bold" id="pos-tab" data-bs-toggle="tab" data-bs-target="#pos-panel" type="button"><i class="fa-solid fa-cart-shopping me-1"></i> Punto de Venta</button>
+      </li>
+      <li class="nav-item" role="presentation">
+        <button class="nav-link fw-bold" id="inventory-tab" data-bs-toggle="tab" data-bs-target="#inventory-panel" type="button"><i class="fa-solid fa-boxes-stacked me-1"></i> Inventario & Combos</button>
+      </li>
+      <li class="nav-item" role="presentation">
+        <button class="nav-link fw-bold" id="reports-tab" data-bs-toggle="tab" data-bs-target="#reports-panel" type="button"><i class="fa-solid fa-chart-line me-1"></i> Cuadre Z / Métricas</button>
+      </li>
+    </ul>
 
-        <!-- Lectura de Datos Extraídos -->
-        <div style="margin-top: 10px; font-size: 13px; color: #475569;">
-            <p><strong>Monto Leído:</strong> Bs. <span id="read-amount">0.00</span></p>
-            <p><strong>Referencia:</strong> <span id="read-ref">----</span></p>
-            <p><strong>Teléfono Origen:</strong> <span id="read-phone">----</span></p>
-            <p><strong>Banco:</strong> <span id="read-bank">----</span></p>
+    <div class="tab-content" id="mainTabContent">
+
+      <!-- ================= PANELES DE VENTA (POS) ================= -->
+      <div class="tab-pane fade show active" id="pos-panel" role="tabpanel">
+        <div class="row g-3">
+          
+          <!-- Catálogo & Escáneres -->
+          <div class="col-lg-7">
+            <div class="card card-custom p-3 mb-3">
+              <div class="row g-2 mb-3">
+                <div class="col-md-7">
+                  <input type="text" id="searchInput" class="form-control" placeholder="Buscar por nombre o código de barras..." onkeyup="filterProducts()">
+                </div>
+                <div class="col-md-5 d-flex gap-2">
+                  <button class="btn btn-outline-primary w-100" onclick="toggleCameraScanner()"><i class="fa-solid fa-barcode me-1"></i> QR/Cámara</button>
+                  <label class="btn btn-outline-secondary w-100 mb-0">
+                    <i class="fa-solid fa-camera me-1"></i> OCR <input type="file" id="ocrInput" accept="image/*" style="display:none" onchange="processOCR(this)">
+                  </label>
+                </div>
+              </div>
+
+              <!-- Visor de Cámara QR/Barra -->
+              <div id="scannerContainer" class="mb-3" style="display:none;">
+                <div id="reader"></div>
+              </div>
+
+              <!-- Estado OCR -->
+              <div id="ocrStatus" class="alert alert-info py-2" style="display:none;">Procesando imagen...</div>
+
+              <!-- Grilla de Productos -->
+              <div class="row row-cols-2 row-cols-md-3 g-2" id="productGrid" style="max-height: 500px; overflow-y: auto;">
+                <!-- Productos dinámicos aquí -->
+              </div>
+            </div>
+          </div>
+
+          <!-- Carrito y Facturación -->
+          <div class="col-lg-5">
+            <div class="card card-custom p-3">
+              <h5 class="fw-bold mb-3"><i class="fa-solid fa-receipt me-2"></i>Orden Actual</h5>
+              
+              <div class="table-responsive" style="max-height: 250px; overflow-y: auto;">
+                <table class="table table-sm align-middle">
+                  <thead>
+                    <tr>
+                      <th>Producto</th>
+                      <th>Cant/Peso</th>
+                      <th>Subtotal</th>
+                      <th></th>
+                    </tr>
+                  </thead>
+                  <tbody id="cartTableBody">
+                    <!-- Filas del carrito -->
+                  </tbody>
+                </table>
+              </div>
+
+              <hr>
+
+              <!-- Resumen Financiero -->
+              <div class="mb-3">
+                <div class="d-flex justify-content-between text-muted">
+                  <span>Total USD:</span>
+                  <span id="totalUSDDisplay" class="fw-bold">$0.00</span>
+                </div>
+                <div class="d-flex justify-content-between align-items-center mt-1">
+                  <span class="h5 mb-0 fw-bold">Total VES:</span>
+                  <span id="totalVESDisplay" class="h4 mb-0 fw-bold text-success">Bs. 0.00</span>
+                </div>
+              </div>
+
+              <!-- Acordeón de Métodos de Pago -->
+              <div class="accordion mb-3" id="paymentAccordion">
+                <div class="accordion-item">
+                  <h2 class="accordion-header">
+                    <button class="accordion-button" type="button" data-bs-toggle="collapse" data-bs-target="#payMobile">
+                      <i class="fa-solid fa-mobile-screen me-2"></i> Pago Móvil / Zelle
+                    </button>
+                  </h2>
+                  <div id="payMobile" class="accordion-collapse collapse show" data-bs-parent="#paymentAccordion">
+                    <div class="accordion-body p-2">
+                      <input type="text" id="refPagoMovil" class="form-control form-control-sm mb-2" placeholder="Referencia bancaria">
+                      <input type="number" id="montoPagoMovil" class="form-control form-control-sm" placeholder="Monto pagado en Bs.">
+                    </div>
+                  </div>
+                </div>
+
+                <div class="accordion-item">
+                  <h2 class="accordion-header">
+                    <button class="accordion-button collapsed" type="button" data-bs-toggle="collapse" data-bs-target="#payBinance">
+                      <i class="fa-brands fa-bitcoin me-2"></i> Binance P2P
+                    </button>
+                  </h2>
+                  <div id="payBinance" class="accordion-collapse collapse" data-bs-parent="#paymentAccordion">
+                    <div class="accordion-body p-2">
+                      <input type="text" id="refBinance" class="form-control form-control-sm mb-2" placeholder="TxID / Order ID">
+                      <input type="number" id="montoBinance" class="form-control form-control-sm" placeholder="Monto en USDT">
+                    </div>
+                  </div>
+                </div>
+
+                <div class="accordion-item">
+                  <h2 class="accordion-header">
+                    <button class="accordion-button collapsed" type="button" data-bs-toggle="collapse" data-bs-target="#payCash">
+                      <i class="fa-solid fa-money-bill-wave me-2"></i> Efectivo (USD / VES)
+                    </button>
+                  </h2>
+                  <div id="payCash" class="accordion-collapse collapse" data-bs-parent="#paymentAccordion">
+                    <div class="accordion-body p-2">
+                      <div class="row g-2">
+                        <div class="col-6">
+                          <label class="small text-muted">Efectivo $</label>
+                          <input type="number" id="montoCashUSD" class="form-control form-control-sm" placeholder="0.00">
+                        </div>
+                        <div class="col-6">
+                          <label class="small text-muted">Efectivo Bs.</label>
+                          <input type="number" id="montoCashVES" class="form-control form-control-sm" placeholder="0.00">
+                        </div>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+              </div>
+
+              <button class="btn btn-success w-100 py-2 fw-bold" onclick="processSale()"><i class="fa-solid fa-check me-2"></i> Procesar Venta</button>
+            </div>
+          </div>
+
         </div>
-    </div>
+      </div>
 
-    <!-- 3. ANIMACIÓN DE CONFIRMACIÓN -->
-    <div id="payment-animation">
-        <div class="checkmark-circle">✓</div>
-        <h3 style="color: var(--success);">¡Pago Móvil Confirmado!</h3>
-        <p style="font-size: 13px; color: #15803d; margin-top: 4px;">Los datos coinciden correctamente.</p>
-    </div>
+      <!-- ================= PANEL DE INVENTARIO ================= -->
+      <div class="tab-pane fade" id="inventory-panel" role="tabpanel">
+        <div class="card card-custom p-3">
+          <div class="d-flex justify-content-between align-items-center mb-3">
+            <h5 class="fw-bold mb-0">Gestión de Productos y Combos</h5>
+            <button class="btn btn-accent btn-sm" onclick="showAddProductModal()"><i class="fa-solid fa-plus me-1"></i> Nuevo Producto</button>
+          </div>
 
-    <!-- 4. GENERACIÓN DE FACTURA Y DESCARGA / WHATSAPP -->
-    <div class="card">
-        <h2>Factura de Venta</h2>
-        <div id="invoice-template">
-            <h3 style="text-align: center; margin-bottom: 10px;">Comprobante de Venta</h3>
-            <div class="invoice-row"><span>Fecha:</span> <span id="inv-date">12/09/2026</span></div>
-            <div class="invoice-row"><span>Referencia:</span> <span id="inv-ref">---</span></div>
-            <div class="invoice-row"><span>Monto Total:</span> <strong>Bs. <span id="inv-amount">150.00</span></strong></div>
-            <div class="invoice-row"><span>Estado:</span> <span style="color: var(--success); font-weight: bold;">PAGADO</span></div>
+          <div class="table-responsive">
+            <table class="table table-hover align-middle">
+              <thead class="table-light">
+                <tr>
+                  <th>Código</th>
+                  <th>Nombre</th>
+                  <th>Tipo</th>
+                  <th>Costo USD</th>
+                  <th>Precio Venta USD</th>
+                  <th>Stock</th>
+                  <th>Acciones</th>
+                </tr>
+              </thead>
+              <tbody id="inventoryTableBody">
+                <!-- Productos en inventario -->
+              </tbody>
+            </table>
+          </div>
         </div>
-        <button onclick="downloadPDF()">Descargar Factura en Teléfono</button>
-        <button class="btn-whatsapp" onclick="sendInvoiceWhatsApp()">Enviar Factura por WhatsApp</button>
+      </div>
+
+      <!-- ================= PANEL DE CUADRE Z / MÉTRICAS ================= -->
+      <div class="tab-pane fade" id="reports-panel" role="tabpanel">
+        <div class="row g-3">
+          <div class="col-md-4">
+            <div class="card card-custom p-3 text-center border-start border-4 border-primary">
+              <span class="text-muted small">Total Ventas (Hoy)</span>
+              <h3 id="statTotalUSD" class="fw-bold my-1">$0.00</h3>
+              <span id="statTotalVES" class="text-success small fw-bold">Bs. 0.00</span>
+            </div>
+          </div>
+          <div class="col-md-4">
+            <div class="card card-custom p-3 text-center border-start border-4 border-success">
+              <span class="text-muted small">Ganancia Est. USD</span>
+              <h3 id="statProfitUSD" class="fw-bold my-1 text-success">$0.00</h3>
+              <span class="small text-muted">Margen sobre el costo</span>
+            </div>
+          </div>
+          <div class="col-md-4">
+            <div class="card card-custom p-3 text-center border-start border-4 border-info">
+              <span class="text-muted small">Transacciones Procesadas</span>
+              <h3 id="statTxCount" class="fw-bold my-1">0</h3>
+              <span class="small text-muted">Ventas registradas</span>
+            </div>
+          </div>
+
+          <div class="col-12">
+            <div class="card card-custom p-3">
+              <h5 class="fw-bold mb-3">Historial de Transacciones (Cuadre Z)</h5>
+              <div class="table-responsive">
+                <table class="table table-sm align-middle">
+                  <thead class="table-light">
+                    <tr>
+                      <th>ID / Hora</th>
+                      <th>Detalle Ítems</th>
+                      <th>Método de Pago</th>
+                      <th>Total USD</th>
+                      <th>Total VES</th>
+                    </tr>
+                  </thead>
+                  <tbody id="salesHistoryBody">
+                    <!-- Registro de ventas -->
+                  </tbody>
+                </table>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+
     </div>
+  </div>
 
-    <script>
-        // Guardar configuración en localStorage
-        function saveMyData() {
-            localStorage.setItem('my_ci', document.getElementById('my-ci').value);
-            localStorage.setItem('my_phone', document.getElementById('my-phone').value);
-            localStorage.setItem('my_bank', document.getElementById('my-bank').value);
-            alert('¡Datos de Pago Móvil guardados con éxito!');
+  <!-- MODAL: Ajustar Tasa BCV -->
+  <div class="modal fade" id="modalRate" tabindex="-1">
+    <div class="modal-dialog modal-sm">
+      <div class="modal-content">
+        <div class="modal-header">
+          <h5 class="modal-title">Ajustar Tasa BCV</h5>
+          <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+        </div>
+        <div class="modal-body">
+          <label class="form-label">Tasa Oficial (VES por 1 USD)</label>
+          <input type="number" step="0.01" id="rateInput" class="form-control" value="36.50">
+        </div>
+        <div class="modal-footer">
+          <button type="button" class="btn btn-primary" onclick="updateRate()" data-bs-dismiss="modal">Guardar</button>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- MODAL: Crear/Editar Producto -->
+  <div class="modal fade" id="modalProduct" tabindex="-1">
+    <div class="modal-dialog">
+      <div class="modal-content">
+        <div class="modal-header">
+          <h5 class="modal-title" id="productModalTitle">Agregar Producto</h5>
+          <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+        </div>
+        <div class="modal-body">
+          <form id="productForm">
+            <div class="mb-2">
+              <label class="form-label small">Código de Barras</label>
+              <input type="text" id="prodBarcode" class="form-control form-control-sm">
+            </div>
+            <div class="mb-2">
+              <label class="form-label small">Nombre del Producto</label>
+              <input type="text" id="prodName" class="form-control form-control-sm" required>
+            </div>
+            <div class="row g-2 mb-2">
+              <div class="col-6">
+                <label class="form-label small">Tipo</label>
+                <select id="prodType" class="form-select form-select-sm">
+                  <option value="unidad">Unidad Estándar</option>
+                  <option value="pesado">Pesado (Kg/g)</option>
+                  <option value="combo">Combo / Pack</option>
+                </select>
+              </div>
+              <div class="col-6">
+                <label class="form-label small">Stock Disponible</label>
+                <input type="number" step="0.01" id="prodStock" class="form-control form-control-sm" value="10">
+              </div>
+            </div>
+            <div class="row g-2 mb-2">
+              <div class="col-6">
+                <label class="form-label small">Costo USD</label>
+                <input type="number" step="0.01" id="prodCost" class="form-control form-control-sm" value="1.00">
+              </div>
+              <div class="col-6">
+                <label class="form-label small">Precio Venta USD</label>
+                <input type="number" step="0.01" id="prodPrice" class="form-control form-control-sm" value="1.50">
+              </div>
+            </div>
+          </form>
+        </div>
+        <div class="modal-footer">
+          <button type="button" class="btn btn-primary" onclick="saveProduct()">Guardar Producto</button>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Bootstrap JS -->
+  <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+
+  <script>
+    // ================= ESTADO GLOBAL DE LA APLICACIÓN =================
+    let bcvRate = 36.50;
+    let inventory = [
+      { id: "101", barcode: "75010001", name: "Harina PAN 1Kg", type: "unidad", cost: 0.90, price: 1.20, stock: 50 },
+      { id: "102", barcode: "75010002", name: "Queso Blanco Duro (Kg)", type: "pesado", cost: 3.50, price: 5.00, stock: 12.5 },
+      { id: "103", barcode: "75010003", name: "Combo Desayuno (Harina + Queso)", type: "combo", cost: 4.00, price: 5.80, stock: 10 }
+    ];
+    let cart = [];
+    let salesHistory = [];
+    let html5QrcodeScanner = null;
+
+    // ================= INICIALIZACIÓN =================
+    document.addEventListener("DOMContentLoaded", () => {
+      document.getElementById("rateDisplay").innerText = bcvRate.toFixed(2);
+      renderInventory();
+      renderProductGrid();
+    });
+
+    function updateRate() {
+      const val = parseFloat(document.getElementById("rateInput").value);
+      if (val && val > 0) {
+        bcvRate = val;
+        document.getElementById("rateDisplay").innerText = bcvRate.toFixed(2);
+        updateCartTotals();
+      }
+    }
+
+    // ================= GESTIÓN DE PRODUCTOS E INVENTARIO =================
+    function renderInventory() {
+      const tbody = document.getElementById("inventoryTableBody");
+      tbody.innerHTML = "";
+      inventory.forEach(p => {
+        tbody.innerHTML += `
+          <tr>
+            <td><code>${p.barcode || 'N/A'}</code></td>
+            <td class="fw-bold">${p.name}</td>
+            <td><span class="badge bg-secondary">${p.type}</span></td>
+            <td>$${p.cost.toFixed(2)}</td>
+            <td>$${p.price.toFixed(2)}</td>
+            <td>${p.stock}</td>
+            <td>
+              <button class="btn btn-sm btn-outline-danger" onclick="deleteProduct('${p.id}')"><i class="fa-solid fa-trash"></i></button>
+            </td>
+          </tr>
+        `;
+      });
+    }
+
+    function renderProductGrid(filter = "") {
+      const grid = document.getElementById("productGrid");
+      grid.innerHTML = "";
+      
+      const filtered = inventory.filter(p => 
+        p.name.toLowerCase().includes(filter.toLowerCase()) || 
+        (p.barcode && p.barcode.includes(filter))
+      );
+
+      filtered.forEach(p => {
+        grid.innerHTML += `
+          <div class="col">
+            <div class="card h-100 p-2 text-center" style="cursor:pointer;" onclick="addToCart('${p.id}')">
+              <div class="fw-bold text-truncate" style="font-size:0.9rem;">${p.name}</div>
+              <div class="text-muted small">${p.type}</div>
+              <div class="price-tag mt-1">$${p.price.toFixed(2)}</div>
+              <div class="text-success small">Bs. ${(p.price * bcvRate).toFixed(2)}</div>
+            </div>
+          </div>
+        `;
+      });
+    }
+
+    function filterProducts() {
+      const query = document.getElementById("searchInput").value;
+      renderProductGrid(query);
+    }
+
+    function showAddProductModal() {
+      document.getElementById("productForm").reset();
+      const modal = new bootstrap.Modal(document.getElementById('modalProduct'));
+      modal.show();
+    }
+
+    function saveProduct() {
+      const name = document.getElementById("prodName").value;
+      if (!name) return alert("Ingrese el nombre del producto.");
+
+      const newProd = {
+        id: Date.now().toString(),
+        barcode: document.getElementById("prodBarcode").value || "",
+        name: name,
+        type: document.getElementById("prodType").value,
+        cost: parseFloat(document.getElementById("prodCost").value) || 0,
+        price: parseFloat(document.getElementById("prodPrice").value) || 0,
+        stock: parseFloat(document.getElementById("prodStock").value) || 0
+      };
+
+      inventory.push(newProd);
+      renderInventory();
+      renderProductGrid();
+      bootstrap.Modal.getInstance(document.getElementById('modalProduct')).hide();
+    }
+
+    function deleteProduct(id) {
+      inventory = inventory.filter(p => p.id !== id);
+      renderInventory();
+      renderProductGrid();
+    }
+
+    // ================= CARRITO DE COMPRAS =================
+    function addToCart(productId) {
+      const prod = inventory.find(p => p.id === productId);
+      if (!prod) return;
+
+      const itemInCart = cart.find(item => item.id === productId);
+
+      if (prod.type === "pesado") {
+        const peso = prompt(`Ingrese la cantidad/peso para ${prod.name} (en Kg):`, "0.500");
+        if (peso && parseFloat(peso) > 0) {
+          if (itemInCart) {
+            itemInCart.qty += parseFloat(peso);
+          } else {
+            cart.push({ ...prod, qty: parseFloat(peso) });
+          }
         }
-
-        // Compartir Datos de Pago Móvil por WhatsApp
-        function sendPaymentDetailsWhatsApp() {
-            const ci = document.getElementById('my-ci').value;
-            const phone = document.getElementById('my-phone').value;
-            const bank = document.getElementById('my-bank').value;
-            const amount = document.getElementById('expected-amount').value;
-
-            const message = `Hola! Mis datos de Pago Móvil son:\n\n📌 Banco: ${bank}\n📌 Cédula/RIF: ${ci}\n📌 Teléfono: ${phone}\n📌 Monto: Bs. ${amount}`;
-            window.open(`https://wa.me/?text=${encodeURIComponent(message)}`, '_blank');
+      } else {
+        if (itemInCart) {
+          itemInCart.qty += 1;
+        } else {
+          cart.push({ ...prod, qty: 1 });
         }
+      }
 
-        // Procesar Lectura del Comprobante (OCR)
-        async function processPaymentImage(event) {
-            const file = event.target.files[0];
-            if (!file) return;
+      renderCart();
+    }
 
-            const spinner = document.getElementById('ocr-loading');
-            spinner.style.display = 'block';
+    function renderCart() {
+      const tbody = document.getElementById("cartTableBody");
+      tbody.innerHTML = "";
 
-            try {
-                const { data: { text } } = await Tesseract.recognize(file, 'spa');
-                spinner.style.display = 'none';
-                
-                // Parseo / Expresiones Regulares para extraer datos
-                const amountMatch = text.match(/(?:bs|monto|total|ref)?\s*[:\.]?\s*(\d+[\.,]\d{2})/i);
-                const refMatch = text.match(/(?:ref|referencia|num|nro)?\s*[:\.]?\s*(\d{6,12})/i);
-                const phoneMatch = text.match(/(0412|0414|0424|0416|0426)\d{7}/);
+      cart.forEach((item, index) => {
+        const subtotal = item.price * item.qty;
+        tbody.innerHTML += `
+          <tr>
+            <td class="small fw-bold">${item.name}</td>
+            <td>
+              <input type="number" step="0.01" class="form-control form-control-sm" style="width:70px;" value="${item.qty}" onchange="updateCartQty(${index}, this.value)">
+            </td>
+            <td class="small">$${subtotal.toFixed(2)}</td>
+            <td><button class="btn btn-sm text-danger p-0" onclick="removeFromCart(${index})"><i class="fa-solid fa-xmark"></i></button></td>
+          </tr>
+        `;
+      });
 
-                const readAmount = amountMatch ? amountMatch[1].replace(',', '.') : document.getElementById('expected-amount').value;
-                const readRef = refMatch ? refMatch[1] : Math.floor(100000 + Math.random() * 900000).toString();
-                const readPhone = phoneMatch ? phoneMatch[0] : 'Detectado';
+      updateCartTotals();
+    }
 
-                // Mostrar en pantalla
-                document.getElementById('read-amount').innerText = readAmount;
-                document.getElementById('read-ref').innerText = readRef;
-                document.getElementById('read-phone').innerText = readPhone;
-                document.getElementById('read-bank').innerText = 'Detectado';
+    function updateCartQty(index, val) {
+      const parsed = parseFloat(val);
+      if (parsed > 0) {
+        cart[index].qty = parsed;
+      } else {
+        cart.splice(index, 1);
+      }
+      renderCart();
+    }
 
-                // Actualizar factura
-                document.getElementById('inv-amount').innerText = readAmount;
-                document.getElementById('inv-ref').innerText = readRef;
+    function removeFromCart(index) {
+      cart.splice(index, 1);
+      renderCart();
+    }
 
-                // Lógica de coincidencia y disparo de animación
-                const expectedAmount = parseFloat(document.getElementById('expected-amount').value);
-                if (parseFloat(readAmount) === expectedAmount || true) { // Validación exitosa
-                    const anim = document.getElementById('payment-animation');
-                    anim.style.display = 'block';
-                    anim.scrollIntoView({ behavior: 'smooth' });
-                }
+    function updateCartTotals() {
+      const totalUSD = cart.reduce((acc, item) => acc + (item.price * item.qty), 0);
+      const totalVES = totalUSD * bcvRate;
 
-            } catch (err) {
-                spinner.style.display = 'none';
-                alert('No se pudo leer el capture claramente. Por favor verifica la imagen.');
-            }
+      document.getElementById("totalUSDDisplay").innerText = `$${totalUSD.toFixed(2)}`;
+      document.getElementById("totalVESDisplay").innerText = `Bs. ${totalVES.toFixed(2)}`;
+    }
+
+    // ================= ESCÁNERES (CAMARA Y OCR) =================
+    function toggleCameraScanner() {
+      const container = document.getElementById("scannerContainer");
+      if (container.style.display === "none") {
+        container.style.display = "block";
+        html5QrcodeScanner = new Html5QrcodeScanner("reader", { fps: 10, qrbox: 250 });
+        html5QrcodeScanner.render((decodedText) => {
+          const prod = inventory.find(p => p.barcode === decodedText);
+          if (prod) {
+            addToCart(prod.id);
+          } else {
+            alert(`Código escaneado: ${decodedText} (No registrado)`);
+          }
+        });
+      } else {
+        if (html5QrcodeScanner) html5QrcodeScanner.clear();
+        container.style.display = "none";
+      }
+    }
+
+    async function processOCR(input) {
+      if (!input.files || !input.files[0]) return;
+      
+      const status = document.getElementById("ocrStatus");
+      status.style.display = "block";
+      status.innerText = "Escaneando imagen con OCR...";
+
+      try {
+        const { data: { text } } = await Tesseract.recognize(input.files[0], 'spa');
+        status.style.display = "none";
+        
+        let found = false;
+        inventory.forEach(p => {
+          if (text.toLowerCase().includes(p.name.toLowerCase())) {
+            addToCart(p.id);
+            found = true;
+          }
+        });
+
+        if (!found) {
+          alert("Texto detectado:\n" + text.substring(0, 100) + "...\nNo se hallaron coincidencias exactas en el inventario.");
         }
+      } catch (e) {
+        status.style.display = "none";
+        alert("Error al procesar la imagen.");
+      }
+    }
 
-        // Descargar Factura en PDF
-        function downloadPDF() {
-            const element = document.getElementById('invoice-template');
-            const opt = {
-                margin:       10,
-                filename:     `Factura_${document.getElementById('inv-ref').innerText}.pdf`,
-                image:        { type: 'jpeg', quality: 0.98 },
-                html2canvas:  { scale: 2 },
-                jsPDF:        { unit: 'mm', format: 'a6', orientation: 'portrait' }
-            };
-            html2pdf().set(opt).from(element).save();
-        }
+    // ================= PROCESAMIENTO DE VENTAS =================
+    function processSale() {
+      if (cart.length === 0) return alert("El carrito está vacío.");
 
-        // Compartir Factura por WhatsApp
-        function sendInvoiceWhatsApp() {
-            const ref = document.getElementById('inv-ref').innerText;
-            const amount = document.getElementById('inv-amount').innerText;
-            
-            const message = `📄 *COMPROBANTE DE FACTURA*\n\nReferencia: ${ref}\nMonto Total: Bs. ${amount}\nEstado: PAGADO ✅\n\n¡Gracias por tu compra!`;
-            window.open(`https://wa.me/?text=${encodeURIComponent(message)}`, '_blank');
-        }
-    </script>
+      const totalUSD = cart.reduce((acc, item) => acc + (item.price * item.qty), 0);
+      const totalVES = totalUSD * bcvRate;
+      const profitUSD = cart.reduce((acc, item) => acc + ((item.price - item.cost) * item.qty), 0);
+
+      // Determinar método de pago activo
+      let method = "Efectivo";
+      const pmRef = document.getElementById("refPagoMovil").value;
+      const binRef = document.getElementById("refBinance").value;
+
+      if (pmRef) method = `Pago Móvil (Ref: ${pmRef})`;
+      else if (binRef) method = `Binance P2P (Tx: ${binRef})`;
+
+      // Descontar inventario
+      cart.forEach(item => {
+        const p = inventory.find(inv => inv.id === item.id);
+        if (p) p.stock -= item.qty;
+      });
+
+      // Registrar venta
+      const sale = {
+        id: Date.now().toString().slice(-4),
+        time: new Date().toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' }),
+        items: cart.map(i => `${i.qty}x ${i.name}`).join(", "),
+        method: method,
+        totalUSD: totalUSD,
+        totalVES: totalVES,
+        profitUSD: profitUSD
+      };
+
+      salesHistory.push(sale);
+      
+      // Limpiar carrito e interfaz
+      cart = [];
+      renderCart();
+      renderInventory();
+      renderProductGrid();
+      updateReports();
+
+      alert("¡Venta procesada con éxito!");
+    }
+
+    // ================= CUADRE Z Y MÉTRICAS =================
+    function updateReports() {
+      const totalUSD = salesHistory.reduce((acc, s) => acc + s.totalUSD, 0);
+      const totalVES = salesHistory.reduce((acc, s) => acc + s.totalVES, 0);
+      const totalProfit = salesHistory.reduce((acc, s) => acc + s.profitUSD, 0);
+
+      document.getElementById("statTotalUSD").innerText = `$${totalUSD.toFixed(2)}`;
+      document.getElementById("statTotalVES").innerText = `Bs. ${totalVES.toFixed(2)}`;
+      document.getElementById("statProfitUSD").innerText = `$${totalProfit.toFixed(2)}`;
+      document.getElementById("statTxCount").innerText = salesHistory.length;
+
+      const tbody = document.getElementById("salesHistoryBody");
+      tbody.innerHTML = "";
+
+      salesHistory.slice().reverse().forEach(s => {
+        tbody.innerHTML += `
+          <tr>
+            <td>#${s.id} - <small class="text-muted">${s.time}</small></td>
+            <td class="small">${s.items}</td>
+            <td><span class="badge bg-info text-dark">${s.method}</span></td>
+            <td class="fw-bold">$${s.totalUSD.toFixed(2)}</td>
+            <td class="text-success small">Bs. ${s.totalVES.toFixed(2)}</td>
+          </tr>
+        `;
+      });
+    }
+  </script>
 </body>
 </html>
