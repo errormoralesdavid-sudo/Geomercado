@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Geo Mercado</title>
+    <title>Geo Mercado V19.1</title>
     
     <script>
         window.onerror = function(msg, url, line) { 
@@ -259,7 +259,7 @@
                 </svg>
             </div>
             <div class="main-title"><span style="color:#00ff66;">GEO MERCADO 🛍️</span></div>
-            <div class="version-tag">V19.0 EDICIÓN VENEZUELA</div>
+            <div class="version-tag">V19.1 EDICIÓN VENEZUELA</div>
             <div class="role-badge">Usuario: <span id="txt-rol">Administrador 👑</span></div>
 
             <div class="menu-grid">
@@ -504,7 +504,10 @@
             
             <div class="admin-form-box">
                 <label>📈 Modificar Tasa del Dólar (Bs):</label>
-                <input type="number" step="0.01" id="input-tasa-global" value="623.02" oninput="window.cambiarTasaManual(this.value)">
+                <div style="display:flex; gap:6px;">
+                    <input type="number" step="0.01" id="input-tasa-global" value="623.02" oninput="window.cambiarTasaManual(this.value)">
+                    <button class="btn-clear" style="border-color:#00ff66; color:#00ff66; flex:none; padding:0 10px;" onclick="window.obtenerTasaBCV()">📡 BCV</button>
+                </div>
             </div>
             
             <div class="admin-form-box">
@@ -563,6 +566,30 @@
             
             document.getElementById('input-fondo-usd').value = fondoCaja.usd || "";
             document.getElementById('input-fondo-ves').value = fondoCaja.ves || "";
+
+            window.obtenerTasaBCV(true);
+        };
+
+        window.obtenerTasaBCV = function(silencioso) {
+            fetch('https://pydolarvenezuela-api.vercel.app/api/v1/dollar?page=bcv')
+            .then(function(res) { return res.json(); })
+            .then(function(data) {
+                if (data && data.moneda && data.moneda.usd) {
+                    var valorBcv = parseFloat(data.moneda.usd);
+                    if (!isNaN(valorBcv) && valorBcv > 0) {
+                        tasaDia = valorBcv;
+                        var inputTasa = document.getElementById('input-tasa-global');
+                        if (inputTasa) inputTasa.value = tasaDia;
+                        if (window.localStorage) window.localStorage.setItem('geomercado_tasa_v19', tasaDia);
+                        window.recalcularTotalesCarrito();
+                        window.renderizarCarritoCaja();
+                        if (!silencioso) window.mostrarToast("✓ Tasa BCV actualizada: " + tasaDia.toFixed(2) + " Bs");
+                    }
+                }
+            })
+            .catch(function(err) {
+                if (!silencioso) window.mostrarToast("⚠️ No se pudo obtener la tasa BCV");
+            });
         };
 
         window.recalcularTotalesCarrito = function() {
@@ -779,6 +806,20 @@
             window.scrollTo({ top: 0, behavior: 'smooth' });
         };
 
+        window.eliminarProductoCat = function(id) {
+            window.mostrarConfirmacion("🗑️ Eliminar Producto", "¿Estás seguro de eliminar este producto del inventario?", function() {
+                for(var i=0; i<productos.length; i++) {
+                    if(productos[i].id === id) {
+                        productos.splice(i, 1);
+                        break;
+                    }
+                }
+                if (window.localStorage) window.localStorage.setItem('geomercado_db_v19', JSON.stringify(productos));
+                window.renderizarInventario(document.getElementById('buscador-inventario').value);
+                window.mostrarToast("Producto eliminado");
+            });
+        };
+
         window.cancelarEdicion = function() {
             productoEnEdicion = null;
             document.getElementById('prod-name').value = "";
@@ -828,6 +869,7 @@
                 html += '<div style="display:flex; gap:6px; margin-top:6px;">';
                 if(rolActual === "Administrador 👑") {
                     html += '<button style="flex:1; background:#313c52; color:#fff; border:none; padding:6px; border-radius:6px; font-weight:bold; cursor:pointer;" onclick="window.editarProducto(' + p.id + ')">✏️</button>';
+                    html += '<button style="flex:1; background:#ff5252; color:#fff; border:none; padding:6px; border-radius:6px; font-weight:bold; cursor:pointer;" onclick="window.eliminarProductoCat(' + p.id + ')">🗑️</button>';
                 }
                 html += '<button style="flex:3; background:#00ff66; border:none; padding:6px; border-radius:6px; font-weight:bold; cursor:pointer;" onclick="window.agregarAlCarritoDesdeCaja(' + p.id + ')">➕ Facturar</button>';
                 html += '</div></div>';
@@ -936,6 +978,7 @@
             if(!p) return;
 
             var precioUnitarioCalculado = p.iva ? (p.precio * 1.16) : p.precio;
+            var costoUnitarioCalculado = p.costo || 0;
             var precioUSD = precioUnitarioCalculado;
 
             if(p.tipo === 'peso') {
@@ -943,8 +986,9 @@
                 var cantidadVendida = parseFloat(kilos);
                 if(isNaN(cantidadVendida) || cantidadVendida <= 0) return;
                 precioUSD = precioUnitarioCalculado * cantidadVendida;
+                var costoTotal = costoUnitarioCalculado * cantidadVendida;
                 
-                carrito.push({ id: p.id, nombre: p.nombre, totalUSD: precioUSD, detalle: cantidadVendida + ' kg', emoji: (p.emoji ? p.emoji : '🍎'), tipo: p.tipo, qtyVenta: cantidadVendida, precioUnitario: precioUnitarioCalculado });
+                carrito.push({ id: p.id, nombre: p.nombre, totalUSD: precioUSD, costoTotalUSD: costoTotal, detalle: cantidadVendida + ' kg', emoji: (p.emoji ? p.emoji : '🍎'), tipo: p.tipo, qtyVenta: cantidadVendida, precioUnitario: precioUnitarioCalculado, costoUnitario: costoUnitarioCalculado });
             } else {
                 if(p.tipo !== 'combo' && p.qty < 1) { window.mostrarFeedbackAnimado('error', 'Sin Stock'); return; }
                 
@@ -963,9 +1007,10 @@
                 if(indexEnCarrito !== -1) {
                     carrito[indexEnCarrito].qtyVenta += 1;
                     carrito[indexEnCarrito].totalUSD += precioUnitarioCalculado;
+                    carrito[indexEnCarrito].costoTotalUSD += costoUnitarioCalculado;
                     carrito[indexEnCarrito].detalle = carrito[indexEnCarrito].qtyVenta + ' unds';
                 } else {
-                    carrito.push({ id: p.id, nombre: p.nombre, totalUSD: precioUnitarioCalculado, detalle: '1 unds', emoji: (p.emoji ? p.emoji : '📦'), tipo: p.tipo, qtyVenta: 1, precioUnitario: precioUnitarioCalculado });
+                    carrito.push({ id: p.id, nombre: p.nombre, totalUSD: precioUnitarioCalculado, costoTotalUSD: costoUnitarioCalculado, detalle: '1 unds', emoji: (p.emoji ? p.emoji : '📦'), tipo: p.tipo, qtyVenta: 1, precioUnitario: precioUnitarioCalculado, costoUnitario: costoUnitarioCalculado });
                 }
             }
             
@@ -993,6 +1038,7 @@
 
             item.qtyVenta += 1;
             item.totalUSD += item.precioUnitario;
+            item.costoTotalUSD += item.costoUnitario;
             item.detalle = item.qtyVenta + ' unds';
 
             window.recalcularTotalesCarrito();
@@ -1015,6 +1061,7 @@
 
             item.qtyVenta -= 1;
             item.totalUSD -= item.precioUnitario;
+            item.costoTotalUSD -= item.costoUnitario;
             item.detalle = item.qtyVenta + ' unds';
 
             if(item.qtyVenta <= 0) {
@@ -1395,12 +1442,18 @@
             var cDir = document.getElementById('cliente-dir').value;
             var cTlf = document.getElementById('pm-phone').value;
 
+            var costoTotalVentaUSD = 0;
+            for (var k = 0; k < carrito.length; k++) {
+                costoTotalVentaUSD += (carrito[k].costoTotalUSD || 0);
+            }
+
             var venta = {
                 id: new Date().getTime(),
                 fecha: now.toLocaleDateString() + ' ' + now.toLocaleTimeString(),
                 items: carrito.slice(),
                 totalUSD: totalVentaUSD,
                 totalVES: totalVentaVES,
+                costoUSD: costoTotalVentaUSD,
                 ptv: ptv, pm: pm, usd: usd, ves: ves,
                 cliente: cNombre, cedula: cCedula, dir: cDir, tlf: cTlf
             };
@@ -1446,14 +1499,16 @@
         };
 
         window.renderizarCierreDeCaja = function() {
-            var totalPM = 0; var totalUSDFisico = 0; var totalVESFisico = 0; var totalPTV = 0; var gananciaTotalVES = 0;
+            var totalPM = 0; var totalUSDFisico = 0; var totalVESFisico = 0; var totalPTV = 0; 
+            var totalVentasUSD = 0; var totalCostoUSD = 0;
             var container = document.getElementById('lista-historial-ventas');
             var html = "";
 
             for(var i=0; i<ventasHistorico.length; i++) {
                 var v = ventasHistorico[i];
                 totalPM += v.pm; totalUSDFisico += v.usd; totalVESFisico += v.ves; totalPTV += v.ptv; 
-                gananciaTotalVES += v.totalVES;
+                totalVentasUSD += v.totalUSD;
+                totalCostoUSD += (v.costoUSD || 0);
                 
                 var itemsStr = v.items.map(function(it){ return window.escapeHTML(it.nombre) + " (x" + (it.qtyVenta || it.detalle) + ")"; }).join(', ');
                 html += '<div class="cierre-card">';
@@ -1477,11 +1532,14 @@
             if(ventasHistorico.length === 0) html = '<div style="text-align:center; color:#57687e; font-size:12px;">No hay ventas registradas.</div>';
             container.innerHTML = html;
 
+            var gananciaNetaUSD = totalVentasUSD - totalCostoUSD;
+            var gananciaTotalVES = gananciaNetaUSD * tasaDia;
+
             document.getElementById('resumen-ptv').innerText = window.formatVE(totalPTV);
             document.getElementById('resumen-pm').innerText = window.formatVE(totalPM);
             document.getElementById('resumen-ves').innerText = window.formatVE(totalVESFisico);
             
-            document.getElementById('resumen-ganancia-ves').innerText = window.formatVE(gananciaTotalVES);
+            document.getElementById('resumen-ganancia-ves').innerText = window.formatVE(gananciaTotalVES) + " (" + window.formatUSD(gananciaNetaUSD) + ")";
             document.getElementById('resumen-efectivo-usd').innerText = "$" + totalUSDFisico.toFixed(2);
 
             document.getElementById('cierre-fondo-usd').innerText = "$" + fondoCaja.usd.toFixed(2);
@@ -1552,11 +1610,17 @@
         };
 
         window.imprimirCierreZ = function() {
-            var gananciaTotalVES = 0; var totalPM = 0; var totalUSDFisico = 0; var totalVESFisico = 0; var totalPTV = 0;
+            var totalPM = 0; var totalUSDFisico = 0; var totalVESFisico = 0; var totalPTV = 0;
+            var totalVentasUSD = 0; var totalCostoUSD = 0;
             for(var i=0; i<ventasHistorico.length; i++) {
                 var v = ventasHistorico[i];
-                totalPM += v.pm; totalUSDFisico += v.usd; totalVESFisico += v.ves; totalPTV += v.ptv; gananciaTotalVES += v.totalVES;
+                totalPM += v.pm; totalUSDFisico += v.usd; totalVESFisico += v.ves; totalPTV += v.ptv; 
+                totalVentasUSD += v.totalUSD;
+                totalCostoUSD += (v.costoUSD || 0);
             }
+
+            var gananciaNetaUSD = totalVentasUSD - totalCostoUSD;
+            var gananciaTotalVES = gananciaNetaUSD * tasaDia;
 
             var pw = window.open('', '_blank');
             if(!pw) { window.mostrarFeedbackAnimado('error', 'Habilita las ventanas emergentes'); return; }
@@ -1570,7 +1634,7 @@
             h += '<div class="it"><span>Punto de Venta:</span><span>' + window.formatVE(totalPTV) + '</span></div>';
             h += '<div class="it"><span>Pago Móvil:</span><span>' + window.formatVE(totalPM) + '</span></div>';
             h += '<div class="it"><span>Efectivo (Bs):</span><span>' + window.formatVE(totalVESFisico) + '</span></div>';
-            h += '<hr><div class="it"><strong>GANANCIA TOTAL (Bs):</strong><strong>' + window.formatVE(gananciaTotalVES) + '</strong></div>';
+            h += '<hr><div class="it"><strong>GANANCIA REAL (Bs):</strong><strong>' + window.formatVE(gananciaTotalVES) + '</strong></div>';
             h += '<div class="it"><span>Efectivo Divisas ($) Físico:</span><span>$' + totalUSDFisico.toFixed(2) + '</span></div>';
             
             h += '<hr><h4 style="margin:4px 0;">2. GAVETA FÍSICA ESPERADA</h4>';
@@ -1579,7 +1643,7 @@
             h += '<div class="it"><strong>TOTAL FÍSICO ($):</strong><strong>$' + (fondoCaja.usd + totalUSDFisico).toFixed(2) + '</strong></div>';
             h += '<div class="it"><strong>TOTAL FÍSICO (Bs):</strong><strong>' + window.formatVE(fondoCaja.ves + totalVESFisico) + '</strong></div>';
             
-            h += '<p style="text-align:center; font-size:9px; margin-top:15px;">Software: Geo Mercado V19.0 (Ed. Venezuela)</p>';
+            h += '<p style="text-align:center; font-size:9px; margin-top:15px;">Software: Geo Mercado V19.1 (Ed. Venezuela)</p>';
             h += '<script>window.print();window.close();<\/script></body></html>';
             doc.write(h);
             doc.close();
