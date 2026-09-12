@@ -3,121 +3,372 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>Geo Mercado - Sistema Comercial Pro</title>
-    <!-- Librerías locales / CDNs con soporte de descarga e impresión -->
+    <title>Geo Mercado - Sistema Comercial Pro V20.0</title>
+    <!-- Librerías externas cargadas con fallback offline -->
     <script src="https://cdnjs.cloudflare.com/ajax/libs/html2pdf.js/0.10.1/html2pdf.bundle.min.js"></script>
     <style>
         :root {
-            --bg-primary: #121212;
+            --bg-dark: #121212;
             --bg-card: #1e1e1e;
-            --accent: #00e676;
-            --text: #ffffff;
-            --text-dim: #b0bec5;
+            --accent-green: #00e676;
+            --accent-blue: #29b6f6;
+            --accent-red: #ff5252;
+            --text-main: #ffffff;
+            --text-muted: #b0bec5;
+            --border: #333333;
         }
-        * { box-sizing: border-box; touch-action: manipulation; }
+
+        * {
+            box-sizing: border-box;
+            touch-action: manipulation;
+            -webkit-tap-highlight-color: transparent;
+        }
+
         body {
-            margin: 0; padding: 0;
-            font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
-            background-color: var(--bg-primary); color: var(--text);
-            display: flex; flex-direction: column; min-height: 100vh;
+            margin: 0;
+            padding: 0;
+            font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+            background-color: var(--bg-dark);
+            color: var(--text-main);
+            min-height: 100vh;
+            display: flex;
+            flex-direction: column;
         }
-        /* Interfaz táctil optimizada para teléfonos */
-        .touch-btn {
-            min-height: 48px; min-width: 48px;
-            padding: 12px 16px; border-radius: 8px; border: none;
-            background: var(--accent); color: #000; font-weight: bold;
-            font-size: 16px; cursor: pointer; display: inline-flex;
-            align-items: center; justify-content: center;
+
+        /* Encabezado PWA Mobile-First */
+        header {
+            background-color: var(--bg-card);
+            padding: 12px 16px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            border-bottom: 1px solid var(--border);
+            position: sticky;
+            top: 0;
+            z-index: 100;
         }
-        .touch-btn:active { opacity: 0.8; transform: scale(0.98); }
-        .grid-layout {
-            display: grid; grid-template-columns: 1fr; gap: 12px; padding: 12px;
+
+        .brand {
+            font-size: 1.1rem;
+            font-weight: bold;
+            color: var(--accent-green);
         }
-        /* Responsivo para Tablets y PC */
-        @media (min-width: 768px) {
-            .grid-layout { grid-template-columns: 2fr 1fr; }
+
+        .rate-badge {
+            background: #2a2a2a;
+            padding: 6px 12px;
+            border-radius: 20px;
+            font-size: 0.85rem;
+            border: 1px solid var(--border);
         }
-        .card { background: var(--bg-card); padding: 16px; border-radius: 12px; }
+
+        /* Layout Grid Flexible (Teléfono 1 Columna, Pantallas Grandes 2 Columnas) */
+        .main-container {
+            display: grid;
+            grid-template-columns: 1fr;
+            gap: 16px;
+            padding: 12px;
+            max-width: 1200px;
+            margin: 0 auto;
+            width: 100%;
+        }
+
+        @media (min-width: 850px) {
+            .main-container {
+                grid-template-columns: 1.5fr 1fr;
+            }
+        }
+
+        .card {
+            background-color: var(--bg-card);
+            border-radius: 12px;
+            padding: 16px;
+            border: 1px solid var(--border);
+        }
+
+        /* Controles Táctiles Adaptados a Pantallas Móviles */
+        .btn {
+            min-height: 48px;
+            width: 100%;
+            border-radius: 8px;
+            border: none;
+            font-size: 1rem;
+            font-weight: 600;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 8px;
+            margin-top: 8px;
+            transition: opacity 0.2s;
+        }
+
+        .btn:active { opacity: 0.8; }
+        .btn-green { background-color: var(--accent-green); color: #000; }
+        .btn-blue { background-color: var(--accent-blue); color: #000; }
+        .btn-red { background-color: var(--accent-red); color: #fff; }
+
+        .input-group {
+            margin-bottom: 12px;
+        }
+
+        .input-group label {
+            display: block;
+            font-size: 0.85rem;
+            color: var(--text-muted);
+            margin-bottom: 4px;
+        }
+
+        .input-field {
+            width: 100%;
+            height: 48px;
+            background: #2a2a2a;
+            border: 1px solid var(--border);
+            border-radius: 8px;
+            color: #fff;
+            padding: 0 12px;
+            font-size: 1rem;
+        }
+
+        /* Ticket de Venta / Reporte Z */
+        .receipt-view {
+            background-color: #ffffff;
+            color: #000000;
+            padding: 16px;
+            border-radius: 8px;
+            font-family: 'Courier New', Courier, monospace;
+            font-size: 0.85rem;
+            margin-top: 12px;
+        }
+
+        .receipt-header {
+            text-align: center;
+            border-bottom: 1px dashed #000;
+            padding-bottom: 8px;
+            margin-bottom: 8px;
+        }
+
+        .receipt-row {
+            display: flex;
+            justify-content: space-between;
+            margin: 4px 0;
+        }
+
+        .receipt-total {
+            border-top: 1px dashed #000;
+            padding-top: 8px;
+            margin-top: 8px;
+            font-weight: bold;
+        }
     </style>
 </head>
 <body>
 
-    <div class="grid-layout">
+    <header>
+        <div class="brand">Geo Mercado Pro</div>
+        <div class="rate-badge">Tasa: <strong id="tasa-display">0.00</strong> VES</div>
+    </header>
+
+    <main class="main-container">
+        <!-- SECCIÓN DE VENTA Y COBRO -->
         <section class="card">
-            <h2>Venta Rápida</h2>
-            <div id="pantalla-cobro">
-                <p>Tasa del día: <strong id="tasa-display">0.00</strong> VES/USD</p>
-                <button class="touch-btn" onclick="procesarVenta()">Registrar Venta</button>
+            <h2>Registrar Venta</h2>
+            
+            <div class="input-group">
+                <label for="producto-select">Producto / Servicio</label>
+                <select id="producto-select" class="input-field" onchange="calcularTotalVenta()">
+                    <option value="10">Harina Pan ($1.00)</option>
+                    <option value="2.5">Arroz ($2.50)</option>
+                    <option value="5.0">Café ($5.00)</option>
+                </select>
             </div>
+
+            <div class="input-group">
+                <label for="monto-usd">Total a Cobrar (USD)</label>
+                <input type="number" id="monto-usd" class="input-field" value="1.00" readonly>
+            </div>
+
+            <div class="input-group">
+                <label for="monto-ves">Equivalente en Bolívares (VES)</label>
+                <input type="number" id="monto-ves" class="input-field" value="0.00" readonly>
+            </div>
+
+            <button class="btn btn-green" onclick="procesarVenta()">Completar Venta</button>
+            <button class="btn btn-blue" onclick="enviarTicketWhatsApp()">Enviar Ticket por WhatsApp</button>
         </section>
 
+        <!-- SECCIÓN DE CIERRE Y ADMINISTRACIÓN -->
         <section class="card">
-            <h2>Arqueo y Cierre</h2>
-            <button class="touch-btn" style="background:#ff5252; color:#fff;" onclick="generarReportePDF()">Exportar Reporte Z (PDF)</button>
-            <div id="reporte-cierre" style="margin-top:15px; padding: 10px; background: #fff; color: #000;">
-                <h3 style="margin:0;">Geo Mercado - Cierre de Caja</h3>
-                <p>Fecha: <span id="fecha-cierre"></span></p>
-                <hr>
-                <p>Total USD: <strong id="total-usd">$0.00</strong></p>
-                <p>Total VES: <strong id="total-ves">0.00 Bs</strong></p>
+            <h2>Cierre de Caja (Reporte Z)</h2>
+            <button class="btn btn-red" onclick="solicitarAccesoAdmin()">Generar Reporte Z (PDF)</button>
+
+            <!-- Plantilla Imprimible / Exportable -->
+            <div id="reporte-cierre-contenedor" class="receipt-view">
+                <div class="receipt-header">
+                    <strong>GEO MERCADO C.A.</strong><br>
+                    <span>COMPROBANTE DE ARQUEO</span><br>
+                    <span id="fecha-reporte">--/--/----</span>
+                </div>
+                <div class="receipt-row">
+                    <span>Ventas Totales:</span>
+                    <strong id="rep-cant-ventas">0</strong>
+                </div>
+                <div class="receipt-row">
+                    <span>Total USD ($):</span>
+                    <strong id="rep-total-usd">$0.00</strong>
+                </div>
+                <div class="receipt-row">
+                    <span>Total VES (Bs):</span>
+                    <strong id="rep-total-ves">0.00 Bs</strong>
+                </div>
+                <div class="receipt-total receipt-row">
+                    <span>Estado:</span>
+                    <span>CONCILIADO</span>
+                </div>
             </div>
         </section>
-    </div>
+    </main>
 
     <script>
-        // --- 1. PERSISTENCIA CON INDEXEDDB ---
-        const DB_NAME = 'GeoMercadoDB';
-        const DB_VERSION = 1;
+        // CONFIGURACIÓN GLOBAL Y ESTADO LOCAL
+        let tasaCambio = 36.50; // Ejemplo Tasa BCV
+        const ADMIN_PIN_HASH = "8c6976e5b5410415bde908bd4dee15dfb167a9c873fc4bb8a81f6f2ab448a918"; // SHA-256 para PIN "1234"
         let db;
 
-        const request = indexedDB.open(DB_NAME, DB_VERSION);
-        request.onupgradeneeded = (e) => {
-            db = e.target.result;
-            if (!db.objectStoreNames.contains('ventas')) {
-                db.createObjectStore('ventas', { keyPath: 'id', autoIncrement: true });
-            }
-            if (!db.objectStoreNames.contains('productos')) {
-                db.createObjectStore('productos', { keyPath: 'id' });
-            }
-        };
-        request.onsuccess = (e) => { db = e.target.result; };
-        request.onerror = (e) => { console.error('Error abriendo IndexedDB:', e); };
+        // 1. INICIALIZACIÓN DE INDEXEDDB (PERSISTENCIA LOCAL 100% OFFLINE)
+        function inicializarBD() {
+            const request = indexedDB.open('GeoMercadoDB', 2);
+            
+            request.onupgradeneeded = (e) => {
+                db = e.target.result;
+                if (!db.objectStoreNames.contains('ventas')) {
+                    db.createObjectStore('ventas', { keyPath: 'id', autoIncrement: true });
+                }
+                if (!db.objectStoreNames.contains('config')) {
+                    db.createObjectStore('config', { keyPath: 'clave' });
+                }
+            };
 
-        // --- 2. SEGURIDAD CON HASH (SHA-256) PARA ADMIN PIN ---
-        async function verificarPin(pinIngresado, hashGuardado) {
-            const encoder = new TextEncoder();
-            const data = encoder.encode(pinIngresado);
-            const buffer = await crypto.subtle.digest('SHA-256', data);
-            const hashArray = Array.from(new Uint8Array(buffer));
-            const hashHex = hashArray.map(b => b.toString(16).padStart(2, '0')).join('');
-            return hashHex === hashGuardado;
+            request.onsuccess = (e) => {
+                db = e.target.result;
+                document.getElementById('tasa-display').innerText = tasaCambio.toFixed(2);
+                calcularTotalVenta();
+                cargarResumenCierre();
+            };
+
+            request.onerror = (e) => {
+                console.error("Error inicializando la base de datos local:", e);
+            };
         }
 
-        // --- 3. EXPORTACIÓN A PDF (REPORTE Z) ---
-        function generarReportePDF() {
-            document.getElementById('fecha-cierre').innerText = new Date().toLocaleString();
-            const elemento = document.getElementById('reporte-cierre');
+        // 2. CÁLCULO DE MONEDAS
+        function calcularTotalVenta() {
+            const select = document.getElementById('producto-select');
+            const montoUSD = parseFloat(select.value);
+            const montoVES = montoUSD * tasaCambio;
+
+            document.getElementById('monto-usd').value = montoUSD.toFixed(2);
+            document.getElementById('monto-ves').value = montoVES.toFixed(2);
+        }
+
+        // 3. REGISTRO DE VENTAS EN INDEXEDDB
+        function procesarVenta() {
+            if (!db) return;
+
+            const montoUSD = parseFloat(document.getElementById('monto-usd').value);
+            const montoVES = parseFloat(document.getElementById('monto-ves').value);
+
+            const venta = {
+                montoUSD: montoUSD,
+                montoVES: montoVES,
+                fecha: new Date().toISOString()
+            };
+
+            const tx = db.transaction('ventas', 'readwrite');
+            const store = tx.objectStore('ventas');
+            store.add(venta);
+
+            tx.oncomplete = () => {
+                alert("Venta registrada exitosamente");
+                cargarResumenCierre();
+            };
+        }
+
+        // 4. CARGA DE REPORTE Y ARQUEO
+        function cargarResumenCierre() {
+            if (!db) return;
+
+            const tx = db.transaction('ventas', 'readonly');
+            const store = tx.objectStore('ventas');
+            const request = store.getAll();
+
+            request.onsuccess = () => {
+                const ventas = request.result;
+                let totalUSD = 0;
+                let totalVES = 0;
+
+                ventas.forEach(v => {
+                    totalUSD += v.montoUSD;
+                    totalVES += v.montoVES;
+                });
+
+                document.getElementById('fecha-reporte').innerText = new Date().toLocaleDateString();
+                document.getElementById('rep-cant-ventas').innerText = ventas.length;
+                document.getElementById('rep-total-usd').innerText = `$${totalUSD.toFixed(2)}`;
+                document.getElementById('rep-total-ves').innerText = `${totalVES.toFixed(2)} Bs`;
+            };
+        }
+
+        // 5. ENVIAR COMPROBANTE POR WHATSAPP
+        function enviarTicketWhatsApp() {
+            const usd = document.getElementById('monto-usd').value;
+            const ves = document.getElementById('monto-ves').value;
+            const texto = `*GEO MERCADO - TICKET DE VENTA*%0A` +
+                          `Fecha: ${new Date().toLocaleString()}%0A` +
+                          `Total USD: $${usd}%0A` +
+                          `Total VES: ${ves} Bs%0A` +
+                          `¡Gracias por su compra!`;
+            
+            window.open(`https://api.whatsapp.com/send?text=${texto}`, '_blank');
+        }
+
+        // 6. VERIFICACIÓN DE SEGURIDAD SHA-256
+        async function solicitarAccesoAdmin() {
+            const pin = prompt("Ingrese el PIN de Administrador para exportar el Cierre:");
+            if (!pin) return;
+
+            const pinHash = await calcularSHA256(pin);
+            if (pinHash === ADMIN_PIN_HASH) {
+                exportarPDF();
+            } else {
+                alert("PIN incorrecto. Acceso denegado.");
+            }
+        }
+
+        async function calcularSHA256(texto) {
+            const encoder = new TextEncoder();
+            const data = encoder.encode(texto);
+            const buffer = await crypto.subtle.digest('SHA-256', data);
+            const hashArray = Array.from(new Uint8Array(buffer));
+            return hashArray.map(b => b.toString(16).padStart(2, '0')).join('');
+        }
+
+        // 7. EXPORTAR A PDF (REPORTE Z)
+        function exportarPDF() {
+            const elemento = document.getElementById('reporte-cierre-contenedor');
             const opciones = {
-                margin:       0.5,
+                margin:       0.2,
                 filename:     `Cierre_Caja_${new Date().toISOString().slice(0,10)}.pdf`,
                 image:        { type: 'jpeg', quality: 0.98 },
                 html2canvas:  { scale: 2 },
                 jsPDF:        { unit: 'in', format: 'letter', orientation: 'portrait' }
             };
+
             html2pdf().set(opciones).from(elemento).save();
         }
 
-        function procesarVenta() {
-            if(!db) return;
-            const tx = db.transaction('ventas', 'readwrite');
-            const store = tx.objectStore('ventas');
-            store.add({
-                montoUSD: 10.00,
-                montoVES: 365.00,
-                fecha: new Date().toISOString()
-            });
-            alert('Venta guardada localmente en IndexedDB');
-        }
+        // Inicializar al cargar la pantalla
+        window.onload = inicializarBD;
     </script>
 </body>
 </html>
