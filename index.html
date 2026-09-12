@@ -13,109 +13,181 @@
     </script>
 
     <style>
-        body { background-color: #0b0e14; color: #ffffff; font-family: 'Segoe UI', Arial, sans-serif; margin: 0; padding: 15px; box-sizing: border-box; display: flex; flex-direction: column; align-items: center; min-height: 100vh; }
-        .app-container { width: 100%; max-width: 450px; display: flex; flex-direction: column; gap: 16px; position: relative; }
+        body { 
+            background-color: #0b0e14; 
+            color: #ffffff; 
+            font-family: 'Segoe UI', Arial, sans-serif; 
+            margin: 0; 
+            padding: 10px; 
+            box-sizing: border-box; 
+            display: flex; 
+            flex-direction: column; 
+            align-items: center; 
+            min-height: 100vh; 
+        }
+        .app-container { width: 100%; max-width: 450px; display: flex; flex-direction: column; gap: 10px; position: relative; }
         
-        #menu-principal { display: flex; flex-direction: column; align-items: center; text-align: center; margin-top: 20px; width: 100%; animation: fadeIn 0.3s ease-in-out; }
-        .logo-grande { width: 120px; height: 120px; margin-bottom: 10px; filter: drop-shadow(0 0 12px #00ff66); transition: transform 0.3s ease; }
+        #menu-principal { display: flex; flex-direction: column; align-items: center; text-align: center; margin-top: 10px; width: 100%; animation: fadeIn 0.3s ease-in-out; }
+        .logo-grande { width: 90px; height: 90px; margin-bottom: 6px; filter: drop-shadow(0 0 12px #00ff66); transition: transform 0.3s ease; }
         .logo-grande:hover { transform: scale(1.05); }
-        .main-title { font-size: 28px; font-weight: 900; letter-spacing: 2px; }
-        .main-title span { color: #00ff66; }
-        .version-tag { font-size: 11px; color: #8fa0b7; font-weight: bold; letter-spacing: 1px; margin-bottom: 15px; text-transform: uppercase; }
-        .role-badge { background-color: #161a23; border: 1px solid #242c3d; padding: 6px 16px; border-radius: 20px; font-size: 13px; color: #8fa0b7; margin-bottom: 20px; font-weight: bold; }
+        .main-title { font-size: 26px; font-weight: 900; letter-spacing: 2px; }
+        .version-tag { font-size: 10px; color: #8fa0b7; font-weight: bold; letter-spacing: 1px; margin-bottom: 10px; text-transform: uppercase; }
+        .role-badge { background-color: #161a23; border: 1px solid #242c3d; padding: 4px 12px; border-radius: 20px; font-size: 12px; color: #8fa0b7; margin-bottom: 15px; font-weight: bold; }
         
-        .menu-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; width: 100%; }
-        .btn-menu { background: linear-gradient(135deg, #161a23 0%, #0f121a 100%); border: 1px solid #242c3d; border-radius: 14px; padding: 16px; color: #ffffff; font-size: 13px; font-weight: bold; text-align: center; cursor: pointer; display: flex; flex-direction: column; align-items: center; gap: 10px; transition: all 0.2s ease; }
-        .btn-menu:active { transform: scale(0.96); border-color: #00ff66; }
-        .btn-menu .icon { font-size: 26px; color: #00ff66; }
+        .menu-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; width: 100%; }
+        .btn-menu { background: linear-gradient(135deg, #161a23 0%, #0f121a 100%); border: 1px solid #242c3d; border-radius: 12px; padding: 12px; color: #ffffff; font-size: 12px; font-weight: bold; text-align: center; cursor: pointer; display: flex; flex-direction: column; align-items: center; gap: 6px; transition: all 0.2s ease; position: relative; overflow: hidden; }
+        .btn-menu:active { transform: scale(0.95); border-color: #00ff66; box-shadow: 0 0 10px rgba(0, 255, 102, 0.3); }
+        .btn-menu .icon { font-size: 24px; color: #00ff66; }
 
-        .modulo-app { display: none; width: 100%; flex-direction: column; gap: 14px; box-sizing: border-box; animation: slideUp 0.25s ease-out; }
-        .header-modulo { display: flex; align-items: center; justify-content: space-between; padding-bottom: 8px; border-bottom: 1px solid #242c3d; }
-        .btn-back { background-color: #161a23; border: 1px solid #242c3d; color: #fff; padding: 8px 12px; border-radius: 8px; font-weight: bold; cursor: pointer; transition: background 0.2s; }
-        .btn-back:active { background: #242c3d; }
+        .modulo-app { display: none; width: 100%; flex-direction: column; gap: 10px; box-sizing: border-box; animation: slideUp 0.25s ease-out; }
+        .header-modulo { display: flex; align-items: center; justify-content: space-between; padding-bottom: 6px; border-bottom: 1px solid #242c3d; }
+        .btn-back { background-color: #161a23; border: 1px solid #242c3d; color: #fff; padding: 6px 10px; border-radius: 8px; font-weight: bold; cursor: pointer; transition: background 0.2s; }
+        .btn-back:active { background: #242c3d; transform: scale(0.95); }
 
-        .tools-carousel { display: flex; gap: 8px; overflow-x: auto; padding-bottom: 5px; width: 100%; scrollbar-width: none; }
+        .tools-carousel { display: flex; gap: 6px; overflow-x: auto; padding-bottom: 4px; width: 100%; scrollbar-width: none; }
         .tools-carousel::-webkit-scrollbar { display: none; }
-        .btn-tool { background: #161a23; border: 1px solid #313c52; color: #8fa0b7; padding: 10px 14px; border-radius: 8px; font-weight: bold; cursor: pointer; white-space: nowrap; flex-shrink: 0; font-size: 12px; transition: all 0.2s; }
-        .btn-tool:active { background: #242c3d; color: #fff; }
+        .btn-tool { background: #161a23; border: 1px solid #313c52; color: #8fa0b7; padding: 8px 12px; border-radius: 8px; font-weight: bold; cursor: pointer; white-space: nowrap; flex-shrink: 0; font-size: 11px; transition: all 0.2s; }
+        .btn-tool:active { background: #242c3d; color: #fff; transform: scale(0.95); }
 
         .modal-overlay { display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.85); z-index: 1000; justify-content: center; align-items: center; animation: fadeIn 0.2s ease; }
-        .modal-content { background: #11151d; border: 1px solid #00ff66; padding: 20px; border-radius: 16px; width: 90%; max-width: 350px; display: flex; flex-direction: column; gap: 12px; max-height: 80vh; overflow-y: auto; box-shadow: 0 0 20px rgba(0,255,102,0.15); }
+        .modal-content { background: #11151d; border: 1px solid #00ff66; padding: 16px; border-radius: 14px; width: 90%; max-width: 350px; display: flex; flex-direction: column; gap: 10px; max-height: 80vh; overflow-y: auto; box-shadow: 0 0 20px rgba(0,255,102,0.15); }
         .modal-content h3 { margin: 0; color: #00ff66; text-align: center; }
 
-        .cart-card { background-color: #11151d; border: 1px dashed #242c3d; border-radius: 14px; padding: 12px; width: 100%; box-sizing: border-box; }
-        .cart-title { font-size: 11px; color: #8fa0b7; text-transform: uppercase; margin-bottom: 6px; font-weight: bold; text-align: center; }
-        .cart-items-container { display: flex; flex-direction: column; gap: 6px; max-height: 160px; overflow-y: auto; }
-        .cart-item { display: flex; justify-content: space-between; align-items: center; font-size: 14px; border-bottom: 1px solid #161a23; padding-bottom: 6px; }
+        .cart-card { background-color: #11151d; border: 1px dashed #242c3d; border-radius: 12px; padding: 10px; width: 100%; box-sizing: border-box; }
+        .cart-title { font-size: 10px; color: #8fa0b7; text-transform: uppercase; margin-bottom: 4px; font-weight: bold; text-align: center; }
+        .cart-items-container { display: flex; flex-direction: column; gap: 4px; max-height: 130px; overflow-y: auto; }
+        .cart-item { display: flex; justify-content: space-between; align-items: center; font-size: 13px; border-bottom: 1px solid #161a23; padding-bottom: 4px; animation: fadeIn 0.2s; }
         
-        .btn-remove-item { background: #ff5252; color: #fff; border: none; border-radius: 6px; padding: 4px 10px; font-weight: bold; cursor: pointer; margin-left: 10px; }
-        .btn-qty { background: #242c3d; color: #fff; border: 1px solid #313c52; padding: 4px 10px; border-radius: 6px; font-weight: bold; cursor: pointer; }
-        
-        .search-input { width: 100%; background: #0b0e14; border: 1px solid #00ff66; color: #fff; padding: 12px; border-radius: 8px; box-sizing: border-box; text-align: left; font-size: 14px; margin-bottom: 8px; outline: none;}
-        .search-results-box { display: flex; flex-direction: column; gap: 6px; max-height: 120px; overflow-y: auto; }
-        .btn-search-result { background: #161a23; border: 1px solid #242c3d; color: #fff; padding: 10px; border-radius: 8px; text-align: left; cursor: pointer; display: flex; justify-content: space-between; align-items: center;}
+        .btn-remove-item { background: #ff5252; color: #fff; border: none; border-radius: 6px; padding: 3px 8px; font-weight: bold; cursor: pointer; margin-left: 8px; transition: transform 0.1s; }
+        .btn-remove-item:active { transform: scale(0.9); }
+        .btn-qty { background: #242c3d; color: #fff; border: 1px solid #313c52; padding: 3px 8px; border-radius: 6px; font-weight: bold; cursor: pointer; transition: transform 0.1s; }
+        .btn-qty:active { transform: scale(0.9); }
 
-        .display-card { background: linear-gradient(135deg, #161a23 0%, #0d1017 100%); border: 1px solid #242c3d; border-radius: 16px; padding: 15px; text-align: center; width: 100%; box-sizing: border-box; }
-        .display-card h2 { font-size: 38px; margin: 4px 0; color: #00ff66; font-weight: 700; }
-        .display-card h3 { font-size: 24px; margin: 0; color: #ffffff; }
+        .search-input { width: 100%; background: #0b0e14; border: 1px solid #00ff66; color: #fff; padding: 8px 12px; border-radius: 8px; box-sizing: border-box; text-align: left; font-size: 13px; margin-bottom: 4px; outline: none; transition: box-shadow 0.2s; }
+        .search-input:focus { box-shadow: 0 0 8px rgba(0, 255, 102, 0.4); }
+        .search-results-box { display: flex; flex-direction: column; gap: 4px; max-height: 100px; overflow-y: auto; }
+        .btn-search-result { background: #161a23; border: 1px solid #242c3d; color: #fff; padding: 8px; border-radius: 8px; text-align: left; cursor: pointer; display: flex; justify-content: space-between; align-items: center; font-size: 12px; transition: transform 0.1s; }
+        .btn-search-result:active { transform: scale(0.97); }
 
-        .scanner-trigger { background: linear-gradient(90deg, #00b347 0%, #00ff66 100%); border: none; border-radius: 14px; padding: 14px; color: #000000; font-weight: bold; cursor: pointer; width: 100%; box-sizing: border-box; display: flex; justify-content: center; align-items: center; gap: 10px; transition: transform 0.1s; }
-        .scanner-trigger:active { transform: scale(0.98); }
+        .display-card { background: linear-gradient(135deg, #161a23 0%, #0d1017 100%); border: 1px solid #242c3d; border-radius: 12px; padding: 10px; text-align: center; width: 100%; box-sizing: border-box; }
+        .display-card h2 { font-size: 32px; margin: 2px 0; color: #00ff66; font-weight: 700; transition: transform 0.2s ease; }
+        .display-card h3 { font-size: 20px; margin: 0; color: #ffffff; }
+
+        .scanner-trigger { background: linear-gradient(90deg, #00b347 0%, #00ff66 100%); border: none; border-radius: 12px; padding: 10px; color: #000000; font-weight: bold; cursor: pointer; width: 100%; box-sizing: border-box; display: flex; justify-content: center; align-items: center; gap: 8px; transition: transform 0.1s; }
+        .scanner-trigger:active { transform: scale(0.96); }
         
-        .payment-toggle-btn { background: #161a23; border: 1px solid #242c3d; color: #8fa0b7; padding: 12px 16px; border-radius: 12px; font-size: 13px; font-weight: bold; cursor: pointer; display: flex; justify-content: space-between; align-items: center; width: 100%; box-sizing: border-box; transition: all 0.2s; }
+        .payment-toggle-btn { background: #161a23; border: 1px solid #242c3d; color: #8fa0b7; padding: 10px 14px; border-radius: 10px; font-size: 12px; font-weight: bold; cursor: pointer; display: flex; justify-content: space-between; align-items: center; width: 100%; box-sizing: border-box; transition: all 0.2s; }
         .payment-toggle-btn.active { border-color: #00ff66; color: #ffffff; background: #1c2230; }
-        .payment-content { display: none; margin-top: 6px; animation: fadeIn 0.2s ease-in-out; }
-        .payment-content.show { display: flex; flex-direction: column; gap: 10px; }
+        .payment-content { display: none; margin-top: 4px; animation: fadeIn 0.2s ease-in-out; }
+        .payment-content.show { display: flex; flex-direction: column; gap: 8px; }
 
-        .form-payments { display: flex; flex-direction: column; gap: 8px; width: 100%; }
-        .input-group { background-color: #161a23; border: 1px solid #242c3d; border-radius: 14px; padding: 12px; display: flex; flex-direction: column; width: 100%; box-sizing: border-box; }
-        .input-group label { font-size: 11px; color: #8fa0b7; text-transform: uppercase; margin-bottom: 6px; text-align: center; }
-        .input-row { display: flex; align-items: center; justify-content: center; gap: 8px; width: 100%; }
-        .input-row input { width: 100%; background: transparent; border: none; color: #ffffff; font-size: 18px; font-weight: bold; outline: none; text-align: center; }
+        .form-payments { display: flex; flex-direction: column; gap: 6px; width: 100%; }
+        .input-group { background-color: #161a23; border: 1px solid #242c3d; border-radius: 12px; padding: 10px; display: flex; flex-direction: column; width: 100%; box-sizing: border-box; }
+        .input-group label { font-size: 10px; color: #8fa0b7; text-transform: uppercase; margin-bottom: 4px; text-align: center; }
+        .input-row { display: flex; align-items: center; justify-content: center; gap: 6px; width: 100%; }
+        .input-row input { width: 100%; background: transparent; border: none; color: #ffffff; font-size: 16px; font-weight: bold; outline: none; text-align: center; }
         
-        .btn-max { background: #313c52; color: #fff; border: none; padding: 8px 12px; border-radius: 8px; font-weight: bold; font-size: 11px; cursor: pointer;}
-        .btn-max:active { background: #00ff66; color: #000; }
+        .btn-max { background: #313c52; color: #fff; border: none; padding: 6px 10px; border-radius: 6px; font-weight: bold; font-size: 10px; cursor: pointer; transition: transform 0.1s;}
+        .btn-max:active { background: #00ff66; color: #000; transform: scale(0.9); }
 
-        .pm-details { display: flex; flex-direction: column; gap: 8px; width: 100%; }
-        .pm-details input { width: 100%; background-color: #0f121a; border: 1px solid #242c3d; border-radius: 8px; padding: 10px; color: #ffffff; font-size: 14px; outline: none; text-align: center; box-sizing: border-box; }
+        .pm-details { display: flex; flex-direction: column; gap: 6px; width: 100%; }
+        .pm-details input { width: 100%; background-color: #0f121a; border: 1px solid #242c3d; border-radius: 8px; padding: 8px; color: #ffffff; font-size: 13px; outline: none; text-align: center; box-sizing: border-box; }
 
-        .admin-form-box { background-color: #161a23; border: 1px solid #242c3d; border-radius: 14px; padding: 15px; display: flex; flex-direction: column; gap: 10px; width: 100%; box-sizing: border-box; }
-        .admin-form-box input, .admin-form-box select { width: 100%; background-color: #0b0e14; border: 1px solid #242c3d; padding: 12px; border-radius: 8px; color: #fff; font-size: 14px; outline: none; box-sizing: border-box; text-align: center; }
+        .admin-form-box { background-color: #161a23; border: 1px solid #242c3d; border-radius: 12px; padding: 12px; display: flex; flex-direction: column; gap: 8px; width: 100%; box-sizing: border-box; }
+        .admin-form-box input, .admin-form-box select { width: 100%; background-color: #0b0e14; border: 1px solid #242c3d; padding: 10px; border-radius: 8px; color: #fff; font-size: 13px; outline: none; box-sizing: border-box; text-align: center; }
 
-        .inventory-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; width: 100%; box-sizing: border-box; }
-        .product-card { background-color: #161a23; border: 1px solid #242c3d; border-radius: 12px; padding: 12px; text-align: center; display: flex; flex-direction: column; justify-content: space-between; position: relative;}
-        .product-card h4 { margin: 6px 0 2px 0; font-size: 14px; word-break: break-word; }
-        .tag-cat { position: absolute; top: 10px; left: 10px; background: #242c3d; color: #8fa0b7; font-size: 9px; padding: 3px 6px; border-radius: 4px; font-weight: bold; text-transform: uppercase; }
+        .inventory-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; width: 100%; box-sizing: border-box; }
+        .product-card { background-color: #161a23; border: 1px solid #242c3d; border-radius: 10px; padding: 10px; text-align: center; display: flex; flex-direction: column; justify-content: space-between; position: relative;}
+        .product-card h4 { margin: 4px 0 2px 0; font-size: 13px; word-break: break-word; }
+        .tag-cat { position: absolute; top: 8px; left: 8px; background: #242c3d; color: #8fa0b7; font-size: 8px; padding: 2px 5px; border-radius: 4px; font-weight: bold; text-transform: uppercase; }
         
-        .footer-totals { background-color: #11151d; border: 1px solid #242c3d; border-radius: 14px; padding: 14px; width: 100%; box-sizing: border-box; }
-        .total-row { display: flex; justify-content: space-between; padding: 4px 0; font-size: 14px; color: #8fa0b7; }
+        .footer-totals { background-color: #11151d; border: 1px solid #242c3d; border-radius: 12px; padding: 10px; width: 100%; box-sizing: border-box; }
+        .total-row { display: flex; justify-content: space-between; padding: 2px 0; font-size: 13px; color: #8fa0b7; }
         .total-row strong { color: #ffffff; }
-        .total-row.final { border-top: 1px dashed #242c3d; margin-top: 6px; padding-top: 8px; font-size: 16px; font-weight: bold; color: #00ff66; }
+        .total-row.final { border-top: 1px dashed #242c3d; margin-top: 4px; padding-top: 6px; font-size: 15px; font-weight: bold; color: #00ff66; }
 
-        .action-container { display: flex; gap: 8px; width: 100%; }
-        .btn-clear { flex: 1; background-color: #242c3d; color: #ffffff; border: 1px solid #313c52; padding: 12px; border-radius: 12px; font-weight: bold; cursor: pointer; font-size: 12px; transition: background 0.2s; }
-        .btn-clear:active { background: #313c52; }
-        .btn-charge { flex: 1; background-color: #00ff66; color: #000000; border: none; padding: 12px; border-radius: 12px; font-weight: bold; cursor: pointer; text-align: center; font-size: 12px; transition: transform 0.1s; }
-        .btn-charge:active { transform: scale(0.97); }
-        .btn-print { flex: 1; background-color: #fff; color: #000; border: none; padding: 12px; border-radius: 12px; font-weight: bold; cursor: pointer; text-align: center; font-size: 12px; transition: transform 0.1s; }
-        .btn-print:active { transform: scale(0.97); }
+        .action-container { display: flex; gap: 6px; width: 100%; }
+        .btn-clear { flex: 1; background-color: #242c3d; color: #ffffff; border: 1px solid #313c52; padding: 10px; border-radius: 10px; font-weight: bold; cursor: pointer; font-size: 11px; transition: transform 0.1s, background 0.2s; }
+        .btn-clear:active { background: #313c52; transform: scale(0.95); }
+        .btn-charge { flex: 1; background-color: #00ff66; color: #000000; border: none; padding: 10px; border-radius: 10px; font-weight: bold; cursor: pointer; text-align: center; font-size: 11px; transition: transform 0.1s; }
+        .btn-charge:active { transform: scale(0.95); }
+        .btn-print { flex: 1; background-color: #fff; color: #000; border: none; padding: 10px; border-radius: 10px; font-weight: bold; cursor: pointer; text-align: center; font-size: 11px; transition: transform 0.1s; }
+        .btn-print:active { transform: scale(0.95); }
+        .btn-ws { flex: 1; background-color: #25D366; color: #fff; border: none; padding: 10px; border-radius: 10px; font-weight: bold; cursor: pointer; text-align: center; font-size: 11px; transition: transform 0.1s; }
+        .btn-ws:active { transform: scale(0.95); }
 
-        .cierre-card { background-color: #161a23; border: 1px solid #242c3d; border-radius: 12px; padding: 15px; margin-bottom: 10px; }
-        .cierre-card h4 { margin: 0 0 10px 0; color: #00ff66; border-bottom: 1px dashed #313c52; padding-bottom: 5px;}
-        .cierre-item { font-size: 13px; color: #8fa0b7; padding: 4px 0; display: flex; justify-content: space-between; }
+        .cierre-card { background-color: #161a23; border: 1px solid #242c3d; border-radius: 10px; padding: 12px; margin-bottom: 8px; }
+        .cierre-card h4 { margin: 0 0 8px 0; color: #00ff66; border-bottom: 1px dashed #313c52; padding-bottom: 4px;}
+        .cierre-item { font-size: 12px; color: #8fa0b7; padding: 3px 0; display: flex; justify-content: space-between; }
         .cierre-item span { color: #fff; font-weight: bold; text-align: right; }
-        .highlight-box { background: #0b0e14; padding: 10px; border-radius: 8px; margin-top: 10px; border: 1px solid #00ff66;}
+        .highlight-box { background: #0b0e14; padding: 8px; border-radius: 8px; margin-top: 8px; border: 1px solid #00ff66;}
 
         #hidden-qr-reader { display: none; }
         .hidden-file-input { display: none; }
 
-        /* Banner de estado de verificación Pago Móvil */
-        .pm-status-banner { font-size: 12px; padding: 8px; border-radius: 6px; text-align: center; font-weight: bold; display: none; }
+        .pm-status-banner { font-size: 11px; padding: 6px; border-radius: 6px; text-align: center; font-weight: bold; display: none; animation: fadeIn 0.2s ease; }
         .pm-status-success { background: rgba(0, 255, 102, 0.15); border: 1px solid #00ff66; color: #00ff66; }
         .pm-status-warning { background: rgba(255, 193, 7, 0.15); border: 1px solid #ffc107; color: #ffc107; }
 
+        /* ANIMACIONES Y FEEDBACK NOTIFICACIONES (TOAST & FEEDBACK OVERLAY) */
+        .toast-notification {
+            position: fixed;
+            bottom: 20px;
+            left: 50%;
+            transform: translateX(-50%) translateY(100px);
+            background: #11151d;
+            border: 1px solid #00ff66;
+            color: #ffffff;
+            padding: 10px 20px;
+            border-radius: 20px;
+            font-size: 12px;
+            font-weight: bold;
+            box-shadow: 0 0 15px rgba(0, 255, 102, 0.4);
+            z-index: 2000;
+            opacity: 0;
+            transition: all 0.3s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+            pointer-events: none;
+        }
+        .toast-notification.show {
+            transform: translateX(-50%) translateY(0);
+            opacity: 1;
+        }
+
+        .scan-feedback-overlay {
+            position: fixed;
+            top: 0; left: 0; width: 100%; height: 100%;
+            background: rgba(0, 0, 0, 0.7);
+            z-index: 3000;
+            display: none;
+            justify-content: center;
+            align-items: center;
+            flex-direction: column;
+        }
+        .scan-feedback-box {
+            width: 100px; height: 100px;
+            border-radius: 50%;
+            display: flex; justify-content: center; align-items: center;
+            font-size: 50px;
+            animation: bounceIn 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+        }
+        .scan-feedback-success { background: #00ff66; color: #000; box-shadow: 0 0 30px #00ff66; }
+        .scan-feedback-error { background: #ff5252; color: #fff; box-shadow: 0 0 30px #ff5252; }
+
         @keyframes fadeIn { from { opacity: 0; } to { opacity: 1; } }
         @keyframes slideUp { from { opacity: 0; transform: translateY(10px); } to { opacity: 1; transform: translateY(0); } }
+        @keyframes bounceIn { 
+            0% { transform: scale(0.3); opacity: 0; } 
+            50% { transform: scale(1.1); opacity: 1; } 
+            100% { transform: scale(1); } 
+        }
+        @keyframes shake {
+            0%, 100% { transform: translateX(0); }
+            20%, 60% { transform: translateX(-10px); }
+            40%, 80% { transform: translateX(10px); }
+        }
+        .shake-effect { animation: shake 0.4s ease-in-out; }
+        .pulse-number { animation: pulseAnim 0.2s ease-out; }
+        @keyframes pulseAnim { 0% { transform: scale(1); } 50% { transform: scale(1.1); } 100% { transform: scale(1); } }
     </style>
 </head>
 <body>
@@ -123,11 +195,20 @@
     <div class="app-container">
         <div id="hidden-qr-reader"></div>
 
+        <!-- OVERLAY ANIMADO PARA SCANNER Y ACCIONES -->
+        <div id="scan-feedback" class="scan-feedback-overlay">
+            <div id="scan-feedback-box" class="scan-feedback-box"></div>
+            <p id="scan-feedback-msg" style="color:#fff; font-weight:bold; margin-top:15px; font-size:14px; text-shadow:0 0 8px #000;"></p>
+        </div>
+
+        <!-- TOAST DE NOTIFICACIONES -->
+        <div id="toast" class="toast-notification"></div>
+
         <!-- MODAL CÁMARA EN TIEMPO REAL -->
         <div id="modal-camara" class="modal-overlay">
             <div class="modal-content" style="max-width: 400px; text-align: center;">
                 <h3>📸 Escanear Código de Barras</h3>
-                <div id="interactive-scanner" style="width: 100%; height: 260px; background: #000; border-radius: 8px; overflow: hidden; position: relative;"></div>
+                <div id="interactive-scanner" style="width: 100%; height: 240px; background: #000; border-radius: 8px; overflow: hidden; position: relative;"></div>
                 <button class="btn-clear" onclick="window.cerrarCamaraEnVivo()" style="margin-top: 10px;">Cancelar</button>
             </div>
         </div>
@@ -141,7 +222,7 @@
                 <input type="text" id="cliente-dir" placeholder="Dirección del Cliente" style="background:#0b0e14; border:1px solid #242c3d; padding:10px; border-radius:8px; color:#fff;">
                 <div style="display:flex; gap:10px;">
                     <button class="btn-clear" onclick="document.getElementById('modal-cliente').style.display='none'">Cancelar</button>
-                    <button class="btn-charge" onclick="document.getElementById('modal-cliente').style.display='none'">Aplicar</button>
+                    <button class="btn-charge" onclick="document.getElementById('modal-cliente').style.display='none'; window.mostrarToast('✓ Cliente guardado');">Aplicar</button>
                 </div>
             </div>
         </div>
@@ -165,7 +246,7 @@
                     <circle cx="58" cy="44" r="7" fill="#ffffff"/>
                 </svg>
             </div>
-            <div class="main-title"><span style="color:#00ff66;">GEO MERCADO</span></div>
+            <div class="main-title"><span style="color:#00ff66;">GEO MERCADO 🛍️</span></div>
             <div class="version-tag">V19.0 EDICIÓN VENEZUELA</div>
             <div class="role-badge">Usuario: <span id="txt-rol">Administrador 👑</span></div>
 
@@ -189,6 +270,7 @@
                 <button class="btn-tool" onclick="window.recuperarFactura()">📂 Recuperar</button>
                 <button class="btn-tool" onclick="document.getElementById('modal-cliente').style.display='flex'">📝 Cliente</button>
                 <button class="btn-tool" onclick="window.abrirModalCombos()" style="color:#00ff66; border-color:#00ff66;">🎁 Combos</button>
+                <button class="btn-tool" onclick="window.enviarDatosPagoMovilWS()" style="color:#25D366; border-color:#25D366;">📲 Enviar Pago Móvil</button>
             </div>
 
             <div class="cart-card">
@@ -196,23 +278,23 @@
                 <div class="cart-items-container" id="items-carrito-factura"></div>
             </div>
 
-            <div class="input-group" style="padding:10px;">
-                <input type="text" id="buscador-caja" class="search-input" placeholder="🔍 Escribe para buscar manual..." oninput="window.filtrarBuscadorCaja(this.value)">
+            <div class="input-group" style="padding:8px;">
+                <input type="text" id="buscador-caja" class="search-input" placeholder="🔍 Buscar producto..." oninput="window.filtrarBuscadorCaja(this.value)">
                 <div id="resultados-busqueda-caja" class="search-results-box"></div>
             </div>
 
             <div class="display-card">
-                <p>TOTAL A PAGAR</p>
+                <p style="font-size:10px; color:#8fa0b7; margin:0; font-weight:bold;">TOTAL A PAGAR</p>
                 <h2 id="grand-total-ves">0,00 Bs</h2>
-                <h3 id="grand-total-usd" style="font-size:16px; color:#8fa0b7;">$0.00</h3>
+                <h3 id="grand-total-usd" style="font-size:14px; color:#8fa0b7;">$0.00</h3>
             </div>
 
             <button class="scanner-trigger" onclick="window.abrirCamaraEnVivo('caja')">
-                <span style="font-size:20px;">📸</span> LEER CÓDIGO BARRAS
+                <span style="font-size:18px;">📸</span> LEER CÓDIGO BARRAS
             </button>
             <input type="file" id="file-barcode-caja" class="hidden-file-input" accept="image/*" capture="environment" onchange="window.escanearBarcodeFoto(event, 'caja')">
 
-            <!-- METODOS DE PAGO ACORDEON (DESPLEGABLES) -->
+            <!-- METODOS DE PAGO ACORDEON -->
             <div class="form-payments">
                 <!-- PUNTO DE VENTA -->
                 <button type="button" class="payment-toggle-btn" onclick="window.toggleMetodoPago('pay-box-ptv', this)">
@@ -241,7 +323,7 @@
                             <input type="tel" id="pay-pm" placeholder="0,00" oninput="window.mascaraMoneda(this); window.actualizarEtiquetasPago(); window.calcularCaja();">
                             <button class="btn-max" onclick="window.llenarMaximo('pm')">MAX</button>
                         </div>
-                        <div class="pm-details" style="margin-top:10px;">
+                        <div class="pm-details" style="margin-top:8px;">
                             <input type="tel" id="pm-phone" placeholder="Teléfono del Cliente">
                             <input type="tel" id="pm-ref" placeholder="Número de Referencia">
                             <div id="pm-status-banner" class="pm-status-banner"></div>
@@ -306,15 +388,15 @@
                 
                 <input type="text" id="prod-name" placeholder="Nombre (Ej. Mantequilla Nelly)">
                 
-                <div style="display:flex; gap:10px;">
+                <div style="display:flex; gap:8px;">
                     <input type="number" step="0.01" id="prod-costo" placeholder="Costo ($)" oninput="window.calcularGanancia()">
                     <input type="number" step="0.01" id="prod-margen" placeholder="Margen %" oninput="window.calcularGanancia()">
                 </div>
                 <div style="text-align:center; color:#00ff66; font-size:12px;">Precio Final Sugerido: <strong id="lbl-precio-calc">$0.00</strong></div>
 
-                <div style="display:flex; align-items:center; justify-content:center; gap:10px; background:#0b0e14; padding:10px; border-radius:8px;">
-                    <input type="checkbox" id="prod-iva" style="width:20px; height:20px;"> 
-                    <label style="color:#8fa0b7; font-size:14px; margin:0;">Sumar IVA (16%) al Vender</label>
+                <div style="display:flex; align-items:center; justify-content:center; gap:8px; background:#0b0e14; padding:8px; border-radius:8px;">
+                    <input type="checkbox" id="prod-iva" style="width:18px; height:18px;"> 
+                    <label style="color:#8fa0b7; font-size:12px; margin:0;">Sumar IVA (16%) al Vender</label>
                 </div>
 
                 <select id="prod-cat">
@@ -336,7 +418,7 @@
 
                 <input type="tel" id="prod-serial" placeholder="Serial / Código de Barras">
                 <button class="btn-clear" style="border:1px solid #00ff66; color:#00ff66; width:100%; display:flex; justify-content:center; gap:8px;" onclick="window.abrirCamaraEnVivo('registro')">
-                    <span style="font-size:18px;">📸</span> SCANNER CÓDIGO BARRAS
+                    <span style="font-size:16px;">📸</span> SCANNER CÓDIGO BARRAS
                 </button>
                 <input type="file" id="file-barcode-reg" class="hidden-file-input" accept="image/*" capture="environment" onchange="window.escanearBarcodeFoto(event, 'registro')">
                 
@@ -356,32 +438,32 @@
             </div>
             
             <div class="cierre-card">
-                <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:10px; border-bottom:1px dashed #313c52; padding-bottom:5px;">
+                <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:8px; border-bottom:1px dashed #313c52; padding-bottom:4px;">
                     <h4 style="margin:0; border:none; padding:0;">1. Ventas Netas del Día</h4>
-                    <button style="background:#fff; color:#000; border:none; padding:4px 8px; border-radius:6px; font-weight:bold; font-size:11px; cursor:pointer;" onclick="window.imprimirCierreZ()">🖨️ IMPRIMIR CIERRE (Z)</button>
+                    <button style="background:#fff; color:#000; border:none; padding:4px 8px; border-radius:6px; font-weight:bold; font-size:10px; cursor:pointer;" onclick="window.imprimirCierreZ()">🖨️ IMPRIMIR Z</button>
                 </div>
                 
                 <div class="cierre-item">Total Punto de Venta: <span id="resumen-ptv">0,00 Bs</span></div>
                 <div class="cierre-item">Total Pago Móvil: <span id="resumen-pm">0,00 Bs</span></div>
                 <div class="cierre-item">Total Efectivo (Bs): <span id="resumen-ves">0,00 Bs</span></div>
-                <hr style="border-top:1px dashed #313c52; margin:8px 0;">
-                <div class="cierre-item" style="color:#00ff66; font-size:16px;">Ganancia Total (Bs): <span id="resumen-ganancia-ves">0,00 Bs</span></div>
-                <div class="cierre-item" style="color:#8fa0b7; font-size:12px;">Efectivo Divisas ($) Físico: <span id="resumen-efectivo-usd" style="color:#fff;">$0.00</span></div>
+                <hr style="border-top:1px dashed #313c52; margin:6px 0;">
+                <div class="cierre-item" style="color:#00ff66; font-size:14px;">Ganancia Total (Bs): <span id="resumen-ganancia-ves">0,00 Bs</span></div>
+                <div class="cierre-item" style="color:#8fa0b7; font-size:11px;">Efectivo Divisas ($) Físico: <span id="resumen-efectivo-usd" style="color:#fff;">$0.00</span></div>
             </div>
 
             <div class="cierre-card highlight-box">
                 <h4 style="color:#fff;">2. Cuadre de Gaveta Física</h4>
-                <div class="cierre-item" style="color:#8fa0b7;">Fondo Inicial (Sencillo) $: <span id="cierre-fondo-usd">0.00 $</span></div>
-                <div class="cierre-item" style="color:#8fa0b7;">Fondo Inicial (Sencillo) Bs: <span id="cierre-fondo-ves">0,00 Bs</span></div>
-                <hr style="border-top:1px dashed #313c52; margin:8px 0;">
-                <div style="font-size:12px; color:#8fa0b7; margin-bottom:5px;">Dinero físico exacto que debe haber en caja:</div>
+                <div class="cierre-item" style="color:#8fa0b7;">Fondo Inicial ($): <span id="cierre-fondo-usd">0.00 $</span></div>
+                <div class="cierre-item" style="color:#8fa0b7;">Fondo Inicial (Bs): <span id="cierre-fondo-ves">0,00 Bs</span></div>
+                <hr style="border-top:1px dashed #313c52; margin:6px 0;">
+                <div style="font-size:11px; color:#8fa0b7; margin-bottom:4px;">Dinero físico exacto que debe haber en caja:</div>
                 <div class="cierre-item" style="color:#00ff66;">Efectivo Esperado ($): <span id="esperado-usd">0.00 $</span></div>
                 <div class="cierre-item" style="color:#00ff66;">Efectivo Esperado (Bs): <span id="esperado-ves">0,00 Bs</span></div>
             </div>
 
-            <h4 style="color:#8fa0b7; margin: 10px 0 5px 0;">Historial de Facturas:</h4>
+            <h4 style="color:#8fa0b7; margin: 8px 0 4px 0; font-size:13px;">Historial de Facturas:</h4>
             <div id="lista-historial-ventas"></div>
-            <button class="btn-clear" style="margin-top:15px; width:100%; background:#ff5252; color:#fff;" onclick="window.borrarHistorial()">BORRAR TODO Y REINICIAR DÍA</button>
+            <button class="btn-clear" style="margin-top:10px; width:100%; background:#ff5252; color:#fff;" onclick="window.borrarHistorial()">BORRAR TODO Y REINICIAR DÍA</button>
         </div>
 
         <!-- MÓDULO 4: AJUSTES Y PERFIL -->
@@ -399,7 +481,7 @@
                 <input type="text" id="cfg-dir" placeholder="Dirección Corta" onchange="window.guardarPerfil()">
             </div>
 
-            <!-- NUEVO: CONFIGURACIÓN PAGO MÓVIL RECEPTOR PARA VERIFICACIÓN -->
+            <!-- CONFIGURACIÓN PAGO MÓVIL RECEPTOR PARA VERIFICACIÓN -->
             <div class="admin-form-box" style="border-color:#00ff66;">
                 <label style="color:#00ff66; font-weight:bold;">📲 Datos Pago Móvil Receptor (Verificación)</label>
                 <input type="text" id="cfg-pm-banco" placeholder="Banco (Ej. BDV, Banesco, Mercantil)" onchange="window.guardarPerfil()">
@@ -425,14 +507,14 @@
             
             <div class="admin-form-box">
                 <label>👤 Configurar Perfil de Operación:</label>
-                <button class="btn-charge" style="background:#242c3d; color:#fff; margin-bottom:6px;" onclick="window.conmutarPerfil('Cajero 👤')">Modo Cajero</button>
+                <button class="btn-charge" style="background:#242c3d; color:#fff; margin-bottom:4px;" onclick="window.conmutarPerfil('Cajero 👤')">Modo Cajero</button>
                 <button class="btn-charge" onclick="window.intentarAdmin()">Modo Administrador</button>
             </div>
         </div>
 
     </div>
 
-    <!-- CEREBROS DEL SISTEMA -->
+    <!-- LIBRERÍAS DE CÁMARA Y OCR -->
     <script defer src="https://cdn.jsdelivr.net/npm/tesseract.js@5/dist/tesseract.min.js"></script>
     <script defer src="https://unpkg.com/html5-qrcode"></script>
 
@@ -446,7 +528,7 @@
         var ventasHistorico = [];
         var facturasEnEspera = [];
         var fondoCaja = { usd: 0, ves: 0 };
-        var perfilNegocio = { nombre: "Geo Mercado", rif: "", dir: "", tlf: "", pin: "1234", pmBanco: "", pmCedula: "", pmTlf: "" };
+        var perfilNegocio = { nombre: "Geo Mercado 🛍️", rif: "", dir: "", tlf: "", pin: "1234", pmBanco: "", pmCedula: "", pmTlf: "" };
         var productoEnEdicion = null;
         var html5QrScannerInstancia = null;
         
@@ -464,6 +546,36 @@
         } catch(e) {
             console.error("Error cargando base de datos local:", e);
         }
+
+        window.mostrarToast = function(mensaje) {
+            var toast = document.getElementById('toast');
+            if(!toast) return;
+            toast.innerText = mensaje;
+            toast.classList.add('show');
+            setTimeout(function(){ toast.classList.remove('show'); }, 2500);
+        };
+
+        window.mostrarFeedbackAnimado = function(tipo, msj) {
+            var overlay = document.getElementById('scan-feedback');
+            var box = document.getElementById('scan-feedback-box');
+            var msgEl = document.getElementById('scan-feedback-msg');
+            
+            if(!overlay || !box || !msgEl) return;
+            
+            if(tipo === 'exito') {
+                box.className = 'scan-feedback-box scan-feedback-success';
+                box.innerText = '✔';
+            } else {
+                box.className = 'scan-feedback-box scan-feedback-error';
+                box.innerText = '✖';
+                document.body.classList.add('shake-effect');
+                setTimeout(function(){ document.body.classList.remove('shake-effect'); }, 400);
+            }
+            msgEl.innerText = msj;
+            overlay.style.display = 'flex';
+            
+            setTimeout(function(){ overlay.style.display = 'none'; }, 1300);
+        };
 
         window.escapeHTML = function(str) {
             if (!str) return '';
@@ -502,7 +614,8 @@
 
         window.cambiarModulo = function(idModulo) {
             if((idModulo === 'modulo-admin' || idModulo === 'modulo-cierre') && rolActual !== "Administrador 👑") {
-                alert("Bloqueado: Requiere permisos de Administrador."); return;
+                window.mostrarFeedbackAnimado('error', 'Bloqueado: Requiere Administrador');
+                return;
             }
             document.getElementById('menu-principal').style.display = 'none';
             var modulos = document.querySelectorAll('.modulo-app');
@@ -556,10 +669,11 @@
             fondoCaja.usd = parseFloat(document.getElementById('input-fondo-usd').value) || 0;
             fondoCaja.ves = parseFloat(document.getElementById('input-fondo-ves').value) || 0;
             if (window.localStorage) window.localStorage.setItem('geomercado_fondo_v19', JSON.stringify(fondoCaja));
+            window.mostrarToast("Fondo de caja guardado");
         };
 
         window.guardarPerfil = function() {
-            perfilNegocio.nombre = document.getElementById('cfg-nombre').value || "Geo Mercado";
+            perfilNegocio.nombre = document.getElementById('cfg-nombre').value || "Geo Mercado 🛍️";
             perfilNegocio.rif = document.getElementById('cfg-rif').value || "";
             perfilNegocio.tlf = document.getElementById('cfg-tlf').value || "";
             perfilNegocio.dir = document.getElementById('cfg-dir').value || "";
@@ -570,6 +684,7 @@
             perfilNegocio.pmTlf = document.getElementById('cfg-pm-tlf').value || "";
 
             if (window.localStorage) window.localStorage.setItem('geomercado_perfil_v19', JSON.stringify(perfilNegocio));
+            window.mostrarToast("Perfil actualizado");
         };
 
         window.cambiarTasaManual = function(nuevaTasa) {
@@ -658,12 +773,12 @@
                 
                 html += '<div class="product-card">';
                 html += '<div class="tag-cat">' + catLabel + '</div>';
-                html += '<div style="background:#1b202e; padding:12px; border-radius:8px; font-size:24px; margin-top:15px;">' + iconoRender + '</div>';
+                html += '<div style="background:#1b202e; padding:10px; border-radius:8px; font-size:22px; margin-top:12px;">' + iconoRender + '</div>';
                 html += '<h4>' + window.escapeHTML(p.nombre) + stringIva + '</h4>';
-                html += '<p style="color:#00ff66;">' + window.formatUSD(precioFinalUSD) + '</p>';
-                html += '<p style="font-size:12px; color:#8fa0b7; margin-bottom:4px;">' + window.formatVE(precioBs) + '</p>';
+                html += '<p style="color:#00ff66; margin:2px 0;">' + window.formatUSD(precioFinalUSD) + '</p>';
+                html += '<p style="font-size:11px; color:#8fa0b7; margin-bottom:4px;">' + window.formatVE(precioBs) + '</p>';
                 html += indicadorStock;
-                html += '<div style="display:flex; gap:8px; margin-top:8px;">';
+                html += '<div style="display:flex; gap:6px; margin-top:6px;">';
                 if(rolActual === "Administrador 👑") {
                     html += '<button style="flex:1; background:#313c52; color:#fff; border:none; padding:6px; border-radius:6px; font-weight:bold; cursor:pointer;" onclick="window.editarProducto(' + p.id + ')">✏️</button>';
                 }
@@ -686,7 +801,7 @@
             var emj = document.getElementById('prod-emoji').value || (type === 'peso' ? '🍎' : '📦');
             var aplicaIva = document.getElementById('prod-iva').checked;
 
-            if(!name || price <= 0) { alert("Ingresa nombre y costo/margen válido."); return; }
+            if(!name || price <= 0) { window.mostrarFeedbackAnimado('error', 'Ingresa datos válidos'); return; }
 
             if(productoEnEdicion !== null) {
                 for(var i=0; i<productos.length; i++) {
@@ -704,10 +819,10 @@
                         break;
                     }
                 }
-                alert("Producto actualizado.");
+                window.mostrarToast("✓ Producto actualizado");
             } else {
                 productos.push({ id: new Date().getTime(), nombre: name, costo: costo, margen: margen, precio: price, tipo: type, categoria: cat, qty: qty, serial: serial, emoji: emj, iva: aplicaIva });
-                alert("Guardado completado.");
+                window.mostrarToast("✓ Producto guardado");
             }
             
             if (window.localStorage) window.localStorage.setItem('geomercado_db_v19', JSON.stringify(productos));
@@ -786,7 +901,7 @@
                 totalVentaUSD += precioUSD;
                 totalVentaVES = totalVentaUSD * tasaDia;
             } else {
-                if(p.tipo !== 'combo' && p.qty < 1) { alert("Sin stock de " + p.nombre); return; }
+                if(p.tipo !== 'combo' && p.qty < 1) { window.mostrarFeedbackAnimado('error', 'Sin Stock'); return; }
                 
                 var indexEnCarrito = -1;
                 for(var c=0; c<carrito.length; c++) {
@@ -811,6 +926,7 @@
                 totalVentaVES = totalVentaUSD * tasaDia;
             }
             
+            window.mostrarToast("+ Agregado al carrito");
             window.renderizarCarritoCaja();
             document.getElementById('buscador-caja').value = "";
             document.getElementById('resultados-busqueda-caja').innerHTML = "";
@@ -826,7 +942,7 @@
             }
             
             if(item.tipo !== 'combo') {
-                if(!p || p.qty < 1) { alert("No hay más stock."); return; }
+                if(!p || p.qty < 1) { window.mostrarFeedbackAnimado('error', 'Sin más stock'); return; }
                 p.qty -= 1; 
                 if (window.localStorage) window.localStorage.setItem('geomercado_db_v19', JSON.stringify(productos));
             }
@@ -891,7 +1007,7 @@
             if(!container) return;
             
             if(carrito.length === 0) {
-                container.innerHTML = '<div style="color:#57687e; text-align:center; font-size:13px; padding:10px;">Ningún artículo en cuenta.</div>';
+                container.innerHTML = '<div style="color:#57687e; text-align:center; font-size:12px; padding:8px;">Ningún artículo en cuenta.</div>';
             } else {
                 var html = "";
                 for(var i=0; i<carrito.length; i++) {
@@ -902,13 +1018,13 @@
                     html += '<div style="flex:1;">' + window.escapeHTML(item.emoji) + ' ' + window.escapeHTML(item.nombre) + '<br><small style="color:#8fa0b7;">' + window.formatVE(precioBsItem) + '</small></div>';
                     
                     if (item.tipo === 'unidad' || item.tipo === 'combo') {
-                        html += '<div style="display:flex; align-items:center; gap:8px; margin-right:15px;">';
+                        html += '<div style="display:flex; align-items:center; gap:6px; margin-right:10px;">';
                         html += '<button class="btn-qty" onclick="window.restarItem(' + i + ')">-</button>';
-                        html += '<span style="font-weight:bold; font-size:16px;">' + item.qtyVenta + '</span>';
+                        html += '<span style="font-weight:bold; font-size:14px;">' + item.qtyVenta + '</span>';
                         html += '<button class="btn-qty" onclick="window.sumarItem(' + i + ')">+</button>';
                         html += '</div>';
                     } else {
-                        html += '<div style="margin-right:15px; color:#8fa0b7; font-size:12px;">' + window.escapeHTML(item.detalle) + '</div>';
+                        html += '<div style="margin-right:10px; color:#8fa0b7; font-size:11px;">' + window.escapeHTML(item.detalle) + '</div>';
                     }
 
                     html += '<div style="display:flex; align-items:center;">';
@@ -919,8 +1035,14 @@
                 container.innerHTML = html;
             }
 
-            document.getElementById('grand-total-usd').innerText = window.formatUSD(totalVentaUSD);
-            document.getElementById('grand-total-ves').innerText = window.formatVE(totalVentaVES);
+            var usdEl = document.getElementById('grand-total-usd');
+            var vesEl = document.getElementById('grand-total-ves');
+            if(usdEl) usdEl.innerText = window.formatUSD(totalVentaUSD);
+            if(vesEl) {
+                vesEl.innerText = window.formatVE(totalVentaVES);
+                vesEl.classList.add('pulse-number');
+                setTimeout(function(){ vesEl.classList.remove('pulse-number'); }, 200);
+            }
             window.calcularCaja();
         };
 
@@ -994,7 +1116,7 @@
         };
 
         window.aparcarFactura = function() {
-            if(carrito.length === 0) { alert("No hay nada que pausar."); return; }
+            if(carrito.length === 0) { window.mostrarFeedbackAnimado('error', 'Carrito Vacío'); return; }
             var cliente = document.getElementById('cliente-nombre').value || "Cliente sin nombre";
             facturasEnEspera.push({
                 cliente: cliente,
@@ -1010,12 +1132,12 @@
             document.getElementById('cliente-nombre').value = ''; document.getElementById('cliente-cedula').value = ''; document.getElementById('cliente-dir').value = '';
             window.actualizarEtiquetasPago();
             window.renderizarCarritoCaja();
-            alert("Factura pausada.");
+            window.mostrarToast("⏸️ Factura Pausada");
         };
 
         window.recuperarFactura = function() {
-            if(facturasEnEspera.length === 0) { alert("No hay facturas en espera."); return; }
-            if(carrito.length > 0) { alert("Pausa o cobra la venta actual primero."); return; }
+            if(facturasEnEspera.length === 0) { window.mostrarFeedbackAnimado('error', 'No hay facturas pausadas'); return; }
+            if(carrito.length > 0) { window.mostrarFeedbackAnimado('error', 'Limpia o procesa la venta actual'); return; }
             
             var text = "Elige qué factura recuperar (escribe el número):\n";
             for(var i=0; i<facturasEnEspera.length; i++) {
@@ -1032,12 +1154,13 @@
                 totalVentaVES = rec.totalVES;
                 document.getElementById('cliente-nombre').value = rec.cliente !== "Cliente sin nombre" ? rec.cliente : "";
                 window.renderizarCarritoCaja();
+                window.mostrarToast("📂 Factura Recuperada");
             }
         };
 
-        /* LECTOR CÓDIGO BARRAS EN TIEMPO REAL CON CÁMARA */
+        /* LECTOR CÓDIGO BARRAS EN TIEMPO REAL */
         window.abrirCamaraEnVivo = function(modo) {
-            if (typeof Html5Qrcode === 'undefined') { alert("Cargando escáner..."); return; }
+            if (typeof Html5Qrcode === 'undefined') { window.mostrarFeedbackAnimado('error', 'Cargando escáner...'); return; }
             document.getElementById('modal-camara').style.display = 'flex';
 
             if(html5QrScannerInstancia) {
@@ -1047,25 +1170,29 @@
             html5QrScannerInstancia = new Html5Qrcode("interactive-scanner");
             html5QrScannerInstancia.start(
                 { facingMode: "environment" },
-                { fps: 10, qrbox: { width: 250, height: 150 } },
+                { fps: 10, qrbox: { width: 220, height: 130 } },
                 function(decodedText) {
                     window.cerrarCamaraEnVivo();
                     if(modo === 'registro') {
                         var eSerial = document.getElementById('prod-serial');
                         if(eSerial) eSerial.value = decodedText;
+                        window.mostrarFeedbackAnimado('exito', 'Código Leído');
                     } else if (modo === 'caja') {
                         var match = null;
                         for(var i=0; i<productos.length; i++) {
                             if(productos[i].serial === decodedText) { match = productos[i]; break; }
                         }
-                        if(match) window.agregarAlCarritoDesdeCaja(match.id);
-                        else alert("Código no registrado.");
+                        if(match) {
+                            window.mostrarFeedbackAnimado('exito', match.nombre);
+                            window.agregarAlCarritoDesdeCaja(match.id);
+                        } else {
+                            window.mostrarFeedbackAnimado('error', 'Código No Registrado');
+                        }
                     }
                 },
                 function(errorMessage) {}
             ).catch(function(err) {
                 document.getElementById('modal-camara').style.display = 'none';
-                alert("No se pudo iniciar la cámara en vivo. Usando alternativa de foto.");
                 if(modo === 'registro') document.getElementById('file-barcode-reg').click();
                 else document.getElementById('file-barcode-caja').click();
             });
@@ -1085,7 +1212,7 @@
         };
 
         window.escanearBarcodeFoto = function(event, modo) {
-            if (typeof Html5Qrcode === 'undefined') { alert("Conectando cámara..."); return; }
+            if (typeof Html5Qrcode === 'undefined') { window.mostrarToast("Conectando cámara..."); return; }
             var file = event.target.files[0];
             if(!file) return;
             var html5QrCode = new Html5Qrcode("hidden-qr-reader");
@@ -1094,21 +1221,26 @@
                 if(modo === 'registro') {
                     var eSerial = document.getElementById('prod-serial');
                     if(eSerial) eSerial.value = decodedText;
+                    window.mostrarFeedbackAnimado('exito', 'Código Detectado');
                 } else if (modo === 'caja') {
                     var match = null;
                     for(var i=0; i<productos.length; i++) {
                         if(productos[i].serial === decodedText) { match = productos[i]; break; }
                     }
-                    if(match) window.agregarAlCarritoDesdeCaja(match.id);
-                    else alert("Código no registrado.");
+                    if(match) {
+                        window.mostrarFeedbackAnimado('exito', match.nombre);
+                        window.agregarAlCarritoDesdeCaja(match.id);
+                    } else {
+                        window.mostrarFeedbackAnimado('error', 'Código No Registrado');
+                    }
                 }
             })
-            .catch(function() { alert("No se detectó código en la imagen."); });
+            .catch(function() { window.mostrarFeedbackAnimado('error', 'No se detectó código'); });
         };
 
-        /* LECTOR Y VERIFICADOR DE PAGO MÓVIL OPTIMIZADO */
+        /* LECTOR Y VERIFICADOR DE PAGO MÓVIL OPTIMIZADO PARA VENEZUELA */
         window.escanearCapturePagoCompleto = function(event) {
-            if (typeof Tesseract === 'undefined') { alert("Cargando motor OCR..."); return; }
+            if (typeof Tesseract === 'undefined') { window.mostrarToast("Cargando motor OCR..."); return; }
             var input = event.target;
             if (!input.files || !input.files[0]) return;
             var eRef = document.getElementById('pm-ref');
@@ -1122,34 +1254,43 @@
                 var text = result.data.text;
                 var textLimpio = text.replace(/[\n\r]/g, ' ').toLowerCase();
 
+                // Búsqueda de referencia
                 var ref = text.match(/\d{6,12}/);
-                var monto = text.match(/(?:bs|monto|pagado|ref)?[:.\s]*([\d.]+,\d{2})/i);
                 
+                // OCR MEJORADO: Captura específica para montos venezolanos formateados con punto de miles y coma decimal (Ej: 6.273,45 Bs)
+                var patronMontoBDV = /([\d\.]+,\d{2})\s*Bs/i;
+                var patronMontoGen = /(?:bs|monto|pagado|ref)?[:.\s]*([\d.]+,\d{2})/i;
+                
+                var matchMonto = text.match(patronMontoBDV) || text.match(patronMontoGen);
+
                 if(eRef) eRef.value = ref ? ref[0] : "Manual";
-                if(monto) {
-                    var limpio = monto[1] || monto[0];
+                
+                if(matchMonto) {
+                    var limpio = matchMonto[1] || matchMonto[0];
                     var numeroParaInput = parseFloat(limpio.replace(/\./g, '').replace(',', '.'));
                     var inputPm = document.getElementById('pay-pm');
-                    if(inputPm) {
+                    if(inputPm && !isNaN(numeroParaInput)) {
                         inputPm.value = Math.round(numeroParaInput * 100).toString();
                         window.mascaraMoneda(inputPm);
+                        window.mostrarFeedbackAnimado('exito', 'Monto: ' + window.formatVE(numeroParaInput));
                     }
+                } else {
+                    window.mostrarFeedbackAnimado('error', 'Revisa el monto manualmente');
                 }
 
                 // Verificación de coincidencias con los datos registrados
                 if(banner) {
-                    var msjs = [];
-                    var coincidenciaCédula = perfilNegocio.pmCedula && textLimpio.includes(perfilNegocio.pmCedula.toLowerCase().trim());
+                    var coincidenciaCedula = perfilNegocio.pmCedula && textLimpio.includes(perfilNegocio.pmCedula.toLowerCase().trim());
                     var coincidenciaTelefono = perfilNegocio.pmTlf && textLimpio.includes(perfilNegocio.pmTlf.toLowerCase().replace(/\D/g, ''));
                     var coincidenciaBanco = perfilNegocio.pmBanco && textLimpio.includes(perfilNegocio.pmBanco.toLowerCase().trim());
 
-                    if(coincidenciaCédula || coincidenciaTelefono || coincidenciaBanco) {
+                    if(coincidenciaCedula || coincidenciaTelefono || coincidenciaBanco) {
                         banner.className = 'pm-status-banner pm-status-success';
                         banner.innerText = "✓ Pago Móvil verificado: Datos coinciden con tu cuenta.";
                         banner.style.display = 'block';
                     } else if(perfilNegocio.pmCedula || perfilNegocio.pmTlf || perfilNegocio.pmBanco) {
                         banner.className = 'pm-status-banner pm-status-warning';
-                        banner.innerText = "⚠️ Verifica manualmente: No se confirmaron los datos de destino exactos.";
+                        banner.innerText = "⚠️ Verifica manualmente: No se confirmaron datos de destino.";
                         banner.style.display = 'block';
                     }
                 }
@@ -1160,12 +1301,27 @@
             .catch(function(err){
                 console.error(err);
                 if(eRef) eRef.value = "";
-                alert("Error al procesar la imagen.");
+                window.mostrarFeedbackAnimado('error', 'Error al leer imagen');
             });
         };
 
+        window.enviarDatosPagoMovilWS = function() {
+            var tlfCliente = document.getElementById('pm-phone').value || "";
+            var msj = "📲 *DATOS DE PAGO MÓVIL*\n\n";
+            msj += "🏢 *" + perfilNegocio.nombre + "*\n";
+            msj += "🏦 Banco: " + (perfilNegocio.pmBanco || "No configurado") + "\n";
+            msj += "🪪 CI/RIF: " + (perfilNegocio.pmCedula || "No configurado") + "\n";
+            msj += "📞 Teléfono: " + (perfilNegocio.pmTlf || "No configurado") + "\n\n";
+            msj += "💵 Total a pagar: *" + window.formatVE(totalVentaVES) + "* (" + window.formatUSD(totalVentaUSD) + ")\n\n";
+            msj += "Por favor envía el comprobante por este medio. ¡Muchas gracias!";
+
+            var numClean = tlfCliente.replace(/\D/g, '');
+            var url = numClean ? ("https://api.whatsapp.com/send?phone=" + numClean + "&text=" + encodeURIComponent(msj)) : ("https://api.whatsapp.com/send?text=" + encodeURIComponent(msj));
+            window.open(url, '_blank');
+        };
+
         window.procesarCobro = function(imprimirTicketBooleano) {
-            if(carrito.length === 0) { alert("El carrito está vacío."); return; }
+            if(carrito.length === 0) { window.mostrarFeedbackAnimado('error', 'Carrito Vacío'); return; }
             var ptv = window.extraerNumeroLimpio('pay-ptv');
             var pm = window.extraerNumeroLimpio('pay-pm');
             var usd = parseFloat(document.getElementById('pay-usd').value) || 0; 
@@ -1189,10 +1345,10 @@
             ventasHistorico.push(venta);
             if (window.localStorage) window.localStorage.setItem('geomercado_ventas_v19', JSON.stringify(ventasHistorico));
             
+            window.mostrarFeedbackAnimado('exito', 'Venta Cobrada Exitosamente');
+
             if(imprimirTicketBooleano) {
                 window.imprimirTicket(ventasHistorico.length - 1);
-            } else {
-                alert("Venta registrada con éxito.");
             }
 
             window.limpiarCaja(true); 
@@ -1211,7 +1367,7 @@
                     }
                 }
                 if (window.localStorage) window.localStorage.setItem('geomercado_db_v19', JSON.stringify(productos));
-                alert("Venta cancelada. Stock devuelto.");
+                window.mostrarToast("Venta cancelada, stock devuelto");
             }
 
             totalVentaUSD = 0.00; totalVentaVES = 0.00; carrito = [];
@@ -1240,22 +1396,23 @@
                 var itemsStr = v.items.map(function(it){ return window.escapeHTML(it.nombre) + " (x" + (it.qtyVenta || it.detalle) + ")"; }).join(', ');
                 html += '<div class="cierre-card">';
                 html += '<div style="display:flex; justify-content:space-between;"><h4>🛒 ' + v.fecha + '</h4></div>';
-                if(v.cliente) html += '<div style="color:#fff; font-size:12px; margin-bottom:5px;">Cliente: ' + window.escapeHTML(v.cliente) + '</div>';
+                if(v.cliente) html += '<div style="color:#fff; font-size:11px; margin-bottom:4px;">Cliente: ' + window.escapeHTML(v.cliente) + '</div>';
                 
                 html += '<div class="cierre-item">Artículos: <span>' + itemsStr + '</span></div>';
-                html += '<div class="cierre-item">Total Factura: <span style="font-size:15px; color:#00ff66;">' + window.formatVE(v.totalVES) + '</span></div>';
+                html += '<div class="cierre-item">Total Factura: <span style="font-size:14px; color:#00ff66;">' + window.formatVE(v.totalVES) + '</span></div>';
                 
                 if(v.usd > 0) {
                     html += '<div class="cierre-item" style="color:#8fa0b7;">Efectivo ($) Entregado: <span>$' + v.usd.toFixed(2) + '</span></div>';
                 }
                 
-                html += '<div style="display:flex; gap:10px; margin-top:10px;">';
-                html += '<button style="flex:1; background:#fff; color:#000; font-weight:bold; border:none; padding:8px; border-radius:6px; cursor:pointer;" onclick="window.imprimirTicket(' + i + ')">🖨️ Imprimir</button>';
-                html += '<button style="flex:1; background:#ff5252; color:#fff; font-weight:bold; border:none; padding:8px; border-radius:6px; cursor:pointer;" onclick="window.anularVenta(' + i + ')">❌ Anular</button>';
+                html += '<div style="display:flex; gap:6px; margin-top:8px;">';
+                html += '<button style="flex:1; background:#fff; color:#000; font-weight:bold; border:none; padding:6px; border-radius:6px; cursor:pointer;" onclick="window.imprimirTicket(' + i + ')">🖨️ Ticket</button>';
+                html += '<button style="flex:1; background:#25D366; color:#fff; font-weight:bold; border:none; padding:6px; border-radius:6px; cursor:pointer;" onclick="window.enviarFacturaWS(' + i + ')">📲 WhatsApp</button>';
+                html += '<button style="flex:1; background:#ff5252; color:#fff; font-weight:bold; border:none; padding:6px; border-radius:6px; cursor:pointer;" onclick="window.anularVenta(' + i + ')">❌ Anular</button>';
                 html += '</div></div>';
             }
 
-            if(ventasHistorico.length === 0) html = '<div style="text-align:center; color:#57687e; font-size:13px;">No hay ventas registradas.</div>';
+            if(ventasHistorico.length === 0) html = '<div style="text-align:center; color:#57687e; font-size:12px;">No hay ventas registradas.</div>';
             container.innerHTML = html;
 
             document.getElementById('resumen-ptv').innerText = window.formatVE(totalPTV);
@@ -1275,21 +1432,43 @@
             document.getElementById('esperado-ves').innerText = window.formatVE(esperadoVES);
         };
 
+        window.enviarFacturaWS = function(index) {
+            var v = ventasHistorico[index];
+            var msj = "🧾 *COMPROBANTE DE COMPRA*\n";
+            msj += "🏢 *" + perfilNegocio.nombre + "*\n";
+            if(perfilNegocio.rif) msj += "RIF: " + perfilNegocio.rif + "\n";
+            msj += "📅 Fecha: " + v.fecha + "\n";
+            if(v.cliente) msj += "👤 Cliente: " + v.cliente + "\n";
+            msj += "-----------------------------------\n";
+            for(var i=0; i<v.items.length; i++) {
+                var item = v.items[i];
+                var precioBsItem = item.totalUSD * (v.totalVES / (v.totalUSD || 1));
+                msj += (item.qtyVenta || item.detalle) + "x " + item.nombre + " - " + window.formatVE(precioBsItem) + "\n";
+            }
+            msj += "-----------------------------------\n";
+            msj += "💰 *TOTAL: " + window.formatVE(v.totalVES) + "* (" + window.formatUSD(v.totalUSD) + ")\n\n";
+            msj += "¡Gracias por su compra!";
+
+            var numClean = (v.tlf || "").replace(/\D/g, '');
+            var url = numClean ? ("https://api.whatsapp.com/send?phone=" + numClean + "&text=" + encodeURIComponent(msj)) : ("https://api.whatsapp.com/send?text=" + encodeURIComponent(msj));
+            window.open(url, '_blank');
+        };
+
         window.imprimirTicket = function(index) {
             var v = ventasHistorico[index];
             var pw = window.open('', '_blank');
             if(!pw) { alert("Por favor habilita las ventanas emergentes (pop-ups)"); return; }
             var doc = pw.document;
-            var h = '<html><head><title>Ticket</title><style>body{font-family:monospace; color:#000; width:300px; margin:0 auto; padding:20px;} .it{display:flex; justify-content:space-between; margin-bottom:5px; font-size:14px;}</style></head><body>';
-            h += '<h2 style="text-align:center; margin:0;">' + window.escapeHTML(perfilNegocio.nombre) + '</h2>';
-            if(perfilNegocio.rif) h += '<p style="text-align:center; margin:0;">RIF: ' + window.escapeHTML(perfilNegocio.rif) + '</p>';
-            if(perfilNegocio.dir) h += '<p style="text-align:center; margin:0; font-size:12px;">' + window.escapeHTML(perfilNegocio.dir) + '</p>';
-            if(perfilNegocio.tlf) h += '<p style="text-align:center; margin:0; font-size:12px;">Tlf: ' + window.escapeHTML(perfilNegocio.tlf) + '</p>';
-            h += '<p style="text-align:center; font-size:12px; margin-top:10px;">' + v.fecha + '</p><hr>';
+            var h = '<html><head><title>Ticket</title><style>body{font-family:monospace; color:#000; width:280px; margin:0 auto; padding:10px;} .it{display:flex; justify-content:space-between; margin-bottom:4px; font-size:12px;}</style></head><body>';
+            h += '<h2 style="text-align:center; margin:0; font-size:16px;">' + window.escapeHTML(perfilNegocio.nombre) + '</h2>';
+            if(perfilNegocio.rif) h += '<p style="text-align:center; margin:0; font-size:11px;">RIF: ' + window.escapeHTML(perfilNegocio.rif) + '</p>';
+            if(perfilNegocio.dir) h += '<p style="text-align:center; margin:0; font-size:10px;">' + window.escapeHTML(perfilNegocio.dir) + '</p>';
+            if(perfilNegocio.tlf) h += '<p style="text-align:center; margin:0; font-size:10px;">Tlf: ' + window.escapeHTML(perfilNegocio.tlf) + '</p>';
+            h += '<p style="text-align:center; font-size:11px; margin-top:6px;">' + v.fecha + '</p><hr>';
             
-            if(v.cliente) h += '<p>Cliente: ' + window.escapeHTML(v.cliente) + '<br>CI/RIF: ' + window.escapeHTML(v.cedula) + '</p>';
-            if(v.dir) h += '<p>Dir: ' + window.escapeHTML(v.dir) + '</p>';
-            if(v.tlf) h += '<p>Tlf: ' + window.escapeHTML(v.tlf) + '</p>';
+            if(v.cliente) h += '<p style="font-size:11px;">Cliente: ' + window.escapeHTML(v.cliente) + '<br>CI/RIF: ' + window.escapeHTML(v.cedula) + '</p>';
+            if(v.dir) h += '<p style="font-size:11px;">Dir: ' + window.escapeHTML(v.dir) + '</p>';
+            if(v.tlf) h += '<p style="font-size:11px;">Tlf: ' + window.escapeHTML(v.tlf) + '</p>';
             h += '<hr>';
             
             for(var i=0; i<v.items.length; i++) {
@@ -1298,13 +1477,13 @@
                 h += '<div class="it"><span>' + (item.qtyVenta || item.detalle) + 'x ' + window.escapeHTML(item.nombre) + '</span><span>' + window.formatVE(precioBsItem) + '</span></div>';
             }
             
-            h += '<hr><h3 style="text-align:right; margin:5px 0;">TOTAL: ' + window.formatVE(v.totalVES) + '</h3>';
+            h += '<hr><h3 style="text-align:right; margin:4px 0; font-size:14px;">TOTAL: ' + window.formatVE(v.totalVES) + '</h3>';
             
             if(v.usd > 0) {
-                h += '<h4 style="text-align:right; margin:5px 0;">Efectivo Entregado: $' + v.usd.toFixed(2) + '</h4>';
+                h += '<h4 style="text-align:right; margin:4px 0; font-size:12px;">Efectivo Entregado: $' + v.usd.toFixed(2) + '</h4>';
             }
             
-            h += '<p style="text-align:center; font-size:12px; margin-top:20px;">¡Gracias por su compra!</p>';
+            h += '<p style="text-align:center; font-size:11px; margin-top:15px;">¡Gracias por su compra!</p>';
             h += '<script>window.print();window.close();<\/script></body></html>';
             doc.write(h);
             doc.close();
@@ -1320,25 +1499,25 @@
             var pw = window.open('', '_blank');
             if(!pw) { alert("Por favor habilita las ventanas emergentes (pop-ups)"); return; }
             var doc = pw.document;
-            var h = '<html><head><title>Cierre Z</title><style>body{font-family:monospace; color:#000; width:300px; margin:0 auto; padding:20px;} .it{display:flex; justify-content:space-between; margin-bottom:5px; font-size:14px;}</style></head><body>';
-            h += '<h2 style="text-align:center; margin:0;">' + window.escapeHTML(perfilNegocio.nombre) + '</h2>';
-            h += '<h3 style="text-align:center; margin:10px 0;">REPORTE CIERRE (Z)</h3>';
-            h += '<p style="text-align:center; font-size:12px;">' + new Date().toLocaleDateString() + '</p><hr>';
+            var h = '<html><head><title>Cierre Z</title><style>body{font-family:monospace; color:#000; width:280px; margin:0 auto; padding:10px;} .it{display:flex; justify-content:space-between; margin-bottom:4px; font-size:12px;}</style></head><body>';
+            h += '<h2 style="text-align:center; margin:0; font-size:16px;">' + window.escapeHTML(perfilNegocio.nombre) + '</h2>';
+            h += '<h3 style="text-align:center; margin:6px 0; font-size:14px;">REPORTE CIERRE (Z)</h3>';
+            h += '<p style="text-align:center; font-size:11px;">' + new Date().toLocaleDateString() + '</p><hr>';
             
-            h += '<h4>1. VENTAS NETAS</h4>';
+            h += '<h4 style="margin:4px 0;">1. VENTAS NETAS</h4>';
             h += '<div class="it"><span>Punto de Venta:</span><span>' + window.formatVE(totalPTV) + '</span></div>';
             h += '<div class="it"><span>Pago Móvil:</span><span>' + window.formatVE(totalPM) + '</span></div>';
             h += '<div class="it"><span>Efectivo (Bs):</span><span>' + window.formatVE(totalVESFisico) + '</span></div>';
             h += '<hr><div class="it"><strong>GANANCIA TOTAL (Bs):</strong><strong>' + window.formatVE(gananciaTotalVES) + '</strong></div>';
             h += '<div class="it"><span>Efectivo Divisas ($) Físico:</span><span>$' + totalUSDFisico.toFixed(2) + '</span></div>';
             
-            h += '<hr><h4>2. GAVETA FÍSICA ESPERADA</h4>';
+            h += '<hr><h4 style="margin:4px 0;">2. GAVETA FÍSICA ESPERADA</h4>';
             h += '<div class="it"><span>Sencillo Inicial ($):</span><span>$' + fondoCaja.usd.toFixed(2) + '</span></div>';
             h += '<div class="it"><span>Sencillo Inicial (Bs):</span><span>' + window.formatVE(fondoCaja.ves) + '</span></div><br>';
             h += '<div class="it"><strong>TOTAL FÍSICO ($):</strong><strong>$' + (fondoCaja.usd + totalUSDFisico).toFixed(2) + '</strong></div>';
             h += '<div class="it"><strong>TOTAL FÍSICO (Bs):</strong><strong>' + window.formatVE(fondoCaja.ves + totalVESFisico) + '</strong></div>';
             
-            h += '<p style="text-align:center; font-size:10px; margin-top:20px;">Software: Geo Mercado V19.0 (Ed. Venezuela)</p>';
+            h += '<p style="text-align:center; font-size:9px; margin-top:15px;">Software: Geo Mercado V19.0 (Ed. Venezuela)</p>';
             h += '<script>window.print();window.close();<\/script></body></html>';
             doc.write(h);
             doc.close();
@@ -1360,8 +1539,9 @@
                 if (window.localStorage) window.localStorage.setItem('geomercado_db_v19', JSON.stringify(productos));
                 
                 ventasHistorico.splice(index, 1);
-                if (window.localStorage) window.localStorage.setItem('geomercado_ventas_v19', JSON.stringify(ventasHistorico));
+                if (window.localStorage) window.localStoragesetItem('geomercado_ventas_v19', JSON.stringify(ventasHistorico));
                 window.renderizarCierreDeCaja();
+                window.mostrarToast("Factura Anulada");
             }
         };
 
@@ -1370,6 +1550,7 @@
                 ventasHistorico = [];
                 if (window.localStorage) window.localStorage.setItem('geomercado_ventas_v19', JSON.stringify(ventasHistorico));
                 window.renderizarCierreDeCaja();
+                window.mostrarToast("Historial Reiniciado");
             }
         };
 
@@ -1378,7 +1559,7 @@
             if(intento === perfilNegocio.pin) {
                 window.conmutarPerfil('Administrador 👑');
             } else {
-                alert("PIN Incorrecto.");
+                window.mostrarFeedbackAnimado('error', 'PIN Incorrecto');
             }
         };
 
@@ -1404,7 +1585,7 @@
             if(document.getElementById('input-fondo-ves')) document.getElementById('input-fondo-ves').value = fondoCaja.ves || '';
             if(document.getElementById('input-tasa-global')) document.getElementById('input-tasa-global').value = tasaDia;
             
-            document.getElementById('cfg-nombre').value = perfilNegocio.nombre !== "Geo Mercado" ? perfilNegocio.nombre : "";
+            document.getElementById('cfg-nombre').value = perfilNegocio.nombre !== "Geo Mercado 🛍️" ? perfilNegocio.nombre : "";
             document.getElementById('cfg-rif').value = perfilNegocio.rif;
             document.getElementById('cfg-tlf').value = perfilNegocio.tlf;
             document.getElementById('cfg-dir').value = perfilNegocio.dir;
