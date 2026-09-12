@@ -129,7 +129,18 @@
         .pm-status-success { background: rgba(0, 255, 102, 0.15); border: 1px solid #00ff66; color: #00ff66; }
         .pm-status-warning { background: rgba(255, 193, 7, 0.15); border: 1px solid #ffc107; color: #ffc107; }
 
-        /* ANIMACIONES Y FEEDBACK NOTIFICACIONES (TOAST & FEEDBACK OVERLAY) */
+        /* SPINNER DE CARGA OCR */
+        .spinner-loader {
+            width: 32px; height: 32px;
+            border: 4px solid rgba(0, 255, 102, 0.2);
+            border-top: 4px solid #00ff66;
+            border-radius: 50%;
+            animation: spin 0.8s linear infinite;
+            margin-bottom: 10px;
+        }
+        @keyframes spin { 0% { transform: rotate(0deg); } 100% { transform: rotate(360deg); } }
+
+        /* ANIMACIONES Y FEEDBACK NOTIFICACIONES */
         .toast-notification {
             position: fixed;
             bottom: 20px;
@@ -203,6 +214,18 @@
 
         <!-- TOAST DE NOTIFICACIONES -->
         <div id="toast" class="toast-notification"></div>
+
+        <!-- MODAL CONFIRMACIONES PERSONALIZADO (REEMPLAZA ALERTS Y CONFIRMS) -->
+        <div id="modal-confirm" class="modal-overlay">
+            <div class="modal-content" style="max-width: 320px; text-align: center;">
+                <h3 id="confirm-title" style="color:#00ff66;">Confirmar Acción</h3>
+                <p id="confirm-msg" style="color:#fff; font-size:13px; margin: 10px 0;"></p>
+                <div style="display:flex; gap:10px; margin-top: 10px;">
+                    <button class="btn-clear" id="confirm-btn-cancel">Cancelar</button>
+                    <button class="btn-charge" id="confirm-btn-accept">Aceptar</button>
+                </div>
+            </div>
+        </div>
 
         <!-- MODAL CÁMARA EN TIEMPO REAL -->
         <div id="modal-camara" class="modal-overlay">
@@ -575,6 +598,27 @@
             overlay.style.display = 'flex';
             
             setTimeout(function(){ overlay.style.display = 'none'; }, 1300);
+        };
+
+        window.mostrarConfirmacion = function(titulo, mensaje, accionAceptar) {
+            var modal = document.getElementById('modal-confirm');
+            var titleEl = document.getElementById('confirm-title');
+            var msgEl = document.getElementById('confirm-msg');
+            var btnAccept = document.getElementById('confirm-btn-accept');
+            var btnCancel = document.getElementById('confirm-btn-cancel');
+
+            if(!modal) return;
+            titleEl.innerText = titulo;
+            msgEl.innerText = mensaje;
+            modal.style.display = 'flex';
+
+            btnAccept.onclick = function() {
+                modal.style.display = 'none';
+                if(typeof accionAceptar === 'function') accionAceptar();
+            };
+            btnCancel.onclick = function() {
+                modal.style.display = 'none';
+            };
         };
 
         window.escapeHTML = function(str) {
@@ -1151,7 +1195,7 @@
                 
                 carrito = rec.items;
                 totalVentaUSD = rec.totalUSD;
-                totalVentaVES = rec.totalVES;
+                totalVentaVES = rec.totalUSD * tasaDia; // Recalcular con la tasa vigente
                 document.getElementById('cliente-nombre').value = rec.cliente !== "Cliente sin nombre" ? rec.cliente : "";
                 window.renderizarCarritoCaja();
                 window.mostrarToast("📂 Factura Recuperada");
@@ -1249,15 +1293,29 @@
             if(eRef) eRef.value = "Leyendo Capture...";
             if(banner) { banner.style.display = 'none'; banner.className = 'pm-status-banner'; }
             
+            // MOSTRAR INDICADOR VISUAL SPINNER DE CARGA
+            var overlay = document.getElementById('scan-feedback');
+            var box = document.getElementById('scan-feedback-box');
+            var msgEl = document.getElementById('scan-feedback-msg');
+            if(overlay && box && msgEl) {
+                box.className = '';
+                box.innerHTML = '<div class="spinner-loader"></div>';
+                msgEl.innerText = 'Procesando Capture...';
+                overlay.style.display = 'flex';
+            }
+
             Tesseract.recognize(input.files[0], 'spa')
             .then(function(result) {
+                if(overlay) overlay.style.display = 'none';
+                if(box) box.innerHTML = '';
+                
                 var text = result.data.text;
                 var textLimpio = text.replace(/[\n\r]/g, ' ').toLowerCase();
 
                 // Búsqueda de referencia
                 var ref = text.match(/\d{6,12}/);
                 
-                // OCR MEJORADO: Captura específica para montos venezolanos formateados con punto de miles y coma decimal (Ej: 6.273,45 Bs)
+                // OCR MEJORADO: Captura específica para montos venezolanos
                 var patronMontoBDV = /([\d\.]+,\d{2})\s*Bs/i;
                 var patronMontoGen = /(?:bs|monto|pagado|ref)?[:.\s]*([\d.]+,\d{2})/i;
                 
@@ -1300,6 +1358,8 @@
             })
             .catch(function(err){
                 console.error(err);
+                if(overlay) overlay.style.display = 'none';
+                if(box) box.innerHTML = '';
                 if(eRef) eRef.value = "";
                 window.mostrarFeedbackAnimado('error', 'Error al leer imagen');
             });
@@ -1457,7 +1517,7 @@
         window.imprimirTicket = function(index) {
             var v = ventasHistorico[index];
             var pw = window.open('', '_blank');
-            if(!pw) { alert("Por favor habilita las ventanas emergentes (pop-ups)"); return; }
+            if(!pw) { window.mostrarFeedbackAnimado('error', 'Habilita las ventanas emergentes'); return; }
             var doc = pw.document;
             var h = '<html><head><title>Ticket</title><style>body{font-family:monospace; color:#000; width:280px; margin:0 auto; padding:10px;} .it{display:flex; justify-content:space-between; margin-bottom:4px; font-size:12px;}</style></head><body>';
             h += '<h2 style="text-align:center; margin:0; font-size:16px;">' + window.escapeHTML(perfilNegocio.nombre) + '</h2>';
@@ -1497,7 +1557,7 @@
             }
 
             var pw = window.open('', '_blank');
-            if(!pw) { alert("Por favor habilita las ventanas emergentes (pop-ups)"); return; }
+            if(!pw) { window.mostrarFeedbackAnimado('error', 'Habilita las ventanas emergentes'); return; }
             var doc = pw.document;
             var h = '<html><head><title>Cierre Z</title><style>body{font-family:monospace; color:#000; width:280px; margin:0 auto; padding:10px;} .it{display:flex; justify-content:space-between; margin-bottom:4px; font-size:12px;}</style></head><body>';
             h += '<h2 style="text-align:center; margin:0; font-size:16px;">' + window.escapeHTML(perfilNegocio.nombre) + '</h2>';
@@ -1524,7 +1584,7 @@
         };
 
         window.anularVenta = function(index) {
-            if(confirm("¿Seguro que deseas anular esta factura?")) {
+            window.mostrarConfirmacion("❌ Anular Factura", "¿Seguro que deseas anular esta factura? El stock se devolverá al inventario.", function() {
                 var v = ventasHistorico[index];
                 for(var i=0; i<v.items.length; i++) {
                     if(v.items[i].tipo !== 'peso' && v.items[i].tipo !== 'combo') {
@@ -1542,16 +1602,16 @@
                 if (window.localStorage) window.localStorage.setItem('geomercado_ventas_v19', JSON.stringify(ventasHistorico));
                 window.renderizarCierreDeCaja();
                 window.mostrarToast("Factura Anulada");
-            }
+            });
         };
 
         window.borrarHistorial = function() {
-            if(confirm("¿Seguro que deseas borrar TODAS las ventas de hoy? Esto reiniciará la caja a cero.")) {
+            window.mostrarConfirmacion("⚠️ Reiniciar Día", "¿Seguro que deseas borrar TODAS las ventas de hoy? Esto reiniciará la caja a cero.", function() {
                 ventasHistorico = [];
                 if (window.localStorage) window.localStorage.setItem('geomercado_ventas_v19', JSON.stringify(ventasHistorico));
                 window.renderizarCierreDeCaja();
                 window.mostrarToast("Historial Reiniciado");
-            }
+            });
         };
 
         window.intentarAdmin = function() {
