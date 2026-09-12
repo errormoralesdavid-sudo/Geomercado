@@ -1539,7 +1539,7 @@
                 if (window.localStorage) window.localStorage.setItem('geomercado_db_v19', JSON.stringify(productos));
                 
                 ventasHistorico.splice(index, 1);
-                if (window.localStorage) window.localStoragesetItem('geomercado_ventas_v19', JSON.stringify(ventasHistorico));
+                if (window.localStorage) window.localStorage.setItem('geomercado_ventas_v19', JSON.stringify(ventasHistorico));
                 window.renderizarCierreDeCaja();
                 window.mostrarToast("Factura Anulada");
             }
@@ -1563,40 +1563,38 @@
             }
         };
 
-        window.conmutarPerfil = function(perfil) {
-            rolActual = perfil;
-            var eRol = document.getElementById('txt-rol');
-            if(eRol) eRol.innerText = perfil;
-            var btnAdminMenu = document.querySelectorAll('.btn-menu');
-            if(btnAdminMenu.length >= 4) {
-                btnAdminMenu[2].style.display = (rolActual === 'Cajero 👤') ? 'none' : 'flex'; 
-                btnAdminMenu[3].style.display = (rolActual === 'Cajero 👤') ? 'none' : 'flex'; 
-            }
-            window.volverAlMenu();
+        window.conmutarPerfil = function(rol) {
+            rolActual = rol;
+            document.getElementById('txt-rol').innerText = rolActual;
+            window.mostrarToast("Modo: " + rolActual);
         };
 
-        window.onload = function() {
-            var totalUsdEl = document.getElementById('grand-total-usd');
-            if (totalUsdEl) totalUsdEl.innerText = window.formatUSD(totalVentaUSD);
-            var totalVesEl = document.getElementById('grand-total-ves');
-            if (totalVesEl) totalVesEl.innerText = window.formatVE(totalVentaVES);
+        // Cargar valores de perfil al iniciar
+        window.addEventListener('DOMContentLoaded', function() {
+            var eNombre = document.getElementById('cfg-nombre');
+            var eRif = document.getElementById('cfg-rif');
+            var eTlf = document.getElementById('cfg-tlf');
+            var eDir = document.getElementById('cfg-dir');
+            var ePin = document.getElementById('cfg-pin');
+            var ePmBanco = document.getElementById('cfg-pm-banco');
+            var ePmCedula = document.getElementById('cfg-pm-cedula');
+            var ePmTlf = document.getElementById('cfg-pm-tlf');
+            var eTasa = document.getElementById('input-tasa-global');
+            var eFondoUSD = document.getElementById('input-fondo-usd');
+            var eFondoVES = document.getElementById('input-fondo-ves');
 
-            if(document.getElementById('input-fondo-usd')) document.getElementById('input-fondo-usd').value = fondoCaja.usd || '';
-            if(document.getElementById('input-fondo-ves')) document.getElementById('input-fondo-ves').value = fondoCaja.ves || '';
-            if(document.getElementById('input-tasa-global')) document.getElementById('input-tasa-global').value = tasaDia;
-            
-            document.getElementById('cfg-nombre').value = perfilNegocio.nombre !== "Geo Mercado 🛍️" ? perfilNegocio.nombre : "";
-            document.getElementById('cfg-rif').value = perfilNegocio.rif;
-            document.getElementById('cfg-tlf').value = perfilNegocio.tlf;
-            document.getElementById('cfg-dir').value = perfilNegocio.dir;
-            document.getElementById('cfg-pin').value = perfilNegocio.pin;
-
-            if(document.getElementById('cfg-pm-banco')) document.getElementById('cfg-pm-banco').value = perfilNegocio.pmBanco || '';
-            if(document.getElementById('cfg-pm-cedula')) document.getElementById('cfg-pm-cedula').value = perfilNegocio.pmCedula || '';
-            if(document.getElementById('cfg-pm-tlf')) document.getElementById('cfg-pm-tlf').value = perfilNegocio.pmTlf || '';
-            
-            window.actualizarEtiquetasPago();
-        };
+            if(eNombre) eNombre.value = perfilNegocio.nombre;
+            if(eRif) eRif.value = perfilNegocio.rif;
+            if(eTlf) eTlf.value = perfilNegocio.tlf;
+            if(eDir) eDir.value = perfilNegocio.dir;
+            if(ePin) ePin.value = perfilNegocio.pin;
+            if(ePmBanco) ePmBanco.value = perfilNegocio.pmBanco || "";
+            if(ePmCedula) ePmCedula.value = perfilNegocio.pmCedula || "";
+            if(ePmTlf) ePmTlf.value = perfilNegocio.pmTlf || "";
+            if(eTasa) eTasa.value = tasaDia;
+            if(eFondoUSD) eFondoUSD.value = fondoCaja.usd || "";
+            if(eFondoVES) eFondoVES.value = fondoCaja.ves || "";
+        });
     </script>
 </body>
 </html>
