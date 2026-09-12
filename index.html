@@ -4,6 +4,10 @@
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>GeoMercado</title>
+  <!-- Enlace imprescindible para conectar el manifest.json -->
+  <link rel="manifest" href="manifest.json">
+  <meta name="theme-color" content="#1e293b">
+  
   <style>
     /* ==========================================
        VARIABLES Y ESTILOS GENERALES
@@ -171,7 +175,7 @@
     }
 
     /* ==========================================
-       BOTONES CON EFECTO TÁCTIL (RIPPLE / PRESS)
+       BOTONES CON EFECTO TÁCTIL (PRESS)
        ========================================== */
     .btn {
       width: 100%;
@@ -232,28 +236,16 @@
       border: 1px solid #fecaca;
     }
 
-    /* ==========================================
-       LISTA DE PRODUCTOS E INVENTARIO
-       ========================================== */
     .item-row {
       display: flex;
       justify-content: space-between;
       align-items: center;
       padding: 10px 0;
       border-bottom: 1px solid var(--border);
-      animation: slideIn 0.25s ease;
-    }
-
-    @keyframes slideIn {
-      from { opacity: 0; transform: translateX(-10px); }
-      to { opacity: 1; transform: translateX(0); }
     }
 
     .item-row:last-child { border-bottom: none; }
 
-    /* ==========================================
-       TOAST DE NOTIFICACIÓN FLOTANTE
-       ========================================== */
     #toast {
       visibility: hidden;
       min-width: 240px;
@@ -285,16 +277,14 @@
   <header>GeoMercado</header>
 
   <nav>
-    <button class="nav-btn active" onclick="switchTab('ventas')">Ventas</button>
-    <button class="nav-btn" onclick="switchTab('pago-movil')">Pago Móvil</button>
-    <button class="nav-btn" onclick="switchTab('cierre')">Cierre</button>
-    <button class="nav-btn" onclick="switchTab('ajustes')">Ajustes</button>
+    <button class="nav-btn active" id="btn-ventas" onclick="switchTab('ventas')">Ventas</button>
+    <button class="nav-btn" id="btn-pago-movil" onclick="switchTab('pago-movil')">Pago Móvil</button>
+    <button class="nav-btn" id="btn-cierre" onclick="switchTab('cierre')">Cierre</button>
+    <button class="nav-btn" id="btn-ajustes" onclick="switchTab('ajustes')">Ajustes</button>
   </nav>
 
   <main>
-    <!-- ==========================================
-         PESTAÑA 1: VENTAS Y PAGO MIXTO
-         ========================================== -->
+    <!-- VENTAS -->
     <section id="tab-ventas" class="tab-content active">
       <div class="card">
         <div class="card-title">Nueva Venta / Registro</div>
@@ -333,9 +323,7 @@
       </div>
     </section>
 
-    <!-- ==========================================
-         PESTAÑA 2: ANALIZADOR DE PAGO MÓVIL
-         ========================================== -->
+    <!-- ANALIZADOR DE PAGO MÓVIL -->
     <section id="tab-pago-movil" class="tab-content">
       <div class="card">
         <div class="card-title">Verificación Antifraude Pago Móvil</div>
@@ -366,7 +354,6 @@
 
         <button class="btn btn-primary" onclick="validarPagoMovil()">Analizar Comprobante</button>
 
-        <!-- Mensajes de Estado Animados -->
         <div id="alert-pm-success" class="alert-box alert-success">
           ✓ Datos Correctos: El pago coincide perfectamente con tu cuenta guardada.
         </div>
@@ -375,7 +362,6 @@
         </div>
       </div>
 
-      <!-- Opciones de Exportación -->
       <div class="card" id="card-exportar" style="display: none;">
         <div class="card-title">Compartir / Guardar Comprobante</div>
         <button class="btn btn-whatsapp" onclick="compartirWhatsApp()">Compartir por WhatsApp</button>
@@ -384,9 +370,7 @@
       </div>
     </section>
 
-    <!-- ==========================================
-         PESTAÑA 3: CIERRE DE CAJA
-         ========================================== -->
+    <!-- CIERRE DE CAJA -->
     <section id="tab-cierre" class="tab-content">
       <div class="card">
         <div class="card-title">Cierre de Caja Diario</div>
@@ -404,9 +388,7 @@
       </div>
     </section>
 
-    <!-- ==========================================
-         PESTAÑA 4: AJUSTES (MIS DATOS DE PAGO MÓVIL)
-         ========================================== -->
+    <!-- AJUSTES -->
     <section id="tab-ajustes" class="tab-content">
       <div class="card">
         <div class="card-title">Mis Datos de Pago Móvil</div>
@@ -433,32 +415,30 @@
     </section>
   </main>
 
-  <!-- Notificación flotante (Toast) -->
   <div id="toast">Notificación</div>
 
   <script>
-    /* ==========================================
-       ESTADO Y LOGICA PRINCIPAL
-       ========================================== */
     let carrito = [];
     let totalAcumulado = 0;
     let contadorVentas = 0;
     let ultimoPagoValidado = null;
 
-    // Cargar datos guardados al iniciar
     window.onload = function() {
       if (localStorage.getItem('cfg_banco')) document.getElementById('cfg-banco').value = localStorage.getItem('cfg_banco');
       if (localStorage.getItem('cfg_cedula')) document.getElementById('cfg-cedula').value = localStorage.getItem('cfg_cedula');
       if (localStorage.getItem('cfg_telefono')) document.getElementById('cfg-telefono').value = localStorage.getItem('cfg_telefono');
+
+      if (window.location.hash === '#pago-movil') {
+        switchTab('pago-movil');
+      }
     };
 
-    // Cambiar entre pestañas con transiciones suaves
     function switchTab(tabId) {
       document.querySelectorAll('.tab-content').forEach(tab => tab.classList.remove('active'));
       document.querySelectorAll('.nav-btn').forEach(btn => btn.classList.remove('active'));
 
       document.getElementById('tab-' + tabId).classList.add('active');
-      event.currentTarget.classList.add('active');
+      document.getElementById('btn-' + tabId).classList.add('active');
     }
 
     function showToast(msj) {
@@ -468,9 +448,6 @@
       setTimeout(() => toast.classList.remove('show'), 2500);
     }
 
-    /* ==========================================
-       FUNCIONES DE VENTAS
-       ========================================== */
     function agregarProducto() {
       const nombre = document.getElementById('prod-nombre').value.trim();
       const monto = parseFloat(document.getElementById('prod-monto').value);
@@ -492,7 +469,7 @@
       lista.innerHTML = '';
       let total = 0;
 
-      carrito.forEach((item, index) => {
+      carrito.forEach((item) => {
         total += item.monto;
         lista.innerHTML += `
           <div class="item-row">
@@ -527,9 +504,6 @@
       showToast("Venta procesada con éxito.");
     }
 
-    /* ==========================================
-       AJUSTES Y COPIADO RÁPIDO
-       ========================================== */
     function guardarAjustes() {
       const banco = document.getElementById('cfg-banco').value.trim();
       const cedula = document.getElementById('cfg-cedula').value.trim();
@@ -558,9 +532,6 @@
       });
     }
 
-    /* ==========================================
-       ANALIZADOR Y VALIDACIÓN ANTIFRAUDE PAGO MÓVIL
-       ========================================== */
     function validarPagoMovil() {
       const bancoIngresado = document.getElementById('pm-banco').value.trim().toLowerCase();
       const cedulaIngresada = document.getElementById('pm-cedula').value.trim().toLowerCase();
@@ -584,7 +555,6 @@
         return;
       }
 
-      // Validación contra tus datos guardados
       const coincideBanco = miBanco === '' || bancoIngresado.includes(miBanco) || miBanco.includes(bancoIngresado);
       const coincideCedula = miCedula === '' || cedulaIngresada === miCedula;
       const coincideTelefono = miTelefono === '' || telefonoIngresado === miTelefono;
@@ -599,9 +569,6 @@
       }
     }
 
-    /* ==========================================
-       OPCIONES DE COMPARTIR Y DESCARGA
-       ========================================== */
     function compartirWhatsApp() {
       if (!ultimoPagoValidado) return;
       const mensaje = `*Comprobante Validado - GeoMercado*%0A%0A*Monto:* Bs/ $${ultimoPagoValidado.monto}%0A*Referencia:* ${ultimoPagoValidado.ref}%0A*Banco Destino:* ${ultimoPagoValidado.banco}%0A*Estado:* Validado Correctamente ✓`;
