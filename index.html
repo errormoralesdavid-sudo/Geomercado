@@ -113,8 +113,6 @@
         .btn-charge:active { transform: scale(0.95); }
         .btn-print { flex: 1; background-color: #fff; color: #000; border: none; padding: 10px; border-radius: 10px; font-weight: bold; cursor: pointer; text-align: center; font-size: 11px; transition: transform 0.1s; }
         .btn-print:active { transform: scale(0.95); }
-        .btn-ws { flex: 1; background-color: #25D366; color: #fff; border: none; padding: 10px; border-radius: 10px; font-weight: bold; cursor: pointer; text-align: center; font-size: 11px; transition: transform 0.1s; }
-        .btn-ws:active { transform: scale(0.95); }
 
         .cierre-card { background-color: #161a23; border: 1px solid #242c3d; border-radius: 10px; padding: 12px; margin-bottom: 8px; }
         .cierre-card h4 { margin: 0 0 8px 0; color: #00ff66; border-bottom: 1px dashed #313c52; padding-bottom: 4px;}
@@ -129,7 +127,6 @@
         .pm-status-success { background: rgba(0, 255, 102, 0.15); border: 1px solid #00ff66; color: #00ff66; }
         .pm-status-warning { background: rgba(255, 193, 7, 0.15); border: 1px solid #ffc107; color: #ffc107; }
 
-        /* SPINNER DE CARGA OCR */
         .spinner-loader {
             width: 32px; height: 32px;
             border: 4px solid rgba(0, 255, 102, 0.2);
@@ -140,7 +137,6 @@
         }
         @keyframes spin { 0% { transform: rotate(0deg); } 100% { transform: rotate(360deg); } }
 
-        /* ANIMACIONES Y FEEDBACK NOTIFICACIONES */
         .toast-notification {
             position: fixed;
             bottom: 20px;
@@ -206,16 +202,13 @@
     <div class="app-container">
         <div id="hidden-qr-reader"></div>
 
-        <!-- OVERLAY ANIMADO PARA SCANNER Y ACCIONES -->
         <div id="scan-feedback" class="scan-feedback-overlay">
             <div id="scan-feedback-box" class="scan-feedback-box"></div>
             <p id="scan-feedback-msg" style="color:#fff; font-weight:bold; margin-top:15px; font-size:14px; text-shadow:0 0 8px #000;"></p>
         </div>
 
-        <!-- TOAST DE NOTIFICACIONES -->
         <div id="toast" class="toast-notification"></div>
 
-        <!-- MODAL CONFIRMACIONES PERSONALIZADO (REEMPLAZA ALERTS Y CONFIRMS) -->
         <div id="modal-confirm" class="modal-overlay">
             <div class="modal-content" style="max-width: 320px; text-align: center;">
                 <h3 id="confirm-title" style="color:#00ff66;">Confirmar Acción</h3>
@@ -227,7 +220,6 @@
             </div>
         </div>
 
-        <!-- MODAL CÁMARA EN TIEMPO REAL -->
         <div id="modal-camara" class="modal-overlay">
             <div class="modal-content" style="max-width: 400px; text-align: center;">
                 <h3>📸 Escanear Código de Barras</h3>
@@ -236,7 +228,6 @@
             </div>
         </div>
 
-        <!-- MODAL DATOS DEL CLIENTE -->
         <div id="modal-cliente" class="modal-overlay">
             <div class="modal-content">
                 <h3>📝 Datos de Facturación</h3>
@@ -250,7 +241,6 @@
             </div>
         </div>
 
-        <!-- MODAL COMBOS -->
         <div id="modal-combos" class="modal-overlay">
             <div class="modal-content">
                 <h3>🎁 Combos y Ofertas</h3>
@@ -259,7 +249,6 @@
             </div>
         </div>
 
-        <!-- MENÚ PRINCIPAL -->
         <div id="menu-principal">
             <div class="logo-grande">
                 <svg viewBox="0 0 100 100" xmlns="http://www.w3.org/2000/svg">
@@ -281,7 +270,6 @@
             </div>
         </div>
 
-        <!-- MÓDULO 1: CAJA DE COBRO -->
         <div id="modulo-caja" class="modulo-app">
             <div class="header-modulo">
                 <h3>🛒 Caja de Facturación</h3>
@@ -317,9 +305,7 @@
             </button>
             <input type="file" id="file-barcode-caja" class="hidden-file-input" accept="image/*" capture="environment" onchange="window.escanearBarcodeFoto(event, 'caja')">
 
-            <!-- METODOS DE PAGO ACORDEON -->
             <div class="form-payments">
-                <!-- PUNTO DE VENTA -->
                 <button type="button" class="payment-toggle-btn" onclick="window.toggleMetodoPago('pay-box-ptv', this)">
                     <span>💳 Punto de Venta (Tarjeta)</span>
                     <span id="label-monto-ptv" style="color:#00ff66;">0,00 Bs</span>
@@ -334,7 +320,6 @@
                     </div>
                 </div>
 
-                <!-- PAGO MÓVIL -->
                 <button type="button" class="payment-toggle-btn" onclick="window.toggleMetodoPago('pay-box-pm', this)">
                     <span>📲 Pago Móvil Recibido</span>
                     <span id="label-monto-pm" style="color:#00ff66;">0,00 Bs</span>
@@ -356,7 +341,6 @@
                     </div>
                 </div>
 
-                <!-- EFECTIVO DIVISAS -->
                 <button type="button" class="payment-toggle-btn" onclick="window.toggleMetodoPago('pay-box-usd', this)">
                     <span>💵 Efectivo Divisas ($)</span>
                     <span id="label-monto-usd" style="color:#00ff66;">$0</span>
@@ -371,7 +355,6 @@
                     </div>
                 </div>
 
-                <!-- EFECTIVO BOLÍVARES -->
                 <button type="button" class="payment-toggle-btn" onclick="window.toggleMetodoPago('pay-box-ves', this)">
                     <span>🫴 Efectivo Bolívares</span>
                     <span id="label-monto-ves" style="color:#00ff66;">0,00 Bs</span>
@@ -399,7 +382,6 @@
             </div>
         </div>
 
-        <!-- MÓDULO 2: CONTROL DE INVENTARIO -->
         <div id="modulo-inventario" class="modulo-app">
             <div class="header-modulo">
                 <h3>📦 Catálogo de Mercancía</h3>
@@ -453,7 +435,6 @@
             <div class="inventory-grid" id="lista-productos"></div>
         </div>
 
-        <!-- MÓDULO 3: CIERRE DE CAJA -->
         <div id="modulo-cierre" class="modulo-app">
             <div class="header-modulo">
                 <h3>📊 Cierre de Caja y Facturas</h3>
@@ -489,7 +470,6 @@
             <button class="btn-clear" style="margin-top:10px; width:100%; background:#ff5252; color:#fff;" onclick="window.borrarHistorial()">BORRAR TODO Y REINICIAR DÍA</button>
         </div>
 
-        <!-- MÓDULO 4: AJUSTES Y PERFIL -->
         <div id="modulo-admin" class="modulo-app">
             <div class="header-modulo">
                 <h3>⚙️ Ajustes y Perfil</h3>
@@ -504,7 +484,6 @@
                 <input type="text" id="cfg-dir" placeholder="Dirección Corta" onchange="window.guardarPerfil()">
             </div>
 
-            <!-- CONFIGURACIÓN PAGO MÓVIL RECEPTOR PARA VERIFICACIÓN -->
             <div class="admin-form-box" style="border-color:#00ff66;">
                 <label style="color:#00ff66; font-weight:bold;">📲 Datos Pago Móvil Receptor (Verificación)</label>
                 <input type="text" id="cfg-pm-banco" placeholder="Banco (Ej. BDV, Banesco, Mercantil)" onchange="window.guardarPerfil()">
@@ -537,7 +516,6 @@
 
     </div>
 
-    <!-- LIBRERÍAS DE CÁMARA Y OCR -->
     <script defer src="https://cdn.jsdelivr.net/npm/tesseract.js@5/dist/tesseract.min.js"></script>
     <script defer src="https://unpkg.com/html5-qrcode"></script>
 
@@ -569,6 +547,31 @@
         } catch(e) {
             console.error("Error cargando base de datos local:", e);
         }
+
+        window.onload = function() {
+            var inputTasa = document.getElementById('input-tasa-global');
+            if(inputTasa) inputTasa.value = tasaDia;
+            
+            document.getElementById('cfg-nombre').value = perfilNegocio.nombre || "";
+            document.getElementById('cfg-rif').value = perfilNegocio.rif || "";
+            document.getElementById('cfg-tlf').value = perfilNegocio.tlf || "";
+            document.getElementById('cfg-dir').value = perfilNegocio.dir || "";
+            document.getElementById('cfg-pin').value = perfilNegocio.pin || "1234";
+            document.getElementById('cfg-pm-banco').value = perfilNegocio.pmBanco || "";
+            document.getElementById('cfg-pm-cedula').value = perfilNegocio.pmCedula || "";
+            document.getElementById('cfg-pm-tlf').value = perfilNegocio.pmTlf || "";
+            
+            document.getElementById('input-fondo-usd').value = fondoCaja.usd || "";
+            document.getElementById('input-fondo-ves').value = fondoCaja.ves || "";
+        };
+
+        window.recalcularTotalesCarrito = function() {
+            totalVentaUSD = 0.00;
+            for(var i = 0; i < carrito.length; i++) {
+                totalVentaUSD += carrito[i].totalUSD;
+            }
+            totalVentaVES = totalVentaUSD * tasaDia;
+        };
 
         window.mostrarToast = function(mensaje) {
             var toast = document.getElementById('toast');
@@ -734,7 +737,7 @@
         window.cambiarTasaManual = function(nuevaTasa) {
             tasaDia = parseFloat(nuevaTasa) || 623.02;
             if (window.localStorage) window.localStorage.setItem('geomercado_tasa_v19', tasaDia);
-            totalVentaVES = totalVentaUSD * tasaDia;
+            window.recalcularTotalesCarrito();
             window.renderizarCarritoCaja();
         };
 
@@ -942,8 +945,6 @@
                 precioUSD = precioUnitarioCalculado * cantidadVendida;
                 
                 carrito.push({ id: p.id, nombre: p.nombre, totalUSD: precioUSD, detalle: cantidadVendida + ' kg', emoji: (p.emoji ? p.emoji : '🍎'), tipo: p.tipo, qtyVenta: cantidadVendida, precioUnitario: precioUnitarioCalculado });
-                totalVentaUSD += precioUSD;
-                totalVentaVES = totalVentaUSD * tasaDia;
             } else {
                 if(p.tipo !== 'combo' && p.qty < 1) { window.mostrarFeedbackAnimado('error', 'Sin Stock'); return; }
                 
@@ -966,10 +967,9 @@
                 } else {
                     carrito.push({ id: p.id, nombre: p.nombre, totalUSD: precioUnitarioCalculado, detalle: '1 unds', emoji: (p.emoji ? p.emoji : '📦'), tipo: p.tipo, qtyVenta: 1, precioUnitario: precioUnitarioCalculado });
                 }
-                totalVentaUSD += precioUnitarioCalculado;
-                totalVentaVES = totalVentaUSD * tasaDia;
             }
             
+            window.recalcularTotalesCarrito();
             window.mostrarToast("+ Agregado al carrito");
             window.renderizarCarritoCaja();
             document.getElementById('buscador-caja').value = "";
@@ -995,8 +995,7 @@
             item.totalUSD += item.precioUnitario;
             item.detalle = item.qtyVenta + ' unds';
 
-            totalVentaUSD += item.precioUnitario;
-            totalVentaVES = totalVentaUSD * tasaDia;
+            window.recalcularTotalesCarrito();
             window.renderizarCarritoCaja();
         };
 
@@ -1014,15 +1013,15 @@
                 if (window.localStorage) window.localStorage.setItem('geomercado_db_v19', JSON.stringify(productos));
             }
 
-            totalVentaUSD -= item.precioUnitario;
-            if(totalVentaUSD < 0) totalVentaUSD = 0;
-            totalVentaVES = totalVentaUSD * tasaDia;
-
             item.qtyVenta -= 1;
             item.totalUSD -= item.precioUnitario;
             item.detalle = item.qtyVenta + ' unds';
 
-            if(item.qtyVenta <= 0) carrito.splice(index, 1); 
+            if(item.qtyVenta <= 0) {
+                carrito.splice(index, 1);
+            }
+
+            window.recalcularTotalesCarrito();
             window.renderizarCarritoCaja();
         };
 
@@ -1038,11 +1037,8 @@
                 if (window.localStorage) window.localStorage.setItem('geomercado_db_v19', JSON.stringify(productos));
             }
             
-            totalVentaUSD -= item.totalUSD;
-            if(totalVentaUSD < 0) totalVentaUSD = 0;
-            totalVentaVES = totalVentaUSD * tasaDia;
-            
             carrito.splice(index, 1);
+            window.recalcularTotalesCarrito();
             window.renderizarCarritoCaja();
         };
 
@@ -1194,23 +1190,32 @@
                 if (window.localStorage) window.localStorage.setItem('geomercado_espera_v19', JSON.stringify(facturasEnEspera));
                 
                 carrito = rec.items;
-                totalVentaUSD = rec.totalUSD;
-                totalVentaVES = rec.totalUSD * tasaDia; // Recalcular con la tasa vigente
+                window.recalcularTotalesCarrito();
                 document.getElementById('cliente-nombre').value = rec.cliente !== "Cliente sin nombre" ? rec.cliente : "";
                 window.renderizarCarritoCaja();
                 window.mostrarToast("📂 Factura Recuperada");
             }
         };
 
-        /* LECTOR CÓDIGO BARRAS EN TIEMPO REAL */
         window.abrirCamaraEnVivo = function(modo) {
             if (typeof Html5Qrcode === 'undefined') { window.mostrarFeedbackAnimado('error', 'Cargando escáner...'); return; }
             document.getElementById('modal-camara').style.display = 'flex';
 
             if(html5QrScannerInstancia) {
-                try { html5QrScannerInstancia.clear(); } catch(e){}
+                try {
+                    html5QrScannerInstancia.stop().then(function() {
+                        html5QrScannerInstancia.clear();
+                        window.iniciarCamaraInstancia(modo);
+                    }).catch(function() {
+                        window.iniciarCamaraInstancia(modo);
+                    });
+                    return;
+                } catch(e){}
             }
+            window.iniciarCamaraInstancia(modo);
+        };
 
+        window.iniciarCamaraInstancia = function(modo) {
             html5QrScannerInstancia = new Html5Qrcode("interactive-scanner");
             html5QrScannerInstancia.start(
                 { facingMode: "environment" },
@@ -1246,8 +1251,10 @@
             if(html5QrScannerInstancia) {
                 html5QrScannerInstancia.stop().then(function() {
                     html5QrScannerInstancia.clear();
+                    html5QrScannerInstancia = null;
                     document.getElementById('modal-camara').style.display = 'none';
                 }).catch(function() {
+                    html5QrScannerInstancia = null;
                     document.getElementById('modal-camara').style.display = 'none';
                 });
             } else {
@@ -1282,7 +1289,6 @@
             .catch(function() { window.mostrarFeedbackAnimado('error', 'No se detectó código'); });
         };
 
-        /* LECTOR Y VERIFICADOR DE PAGO MÓVIL OPTIMIZADO PARA VENEZUELA */
         window.escanearCapturePagoCompleto = function(event) {
             if (typeof Tesseract === 'undefined') { window.mostrarToast("Cargando motor OCR..."); return; }
             var input = event.target;
@@ -1293,7 +1299,6 @@
             if(eRef) eRef.value = "Leyendo Capture...";
             if(banner) { banner.style.display = 'none'; banner.className = 'pm-status-banner'; }
             
-            // MOSTRAR INDICADOR VISUAL SPINNER DE CARGA
             var overlay = document.getElementById('scan-feedback');
             var box = document.getElementById('scan-feedback-box');
             var msgEl = document.getElementById('scan-feedback-msg');
@@ -1312,10 +1317,8 @@
                 var text = result.data.text;
                 var textLimpio = text.replace(/[\n\r]/g, ' ').toLowerCase();
 
-                // Búsqueda de referencia
                 var ref = text.match(/\d{6,12}/);
                 
-                // OCR MEJORADO: Captura específica para montos venezolanos
                 var patronMontoBDV = /([\d\.]+,\d{2})\s*Bs/i;
                 var patronMontoGen = /(?:bs|monto|pagado|ref)?[:.\s]*([\d.]+,\d{2})/i;
                 
@@ -1336,7 +1339,6 @@
                     window.mostrarFeedbackAnimado('error', 'Revisa el monto manualmente');
                 }
 
-                // Verificación de coincidencias con los datos registrados
                 if(banner) {
                     var coincidenciaCedula = perfilNegocio.pmCedula && textLimpio.includes(perfilNegocio.pmCedula.toLowerCase().trim());
                     var coincidenciaTelefono = perfilNegocio.pmTlf && textLimpio.includes(perfilNegocio.pmTlf.toLowerCase().replace(/\D/g, ''));
@@ -1377,7 +1379,7 @@
 
             var numClean = tlfCliente.replace(/\D/g, '');
             var url = numClean ? ("https://api.whatsapp.com/send?phone=" + numClean + "&text=" + encodeURIComponent(msj)) : ("https://api.whatsapp.com/send?text=" + encodeURIComponent(msj));
-            window.open(url, '_blank');
+            window.open(url, '_blank', 'noopener,noreferrer');
         };
 
         window.procesarCobro = function(imprimirTicketBooleano) {
@@ -1511,7 +1513,7 @@
 
             var numClean = (v.tlf || "").replace(/\D/g, '');
             var url = numClean ? ("https://api.whatsapp.com/send?phone=" + numClean + "&text=" + encodeURIComponent(msj)) : ("https://api.whatsapp.com/send?text=" + encodeURIComponent(msj));
-            window.open(url, '_blank');
+            window.open(url, '_blank', 'noopener,noreferrer');
         };
 
         window.imprimirTicket = function(index) {
