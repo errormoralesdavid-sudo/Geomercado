@@ -1458,7 +1458,7 @@
                 cliente: cNombre, cedula: cCedula, dir: cDir, tlf: cTlf
             };
             ventasHistorico.push(venta);
-            if (window.localStorage) window.localStorage.setItem('geomercado_ventas_v19', JSON.stringify(ventasHistorico));
+            if (window.localStorage) window.localStoragesetItem('geomercado_ventas_v19', JSON.stringify(ventasHistorico));
             
             window.mostrarFeedbackAnimado('exito', 'Venta Cobrada Exitosamente');
 
@@ -1652,47 +1652,49 @@
         window.anularVenta = function(index) {
             window.mostrarConfirmacion("❌ Anular Factura", "¿Seguro que deseas anular esta factura? El stock se devolverá al inventario.", function() {
                 var v = ventasHistorico[index];
-                for(var i=0; i<v.items.length; i++) {
-                    if(v.items[i].tipo !== 'peso' && v.items[i].tipo !== 'combo') {
-                        for(var j=0; j<productos.length; j++) {
-                            if(productos[j].id === v.items[i].id) {
-                                productos[j].qty += v.items[i].qtyVenta;
-                                break;
+                if(v && v.items) {
+                    for(var i=0; i<v.items.length; i++) {
+                        var it = v.items[i];
+                        if(it.tipo !== 'peso' && it.tipo !== 'combo') {
+                            for(var j=0; j<productos.length; j++) {
+                                if(productos[j].id === it.id) {
+                                    productos[j].qty += (it.qtyVenta || 1);
+                                    break;
+                                }
                             }
                         }
                     }
+                    if (window.localStorage) window.localStorage.setItem('geomercado_db_v19', JSON.stringify(productos));
                 }
-                if (window.localStorage) window.localStorage.setItem('geomercado_db_v19', JSON.stringify(productos));
-                
                 ventasHistorico.splice(index, 1);
                 if (window.localStorage) window.localStorage.setItem('geomercado_ventas_v19', JSON.stringify(ventasHistorico));
                 window.renderizarCierreDeCaja();
-                window.mostrarToast("Factura Anulada");
+                window.mostrarToast("Factura anulada y stock retornado");
             });
         };
 
         window.borrarHistorial = function() {
-            window.mostrarConfirmacion("⚠️ Reiniciar Día", "¿Seguro que deseas borrar TODAS las ventas de hoy? Esto reiniciará la caja a cero.", function() {
+            window.mostrarConfirmacion("⚠️ Reiniciar Día", "¿Deseas borrar el historial de ventas del día actual? Esta acción es irreversible.", function() {
                 ventasHistorico = [];
                 if (window.localStorage) window.localStorage.setItem('geomercado_ventas_v19', JSON.stringify(ventasHistorico));
                 window.renderizarCierreDeCaja();
-                window.mostrarToast("Historial Reiniciado");
+                window.mostrarToast("Historial reseteado");
             });
         };
 
+        window.conmutarPerfil = function(nuevoRol) {
+            rolActual = nuevoRol;
+            document.getElementById('txt-rol').innerText = rolActual;
+            window.mostrarToast("Perfil cambiado a: " + rolActual);
+        };
+
         window.intentarAdmin = function() {
-            var intento = prompt("Ingrese el PIN de Seguridad:");
-            if(intento === perfilNegocio.pin) {
-                window.conmutarPerfil('Administrador 👑');
+            var pin = prompt("Ingresa el PIN Administrador:");
+            if(pin === (perfilNegocio.pin || "1234")) {
+                window.conmutarPerfil("Administrador 👑");
             } else {
                 window.mostrarFeedbackAnimado('error', 'PIN Incorrecto');
             }
-        };
-
-        window.conmutarPerfil = function(rol) {
-            rolActual = rol;
-            document.getElementById('txt-rol').innerText = rolActual;
-            window.mostrarToast("Modo: " + rolActual);
         };
     </script>
 </body>
