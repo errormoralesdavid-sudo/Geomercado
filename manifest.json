@@ -1,20 +1,21 @@
 {
-  "short_name": "Geo Mercado",
-  "name": "Geo Mercado V19.0",
+  "short_name": "GeoMercado",
+  "name": "Geo Mercado V19.1 POS",
   "icons": [
     {
-      "src": "icon-192.png",
+      "src": "https://cdn-icons-png.flaticon.com/512/891/891462.png",
       "type": "image/png",
       "sizes": "192x192"
     },
     {
-      "src": "icon-512.png",
+      "src": "https://cdn-icons-png.flaticon.com/512/891/891462.png",
       "type": "image/png",
       "sizes": "512x512"
     }
   ],
   "start_url": "./index.html",
-  "background_color": "#000000",
-  "theme_color": "#000000",
-  "display": "standalone"
+  "background_color": "#0d1117",
+  "theme_color": "#0d1117",
+  "display": "standalone",
+  "orientation": "portrait"
 }
