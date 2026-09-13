@@ -3,14 +3,19 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-  <title>GEO MERCADO 🛍️ - POS V20</title>
+  <title>GEO MERCADO 🛍️ - Punto de Venta POS</title>
+  
+  <!-- Tailwind CSS & FontAwesome -->
   <script src="https://cdn.tailwindcss.com"></script>
   <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+  
+  <!-- Librerías de Escáner y OCR -->
   <script src="https://unpkg.com/html5-qrcode"></script>
   <script src="https://cdn.jsdelivr.net/npm/tesseract.js@5/dist/tesseract.min.js"></script>
+
   <style>
     body { background-color: #0b0f19; color: #f1f5f9; font-family: system-ui, -apple-system, sans-serif; user-select: none; }
-    .neon-card { background: rgba(15, 23, 42, 0.75); backdrop-filter: blur(12px); border: 1px solid rgba(56, 189, 248, 0.2); }
+    .neon-card { background: rgba(15, 23, 42, 0.85); backdrop-filter: blur(12px); border: 1px solid rgba(56, 189, 248, 0.2); }
     .neon-border { border-color: #38bdf8; box-shadow: 0 0 12px rgba(56, 189, 248, 0.25); }
     .neon-text-green { color: #10b981; text-shadow: 0 0 8px rgba(16, 185, 129, 0.3); }
     .neon-text-blue { color: #38bdf8; text-shadow: 0 0 8px rgba(56, 189, 248, 0.3); }
@@ -18,11 +23,12 @@
     .neon-btn-green:active { background: #047857; }
     .no-scrollbar::-webkit-scrollbar { display: none; }
     .no-scrollbar { -ms-overflow-style: none; scrollbar-width: none; }
+    .tab-btn.active { border-bottom: 2px solid #38bdf8; color: #38bdf8; font-weight: bold; }
   </style>
 </head>
 <body class="h-screen flex flex-col justify-between overflow-hidden">
 
-  <!-- ENCABEZADO PRINCIPAL -->
+  <!-- ENCABEZADO SUPERIOR -->
   <header class="neon-card px-4 py-2.5 flex justify-between items-center border-b border-slate-800 z-10">
     <div class="flex items-center gap-2">
       <div class="w-8 h-8 rounded-lg bg-sky-500/20 border border-sky-400/30 flex items-center justify-center">
@@ -32,44 +38,59 @@
         <h1 class="font-bold text-sm tracking-wide text-slate-100 flex items-center gap-1.5">
           GEO MERCADO <span class="text-[10px] bg-sky-500/20 text-sky-300 px-1.5 py-0.2 rounded border border-sky-500/30">V20</span>
         </h1>
-        <p id="role-indicator" class="text-[10px] text-slate-400">Terminal Cajero</p>
+        <p id="role-indicator" class="text-[10px] text-slate-400">Terminal Principal</p>
       </div>
     </div>
 
-    <!-- Tasa BCV y Control de Rol -->
+    <!-- TASA Y ROL -->
     <div class="flex items-center gap-2">
       <div class="bg-slate-900/80 border border-slate-700/80 rounded-lg px-2.5 py-1 text-right flex items-center gap-2">
         <div>
           <p class="text-[9px] text-slate-400 font-medium">TASA BCV</p>
           <p id="display-tasa" class="text-xs font-bold text-emerald-400">Bs. 0.00</p>
         </div>
-        <button onclick="obtenerTasaBCV()" class="text-sky-400 hover:text-sky-300 text-xs p-1" title="Actualizar Tasa en Vivo">
+        <button onclick="obtenerTasaOficial()" class="text-sky-400 hover:text-sky-300 text-xs p-1" title="Actualizar Tasa en Vivo">
           <i class="fa-solid fa-arrows-rotate"></i>
         </button>
       </div>
 
       <select id="select-role" onchange="cambiarRol(this.value)" class="bg-slate-900 text-[11px] border border-slate-700 rounded-lg px-2 py-1 text-slate-300 outline-none">
-        <option value="cajero">Cajero</option>
-        <option value="admin">Admin</option>
+        <option value="admin">Administrador Main</option>
+        <option value="cajero">Terminal Cajero</option>
       </select>
     </div>
   </header>
 
-  <!-- CONTENIDO PRINCIPAL -->
-  <main class="flex-1 flex flex-col p-3 overflow-hidden gap-3">
+  <!-- NAVEGACIÓN POR PESTAÑAS -->
+  <nav class="bg-slate-900 border-b border-slate-800 flex justify-around text-xs text-slate-400">
+    <button onclick="cambiarPestana('pos')" id="tab-pos" class="tab-btn active py-2 px-4 flex items-center gap-1.5">
+      <i class="fa-solid fa-cash-register"></i> Punto de Venta
+    </button>
+    <button onclick="cambiarPestana('inventario')" id="tab-inventario" class="tab-btn py-2 px-4 flex items-center gap-1.5">
+      <i class="fa-solid fa-boxes-stacked"></i> Inventario
+    </button>
+    <button onclick="cambiarPestana('espera')" id="tab-espera" class="tab-btn py-2 px-4 flex items-center gap-1.5">
+      <i class="fa-solid fa-clock-rotate-left"></i> En Espera (<span id="hold-count">0</span>)
+    </button>
+    <button onclick="cambiarPestana('reportes')" id="tab-reportes" class="tab-btn py-2 px-4 flex items-center gap-1.5">
+      <i class="fa-solid fa-chart-line"></i> Reportes / Cierre
+    </button>
+  </nav>
+
+  <!-- SECCIÓN 1: VISTA PRINCIPAL (POS) -->
+  <section id="sec-pos" class="flex-1 flex flex-col p-3 overflow-hidden gap-3">
     
-    <!-- BARRA DE BÚSQUEDA Y ESCÁNER -->
     <div class="flex gap-2">
       <div class="relative flex-1">
         <i class="fa-solid fa-magnifying-glass absolute left-3 top-3 text-slate-500 text-xs"></i>
-        <input type="text" id="input-search" oninput="filtrarProductos()" placeholder="Buscar producto o código de barra..." class="w-full bg-slate-900/90 border border-slate-700/80 rounded-xl pl-8 pr-3 py-2 text-xs text-slate-200 placeholder-slate-500 focus:outline-none focus:border-sky-500 transition">
+        <input type="text" id="input-search" oninput="filtrarProductos()" placeholder="Buscar producto o escaneo..." class="w-full bg-slate-900/90 border border-slate-700/80 rounded-xl pl-8 pr-3 py-2 text-xs text-slate-200 placeholder-slate-500 focus:outline-none focus:border-sky-500 transition">
       </div>
-      <button onclick="toggleCamara Scanner()" class="bg-slate-800 hover:bg-slate-700 text-sky-400 border border-slate-700 px-3 rounded-xl flex items-center gap-1.5 text-xs font-medium transition">
-        <i class="fa-solid fa-barcode"></i> Escaneo
+      <button onclick="toggleCamaraScanner()" class="bg-slate-800 hover:bg-slate-700 text-sky-400 border border-slate-700 px-3 rounded-xl flex items-center gap-1.5 text-xs font-medium transition">
+        <i class="fa-solid fa-barcode"></i> Escáner
       </button>
     </div>
 
-    <!-- VISOR DE CÁMARA ESCÁNER (OCULTO POR DEFECTO) -->
+    <!-- CÁMARA ESCÁNER -->
     <div id="scanner-container" class="hidden bg-slate-900 border border-sky-500/50 rounded-xl p-2 relative">
       <div id="reader" class="w-full rounded-lg overflow-hidden"></div>
       <button onclick="toggleCamaraScanner()" class="absolute top-4 right-4 bg-rose-600 text-white w-7 h-7 rounded-full flex items-center justify-center text-xs">
@@ -79,26 +100,85 @@
 
     <!-- GRILLA DE PRODUCTOS -->
     <div id="grid-productos" class="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 gap-2.5 overflow-y-auto flex-1 no-scrollbar pr-0.5">
-      <!-- Carga dinámica -->
+      <!-- Se carga dinámicamente -->
     </div>
 
-  </main>
+  </section>
 
-  <!-- SECCIÓN INFERIOR: CARRITO Y RESUMEN -->
-  <footer class="neon-card border-t border-slate-800 p-3 flex flex-col gap-2 z-10">
+  <!-- SECCIÓN 2: INVENTARIO (ADMINISTRACIÓN) -->
+  <section id="sec-inventario" class="hidden flex-1 p-3 flex flex-col gap-3 overflow-y-auto">
+    <div class="neon-card p-3 rounded-xl border border-slate-700 space-y-3">
+      <h3 class="text-xs font-bold text-sky-400 uppercase tracking-wider">Agregar / Editar Producto</h3>
+      <div class="grid grid-cols-2 gap-2 text-xs">
+        <input type="text" id="inv-codigo" placeholder="Código de Barra" class="bg-slate-900 border border-slate-700 rounded-lg p-2 text-slate-200">
+        <input type="text" id="inv-nombre" placeholder="Nombre del Producto" class="bg-slate-900 border border-slate-700 rounded-lg p-2 text-slate-200">
+        <input type="number" step="0.01" id="inv-precio" placeholder="Precio USD ($)" class="bg-slate-900 border border-slate-700 rounded-lg p-2 text-slate-200">
+        <input type="number" id="inv-stock" placeholder="Cantidad Stock" class="bg-slate-900 border border-slate-700 rounded-lg p-2 text-slate-200">
+      </div>
+      <button onclick="guardarProducto()" class="w-full bg-sky-600 hover:bg-sky-500 text-white font-bold py-2 rounded-lg text-xs transition">
+        <i class="fa-solid fa-plus"></i> Guardar en Inventario
+      </button>
+    </div>
+
+    <div class="neon-card p-3 rounded-xl border border-slate-700 flex-1 overflow-y-auto">
+      <h3 class="text-xs font-bold text-slate-300 mb-2">Lista de Productos Registrados</h3>
+      <div id="tabla-inventario" class="space-y-2">
+        <!-- Renderizado de inventario -->
+      </div>
+    </div>
+  </section>
+
+  <!-- SECCIÓN 3: VENTAS EN ESPERA (CONGELADAS) -->
+  <section id="sec-espera" class="hidden flex-1 p-3 overflow-y-auto space-y-2">
+    <div id="lista-espera" class="space-y-2">
+      <!-- Listado de órdenes en espera -->
+    </div>
+  </section>
+
+  <!-- SECCIÓN 4: REPORTES Y CIERRE Z -->
+  <section id="sec-reportes" class="hidden flex-1 p-3 overflow-y-auto space-y-3">
+    <div class="neon-card p-4 rounded-xl border border-slate-700 space-y-3">
+      <h3 class="text-xs font-bold text-emerald-400 uppercase tracking-wider">Resumen de Ventas del Día (Cierre Z)</h3>
+      <div class="grid grid-cols-2 gap-3">
+        <div class="bg-slate-900 p-2.5 rounded-lg border border-slate-800">
+          <p class="text-[10px] text-slate-400">Total en Divisas ($)</p>
+          <p id="rep-total-usd" class="text-sm font-bold text-slate-100">$0.00</p>
+        </div>
+        <div class="bg-slate-900 p-2.5 rounded-lg border border-slate-800">
+          <p class="text-[10px] text-slate-400">Total en Bolívares (Bs)</p>
+          <p id="rep-total-bs" class="text-sm font-bold text-emerald-400">Bs. 0.00</p>
+        </div>
+      </div>
+
+      <div class="bg-slate-900 p-3 rounded-lg border border-slate-800 space-y-1 text-xs">
+        <div class="flex justify-between text-slate-400">
+          <span>Transacciones procesadas:</span>
+          <span id="rep-cant-ventas" class="text-slate-200 font-bold">0</span>
+        </div>
+      </div>
+
+      <button onclick="ejecutarCierreZ()" class="w-full bg-rose-700 hover:bg-rose-600 text-white font-bold py-2.5 rounded-xl text-xs transition">
+        <i class="fa-solid fa-lock"></i> Realizar Cierre Z y Reiniciar Día
+      </button>
+    </div>
+  </section>
+
+  <!-- PIE DE PÁGINA (RESUMEN DE ORDEN ACTUAL) -->
+  <footer id="main-footer" class="neon-card border-t border-slate-800 p-3 flex flex-col gap-2 z-10">
     <div class="flex justify-between items-center text-xs">
       <span class="text-slate-400 font-medium flex items-center gap-1">
         <i class="fa-solid fa-cart-shopping text-sky-400"></i> Orden (<span id="cart-count">0</span>)
       </span>
-      <button onclick="vaciarCarrito()" class="text-rose-400 hover:text-rose-300 text-[11px]">Vaciar</button>
+      <div class="flex gap-3">
+        <button onclick="congelarVenta()" class="text-amber-400 hover:text-amber-300 text-[11px]"><i class="fa-solid fa-pause"></i> En Espera</button>
+        <button onclick="vaciarCarrito()" class="text-rose-400 hover:text-rose-300 text-[11px]">Vaciar</button>
+      </div>
     </div>
 
-    <!-- VISTA PREVIA DEL CARRITO -->
     <div id="cart-preview" class="max-h-24 overflow-y-auto space-y-1.5 no-scrollbar">
-      <!-- Items del carrito -->
+      <!-- Items agregados al carrito -->
     </div>
 
-    <!-- TOTALES -->
     <div class="pt-2 border-t border-slate-800/80 flex justify-between items-center">
       <div>
         <p class="text-[10px] text-slate-400">TOTAL ESTIMADO</p>
@@ -112,28 +192,37 @@
     </div>
   </footer>
 
-  <!-- MODAL DE COBRO -->
+  <!-- MODAL DE PROCESAMIENTO DE PAGO -->
   <div id="modal-cobro" class="fixed inset-0 bg-slate-950/80 backdrop-blur-md hidden flex items-end sm:items-center justify-center p-0 sm:p-4 z-50">
     <div class="neon-card w-full sm:max-w-md rounded-t-2xl sm:rounded-2xl p-4 space-y-4 border border-slate-700">
       <div class="flex justify-between items-center border-b border-slate-800 pb-2">
-        <h3 class="font-bold text-sm text-slate-100">Procesar Pago</h3>
+        <h3 class="font-bold text-sm text-slate-100">Procesar Pago & Vuelto</h3>
         <button onclick="cerrarModalCobro()" class="text-slate-400 hover:text-slate-200 text-sm"><i class="fa-solid fa-xmark"></i></button>
       </div>
 
       <div class="bg-slate-900/90 p-3 rounded-xl border border-slate-800 space-y-1">
         <div class="flex justify-between text-xs text-slate-400">
-          <span>Monto Total:</span>
+          <span>Monto USD:</span>
           <span id="modal-total-usd" class="text-slate-200 font-bold">$0.00</span>
         </div>
         <div class="flex justify-between text-sm font-bold">
-          <span class="text-slate-300">Total a pagar:</span>
+          <span class="text-slate-300">Total en Bs:</span>
           <span id="modal-total-bs" class="text-emerald-400">Bs. 0.00</span>
         </div>
       </div>
 
-      <!-- Pagos Ingresados -->
+      <!-- LECTOR DE CAPTURA PAGO MÓVIL (OCR) -->
+      <div class="bg-slate-900/60 p-2.5 rounded-xl border border-slate-800 space-y-2">
+        <label class="text-[10px] text-sky-400 font-bold flex items-center gap-1">
+          <i class="fa-solid fa-camera"></i> Escanear Captura Pago Móvil (OCR)
+        </label>
+        <input type="file" id="ocr-file" accept="image/*" onchange="procesarCapturaPago(this)" class="block w-full text-[10px] text-slate-400 file:mr-2 file:py-1 file:px-2 file:rounded-md file:border-0 file:text-[10px] file:bg-sky-900 file:text-sky-300">
+        <p id="ocr-status" class="text-[9px] text-slate-500 italic"></p>
+      </div>
+
+      <!-- INGRESO DE MONTOS RECIBIDOS -->
       <div class="space-y-2">
-        <label class="text-[11px] text-slate-400 font-medium">Ingresar Pagos Recibidos:</label>
+        <label class="text-[11px] text-slate-400 font-medium">Formas de Pago Recibidas:</label>
         <div class="grid grid-cols-2 gap-2">
           <div>
             <span class="text-[10px] text-slate-400">Efectivo USD ($)</span>
@@ -146,24 +235,24 @@
         </div>
       </div>
 
-      <!-- Vuelto Calculado -->
+      <!-- CÁLCULO DE VUELTO -->
       <div class="bg-slate-900/50 p-2.5 rounded-lg border border-slate-800 text-center">
-        <p class="text-[10px] text-slate-400">VUELTO CORRESPONDIENTE</p>
+        <p class="text-[10px] text-slate-400">VUELTO A ENTREGAR</p>
         <p id="vuelto-bs" class="text-sm font-bold text-sky-400">Bs. 0.00</p>
         <p id="vuelto-usd" class="text-[11px] text-slate-400">$0.00</p>
       </div>
 
       <button onclick="finalizarVenta()" class="w-full neon-btn-green text-white font-bold py-3 rounded-xl text-xs tracking-wider transition">
-        CONFIRMAR REGISTRO DE VENTA
+        REGISTRAR Y GUARDAR VENTA
       </button>
     </div>
   </div>
 
-  <!-- SCRIPT CON LÓGICA INTEGRADA -->
+  <!-- LÓGICA COMPLETA DE GEO MERCADO -->
   <script>
-    // Variables de Estado Centralizado
+    // ESTADO GENERAL DE LA APLICACIÓN
     var tasaDia = parseFloat(localStorage.getItem('geomercado_tasa_v19')) || 623.02;
-    var rolActual = localStorage.getItem('geomercado_rol') || 'cajero';
+    var rolActual = localStorage.getItem('geomercado_rol') || 'admin';
     var productos = JSON.parse(localStorage.getItem('geomercado_prods')) || [
       { id: '1', nombre: 'Harina PAN 1kg', precioUSD: 1.10, stock: 50, codigo: '7591001001' },
       { id: '2', nombre: 'Arroz Primor 1kg', precioUSD: 1.25, stock: 40, codigo: '7591002002' },
@@ -171,38 +260,67 @@
       { id: '4', nombre: 'Azúcar Montalbán 1kg', precioUSD: 1.15, stock: 30, codigo: '7591004004' }
     ];
     var carrito = [];
+    var ordenesEnEspera = JSON.parse(localStorage.getItem('geomercado_espera')) || [];
+    var historialVentas = JSON.parse(localStorage.getItem('geomercado_ventas')) || [];
     var html5QrcodeScanner = null;
 
-    // 1. OBTENER TASA BCV OFICIAL DESDE LA API
-    async function obtenerTasaBCV() {
+    // 1. ACTUALIZACIÓN DE TASA DESDE LA API DEL BCV
+    async function obtenerTasaOficial() {
       try {
         const respuesta = await fetch('https://rates.dolarvzla.com/bcv/current.json');
         const datos = await respuesta.json();
         if (datos && datos.price) {
           tasaDia = parseFloat(datos.price);
           localStorage.setItem('geomercado_tasa_v19', tasaDia);
-          actualizarPantallaTasa();
-          renderizarProductos(productos);
-          renderizarCarrito();
+          refrescarInterfaz();
         }
       } catch (e) {
-        console.warn('Uso de tasa local por fallo de red:', tasaDia);
-        actualizarPantallaTasa();
+        console.warn('Uso de la tasa local por fallo de conexión:', tasaDia);
+        refrescarInterfaz();
       }
     }
 
-    function actualizarPantallaTasa() {
+    function refrescarInterfaz() {
       document.getElementById('display-tasa').innerText = `Bs. ${tasaDia.toFixed(2)}`;
+      renderizarProductos(productos);
+      renderizarCarrito();
+      actualizarReportes();
     }
 
-    // 2. CONTROL DE ROLES
+    // 2. NAVEGACIÓN Y ROLES
+    function cambiarPestana(pestana) {
+      document.querySelectorAll('section').forEach(s => s.classList.add('hidden'));
+      document.querySelectorAll('.tab-btn').forEach(b => b.classList.remove('active'));
+
+      document.getElementById(`sec-${pestana}`).classList.remove('hidden');
+      document.getElementById(`tab-${pestana}`).classList.add('active');
+
+      const mainFooter = document.getElementById('main-footer');
+      if (pestana === 'pos') {
+        mainFooter.classList.remove('hidden');
+      } else {
+        mainFooter.classList.add('hidden');
+      }
+
+      if (pestana === 'inventario') renderizarTablaInventario();
+      if (pestana === 'espera') renderizarListaEspera();
+      if (pestana === 'reportes') actualizarReportes();
+    }
+
     function cambiarRol(rol) {
       rolActual = rol;
       localStorage.setItem('geomercado_rol', rol);
       document.getElementById('role-indicator').innerText = rol === 'admin' ? 'Administrador Main' : 'Terminal Cajero';
+      
+      const tabInv = document.getElementById('tab-inventario');
+      if (rol === 'cajero') {
+        tabInv.classList.add('hidden');
+      } else {
+        tabInv.classList.remove('hidden');
+      }
     }
 
-    // 3. RENDERIZADO DE PRODUCTOS
+    // 3. CATALOGO Y CARRITO DE VENTAS
     function renderizarProductos(lista) {
       const grid = document.getElementById('grid-productos');
       grid.innerHTML = '';
@@ -226,10 +344,9 @@
       });
     }
 
-    // 4. MANEJO DE CARRITO
     function agregarAlCarrito(id) {
       const prod = productos.find(p => p.id === id);
-      if (!prod || prod.stock <= 0) return alert('Producto sin stock disponible');
+      if (!prod || prod.stock <= 0) return alert('Sin stock disponible');
 
       const item = carrito.find(i => i.id === id);
       if (item) {
@@ -283,6 +400,53 @@
       renderizarCarrito();
     }
 
+    // 4. VENTAS EN ESPERA
+    function congelarVenta() {
+      if (carrito.length === 0) return alert('No hay productos en la orden');
+      ordenesEnEspera.push({ id: Date.now(), items: [...carrito] });
+      localStorage.setItem('geomercado_espera', JSON.stringify(ordenesEnEspera));
+      vaciarCarrito();
+      actualizarContadorEspera();
+      alert('Venta congelada correctamente');
+    }
+
+    function actualizarContadorEspera() {
+      document.getElementById('hold-count').innerText = ordenesEnEspera.length;
+    }
+
+    function renderizarListaEspera() {
+      const cont = document.getElementById('lista-espera');
+      cont.innerHTML = '';
+      if (ordenesEnEspera.length === 0) {
+        cont.innerHTML = '<p class="text-xs text-slate-500 text-center py-4">No hay ventas congeladas</p>';
+        return;
+      }
+
+      ordenesEnEspera.forEach((ord, index) => {
+        const total = ord.items.reduce((s, i) => s + (i.precioUSD * i.cant), 0);
+        cont.innerHTML += `
+          <div class="neon-card p-3 rounded-xl border border-slate-700 flex justify-between items-center text-xs">
+            <div>
+              <p class="font-bold text-slate-200">Orden #${ord.id.toString().slice(-4)}</p>
+              <p class="text-[10px] text-slate-400">${ord.items.length} productos - Total: $${total.toFixed(2)}</p>
+            </div>
+            <button onclick="recuperarVenta(${index})" class="bg-sky-600 hover:bg-sky-500 text-white px-3 py-1.5 rounded-lg text-xs font-semibold">
+              Recuperar
+            </button>
+          </div>
+        `;
+      });
+    }
+
+    function recuperarVenta(index) {
+      carrito = ordenesEnEspera[index].items;
+      ordenesEnEspera.splice(index, 1);
+      localStorage.setItem('geomercado_espera', JSON.stringify(ordenesEnEspera));
+      actualizarContadorEspera();
+      cambiarPestana('pos');
+      renderizarCarrito();
+    }
+
     // 5. ESCÁNER DE CÓDIGO DE BARRAS
     function toggleCamaraScanner() {
       const cont = document.getElementById('scanner-container');
@@ -302,7 +466,39 @@
       }
     }
 
-    // 6. PROCESO DE COBRO Y VUELTOS
+    // 6. OCR CON TESSERACT.JS PARA PAGO MÓVIL
+    async function procesarCapturaPago(input) {
+      const file = input.files[0];
+      if (!file) return;
+
+      const status = document.getElementById('ocr-status');
+      status.innerText = "Escaneando imagen del pago...";
+
+      try {
+        const worker = await Tesseract.createWorker('spa');
+        const ret = await worker.recognize(file);
+        await worker.terminate();
+
+        const texto = ret.data.text;
+        const matchMonto = texto.match(/(Bs\.?|Monto:?)\s*([\d\.,]+)/i);
+
+        if (matchMonto && matchMonto[2]) {
+          let montoString = matchMonto[2].replace(/\./g, '').replace(',', '.');
+          let val = parseFloat(montoString);
+          if (!isNaN(val)) {
+            document.getElementById('pay-bs').value = val;
+            calcularVuelto();
+            status.innerText = `Monto detectado: Bs. ${val}`;
+          }
+        } else {
+          status.innerText = "No se detectó un monto claro. Ingrésalo manualmente.";
+        }
+      } catch (err) {
+        status.innerText = "Error al procesar la imagen.";
+      }
+    }
+
+    // 7. COBRO Y CIERRE Z
     function abrirModalCobro() {
       if (carrito.length === 0) return alert('Selecciona al menos un producto');
       const totalUSD = carrito.reduce((sum, i) => sum + (i.precioUSD * i.cant), 0);
@@ -338,16 +534,94 @@
     }
 
     function finalizarVenta() {
-      // Descontar inventario
+      const totalUSD = carrito.reduce((sum, i) => sum + (i.precioUSD * i.cant), 0);
+      const totalBs = totalUSD * tasaDia;
+
       carrito.forEach(item => {
         const p = productos.find(prod => prod.id === item.id);
         if (p) p.stock -= item.cant;
       });
 
+      historialVentas.push({
+        id: Date.now(),
+        montoUSD: totalUSD,
+        montoBs: totalBs,
+        fecha: new Date().toLocaleString()
+      });
+
       localStorage.setItem('geomercado_prods', JSON.stringify(productos));
+      localStorage.setItem('geomercado_ventas', JSON.stringify(historialVentas));
+
       alert('Venta procesada con éxito');
       vaciarCarrito();
       cerrarModalCobro();
+      renderizarProductos(productos);
+    }
+
+    function actualizarReportes() {
+      const totalUSD = historialVentas.reduce((s, v) => s + v.montoUSD, 0);
+      const totalBs = historialVentas.reduce((s, v) => s + v.montoBs, 0);
+
+      document.getElementById('rep-total-usd').innerText = `$${totalUSD.toFixed(2)}`;
+      document.getElementById('rep-total-bs').innerText = `Bs. ${totalBs.toFixed(2)}`;
+      document.getElementById('rep-cant-ventas').innerText = historialVentas.length;
+    }
+
+    function ejecutarCierreZ() {
+      if (confirm('¿Deseas cerrar el día de ventas? Se reiniciarán las estadísticas diarias.')) {
+        historialVentas = [];
+        localStorage.setItem('geomercado_ventas', JSON.stringify(historialVentas));
+        actualizarReportes();
+        alert('Cierre Z completado exitosamente.');
+      }
+    }
+
+    // 8. CONTROL DE INVENTARIO
+    function guardarProducto() {
+      const cod = document.getElementById('inv-codigo').value;
+      const nom = document.getElementById('inv-nombre').value;
+      const pre = parseFloat(document.getElementById('inv-precio').value);
+      const sto = parseInt(document.getElementById('inv-stock').value);
+
+      if (!nom || isNaN(pre) || isNaN(sto)) return alert('Por favor completa los datos');
+
+      productos.push({
+        id: Date.now().toString(),
+        codigo: cod || '0000',
+        nombre: nom,
+        precioUSD: pre,
+        stock: sto
+      });
+
+      localStorage.setItem('geomercado_prods', JSON.stringify(productos));
+      alert('Producto guardado');
+      renderizarTablaInventario();
+      renderizarProductos(productos);
+    }
+
+    function renderizarTablaInventario() {
+      const cont = document.getElementById('tabla-inventario');
+      cont.innerHTML = '';
+      productos.forEach((p, idx) => {
+        cont.innerHTML += `
+          <div class="flex justify-between items-center bg-slate-900 p-2 rounded-lg text-xs border border-slate-800">
+            <div>
+              <p class="font-bold text-slate-200">${p.nombre}</p>
+              <p class="text-[10px] text-slate-400">Cod: ${p.codigo} | Stock: ${p.stock}</p>
+            </div>
+            <div class="flex items-center gap-2">
+              <span class="font-bold text-emerald-400">$${p.precioUSD.toFixed(2)}</span>
+              <button onclick="eliminarProducto(${idx})" class="text-rose-400 p-1"><i class="fa-solid fa-trash"></i></button>
+            </div>
+          </div>
+        `;
+      });
+    }
+
+    function eliminarProducto(idx) {
+      productos.splice(idx, 1);
+      localStorage.setItem('geomercado_prods', JSON.stringify(productos));
+      renderizarTablaInventario();
       renderizarProductos(productos);
     }
 
@@ -357,11 +631,12 @@
       renderizarProductos(res);
     }
 
-    // Inicialización del POS
+    // INICIALIZACIÓN
     window.onload = function() {
       document.getElementById('select-role').value = rolActual;
       cambiarRol(rolActual);
-      obtenerTasaBCV();
+      obtenerTasaOficial();
+      actualizarContadorEspera();
       renderizarProductos(productos);
     };
   </script>
