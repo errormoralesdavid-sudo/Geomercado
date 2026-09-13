@@ -1,202 +1,2398 @@
 <!DOCTYPE html>
 <html lang="es">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>Geo Mercado V19.5</title>
-    <link rel="manifest" href="manifest.json">
-    <meta name="theme-color" content="#0d1117">
-    <link rel="stylesheet" href="styles.css">
-    <script src="https://unpkg.com/html5-qrcode"></script>
-    <script src="https://cdn.jsdelivr.net/npm/tesseract.js@5/dist/tesseract.min.js"></script>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width,initial-scale=1.0">
+<meta name="theme-color" content="#0b0e14">
+<title>Geo Mercado</title>
+
+<style>
+*{box-sizing:border-box}
+
+body{
+margin:0;
+background:#0b0e14;
+color:#fff;
+font-family:Arial,sans-serif
+}
+
+.app{
+max-width:1000px;
+margin:auto;
+padding:14px
+}
+
+.top{
+display:flex;
+justify-content:space-between;
+align-items:center;
+gap:8px
+}
+
+h1{
+font-size:25px;
+margin:8px 0
+}
+
+h2{
+margin-top:5px
+}
+
+.card{
+background:#161a23;
+border:1px solid #2b3548;
+border-radius:14px;
+padding:14px;
+margin:10px 0
+}
+
+.grid{
+display:grid;
+grid-template-columns:repeat(2,1fr);
+gap:10px
+}
+
+.grid3{
+display:grid;
+grid-template-columns:repeat(3,1fr);
+gap:8px
+}
+
+button,input,select{
+font:inherit
+}
+
+button{
+border:0;
+border-radius:10px;
+padding:10px;
+cursor:pointer
+}
+
+button:disabled{
+opacity:.5;
+cursor:not-allowed
+}
+
+.btn{
+background:#242c3d;
+color:#fff
+}
+
+.primary{
+background:#00ff66;
+color:#000;
+font-weight:bold
+}
+
+.danger{
+background:#ff5252;
+color:#fff
+}
+
+.warning{
+background:#ffc107;
+color:#000
+}
+
+input,select{
+width:100%;
+padding:10px;
+border-radius:9px;
+border:1px solid #313c52;
+background:#0b0e14;
+color:#fff
+}
+
+label{
+font-size:11px;
+color:#9aa8bc;
+display:block;
+margin:7px 0 4px
+}
+
+.hidden{
+display:none!important
+}
+
+.status{
+padding:8px;
+border-radius:9px;
+margin:8px 0;
+font-size:12px
+}
+
+.ok{
+background:#07351f;
+border:1px solid #00ff66
+}
+
+.warn{
+background:#3b3005;
+border:1px solid #ffc107
+}
+
+.error{
+background:#3b1010;
+border:1px solid #ff5252
+}
+
+nav{
+display:grid;
+grid-template-columns:repeat(4,1fr);
+gap:7px;
+margin-bottom:10px
+}
+
+.product{
+padding:10px;
+border:1px solid #2b3548;
+border-radius:10px;
+background:#11151d
+}
+
+.product small{
+color:#9aa8bc
+}
+
+.row{
+display:flex;
+justify-content:space-between;
+gap:8px;
+align-items:center
+}
+
+.total{
+font-size:20px;
+font-weight:bold;
+color:#00ff66
+}
+
+.tag{
+font-size:10px;
+padding:3px 6px;
+border-radius:8px;
+background:#2b3548
+}
+
+.stat{
+background:#11151d;
+border:1px solid #2b3548;
+padding:12px;
+border-radius:10px
+}
+
+.stat b{
+font-size:20px
+}
+
+.cart-line{
+padding:8px 0;
+border-bottom:1px solid #293244
+}
+
+.sale-card{
+background:#11151d;
+border:1px solid #293244;
+border-radius:10px;
+padding:10px;
+margin:8px 0
+}
+
+.low-stock{
+color:#ffc107
+}
+
+.out-stock{
+color:#ff5252
+}
+
+.small{
+font-size:11px;
+color:#9aa8bc
+}
+
+.center{
+text-align:center
+}
+
+@media(max-width:600px){
+
+.grid{
+grid-template-columns:1fr
+}
+
+.grid3{
+grid-template-columns:1fr 1fr
+}
+
+nav{
+grid-template-columns:repeat(2,1fr)
+}
+
+.top{
+align-items:flex-start
+}
+
+}
+
+@media(max-width:400px){
+
+.grid3{
+grid-template-columns:1fr
+}
+
+}
+</style>
 </head>
+
 <body>
 
-    <!-- Modales -->
-    <div id="modal-camara" class="modal-overlay" style="display:none;">
-        <div class="modal-content">
-            <div id="interactive-scanner"></div>
-            <button class="btn-cancelar" onclick="window.cerrarCamaraEnVivo()">Cerrar Cámara</button>
-        </div>
-    </div>
+<div class="app">
 
-    <div id="scan-feedback" class="feedback-overlay" style="display:none;">
-        <div id="scan-feedback-box"></div>
-        <p id="scan-feedback-msg"></p>
-    </div>
+<div class="top">
 
-    <input type="file" id="file-barcode-reg" accept="image/*" style="display:none;" onchange="window.escanearBarcodeFoto(event, 'registro')">
-    <input type="file" id="file-barcode-caja" accept="image/*" style="display:none;" onchange="window.escanearBarcodeFoto(event, 'caja')">
-    <div id="hidden-qr-reader" style="display:none;"></div>
+<div>
+<h1>🛒 GEO MERCADO</h1>
+<span id="sessionInfo" class="tag">Sin sesión</span>
+</div>
 
-    <!-- Encabezado y Navegación -->
-    <header class="app-header">
-        <h1 id="header-titulo">GEOMERCADO</h1>
-        <div class="tasa-badge">
-            <span>BCV:</span>
-            <input type="number" id="input-tasa" step="0.01" value="36.50" onchange="window.actualizarTasa(this.value)">
-        </div>
-    </header>
+<div>
+<span id="net" class="tag">●</span>
+</div>
 
-    <nav class="nav-tabs">
-        <button class="tab-btn active" onclick="window.cambiarPestaña('caja')">🛒 Caja</button>
-        <button class="tab-btn" onclick="window.cambiarPestaña('inventario')">📦 Inventario</button>
-        <button class="tab-btn" onclick="window.cambiarPestaña('cierre')">📊 Cierre</button>
-        <button class="tab-btn" onclick="window.cambiarPestaña('perfil')">⚙️ Ajustes</button>
-    </nav>
+</div>
 
-    <main class="main-container">
 
-        <!-- Caja -->
-        <section id="sec-caja" class="tab-content active">
-            <div class="caja-actions">
-                <button class="btn-scan" onclick="window.abrirCamaraEnVivo('caja')">📷 Escanear Código</button>
-                <button class="btn-secondary" onclick="window.recuperarFactura()">📂 Recuperar Pausa</button>
-            </div>
+<!-- LOGIN -->
 
-            <div class="search-box">
-                <input type="text" id="caja-buscar" placeholder="🔍 Buscar producto..." oninput="window.filtrarProductosCaja(this.value)">
-            </div>
-            <div id="caja-sugerencias" class="sugerencias-list"></div>
+<div id="login" class="card">
 
-            <div class="carrito-container">
-                <h3>Carrito de Compras</h3>
-                <div id="carrito-items" class="carrito-list"></div>
-                
-                <div class="totales-card">
-                    <div class="total-row">
-                        <span>Total USD:</span>
-                        <strong id="total-usd">$0.00</strong>
-                    </div>
-                    <div class="total-row main-total">
-                        <span>Total VES:</span>
-                        <strong id="total-ves">Bs. 0,00</strong>
-                    </div>
-                </div>
-            </div>
+<h2>🔐 Acceso</h2>
 
-            <div class="pago-container">
-                <h4>Métodos de Pago</h4>
-                <div class="pago-grid">
-                    <div class="pago-field">
-                        <label>💳 Punto (VES)</label>
-                        <input type="text" id="pay-ptv" placeholder="0,00" oninput="window.mascaraMoneda(this); window.calcularCaja();">
-                    </div>
-                    <div class="pago-field">
-                        <label>📲 Pago Móvil (VES)</label>
-                        <input type="text" id="pay-pm" placeholder="0,00" oninput="window.mascaraMoneda(this); window.calcularCaja();">
-                    </div>
-                    <div class="pago-field">
-                        <label>💵 Efectivo ($)</label>
-                        <input type="number" id="pay-usd" placeholder="0.00" step="0.01" oninput="window.calcularCaja();">
-                    </div>
-                    <div class="pago-field">
-                        <label>💵 Efectivo (VES)</label>
-                        <input type="text" id="pay-ves" placeholder="0,00" oninput="window.mascaraMoneda(this); window.calcularCaja();">
-                    </div>
-                </div>
+<label>Usuario</label>
+<input id="loginUser" value="admin" autocomplete="username">
 
-                <div class="pm-ocr-box">
-                    <label class="btn-ocr">
-                        📄 Cargar Capture Pago Móvil (OCR)
-                        <input type="file" accept="image/*" style="display:none;" onchange="window.escanearCapturePagoCompleto(event)">
-                    </label>
-                    <input type="text" id="pm-ref" placeholder="Ref. Pago Móvil" style="margin-top:5px;">
-                    <input type="text" id="pm-phone" placeholder="Tlf. Cliente (para WhatsApp)" style="margin-top:5px;">
-                    <button class="btn-ws" onclick="window.enviarDatosPagoMovilWS()">📲 Enviar Datos PM por WhatsApp</button>
-                    <div id="pm-status-banner" class="pm-status-banner" style="display:none;"></div>
-                </div>
+<label>Clave</label>
+<input id="loginPass" type="password" value="1234" autocomplete="current-password">
 
-                <div class="cliente-box">
-                    <input type="text" id="cliente-nombre" placeholder="Nombre Cliente (Opcional)">
-                    <input type="text" id="cliente-cedula" placeholder="CI / RIF">
-                    <input type="text" id="cliente-dir" placeholder="Dirección">
-                </div>
+<button class="primary" style="width:100%;margin-top:10px" onclick="login()">
+Entrar
+</button>
 
-                <div class="caja-buttons">
-                    <button class="btn-cobrar" onclick="window.procesarCobro(true)">🖨️ Cobrar con Ticket</button>
-                    <button class="btn-cobrar-solo" onclick="window.procesarCobro(false)">✅ Cobrar Solo</button>
-                    <button class="btn-cancelar" onclick="window.limpiarCaja(false)">❌ Cancelar</button>
-                </div>
-            </div>
-        </section>
+<p class="small">
+Usuario inicial: <b>admin</b><br>
+Clave inicial: <b>1234</b>
+</p>
 
-        <!-- Inventario -->
-        <section id="sec-inventario" class="tab-content" style="display:none;">
-            <h3>Registro de Producto</h3>
-            <div class="form-grid">
-                <input type="text" id="prod-nombre" placeholder="Nombre del producto">
-                <div class="barcode-input-group">
-                    <input type="text" id="prod-serial" placeholder="Código de Barras">
-                    <button onclick="window.abrirCamaraEnVivo('registro')">📷</button>
-                </div>
-                <input type="number" id="prod-costo" placeholder="Costo USD" step="0.01">
-                <input type="number" id="prod-precio" placeholder="Precio Venta USD" step="0.01">
-                <input type="number" id="prod-qty" placeholder="Cantidad / Stock">
-                <button class="btn-cobrar" onclick="window.guardarProducto()">💾 Guardar Producto</button>
-            </div>
+</div>
 
-            <h3 style="margin-top:20px;">Lista de Productos</h3>
-            <div id="lista-productos" class="productos-list"></div>
-        </section>
 
-        <!-- Cierre -->
-        <section id="sec-cierre" class="tab-content" style="display:none;">
-            <h3>Resumen del Día</h3>
-            <div class="resumen-grid">
-                <div class="resumen-card"><span>Punto de Venta:</span><strong id="resumen-ptv">Bs. 0,00</strong></div>
-                <div class="resumen-card"><span>Pago Móvil:</span><strong id="resumen-pm">Bs. 0,00</strong></div>
-                <div class="resumen-card"><span>Efectivo Bs:</span><strong id="resumen-ves">Bs. 0,00</strong></div>
-                <div class="resumen-card"><span>Efectivo USD:</span><strong id="resumen-efectivo-usd">$0.00</strong></div>
-                <div class="resumen-card highlight"><span>Ganancia Neta:</span><strong id="resumen-ganancia-ves">Bs. 0,00</strong></div>
-            </div>
+<!-- APP PRINCIPAL -->
 
-            <div class="cierre-actions" style="margin-top:15px;">
-                <button class="btn-cobrar" onclick="window.imprimirCierreZ()">🖨️ Imprimir Cierre Z</button>
-                <button class="btn-cancelar" onclick="window.borrarHistorial()">⚠️ Reiniciar Día</button>
-            </div>
+<div id="appMain" class="hidden">
 
-            <h3 style="margin-top:20px;">Historial de Ventas</h3>
-            <div id="lista-historial-ventas"></div>
-        </section>
 
-        <!-- Perfil -->
-        <section id="sec-perfil" class="tab-content" style="display:none;">
-            <h3>Perfil del Negocio</h3>
-            <div class="form-grid">
-                <input type="text" id="cfg-nombre" placeholder="Nombre Comercial">
-                <input type="text" id="cfg-rif" placeholder="RIF / Identificación">
-                <input type="text" id="cfg-dir" placeholder="Dirección">
-                <input type="text" id="cfg-tlf" placeholder="Teléfono de Contacto">
-                
-                <h4>Datos para Pago Móvil</h4>
-                <input type="text" id="cfg-pm-banco" placeholder="Banco (ej: Banesco, BDV)">
-                <input type="text" id="cfg-pm-cedula" placeholder="Cédula / RIF Destino">
-                <input type="text" id="cfg-pm-tlf" placeholder="Teléfono Pago Móvil">
+<!-- TASA -->
 
-                <button class="btn-cobrar" onclick="window.guardarPerfil()">💾 Guardar Configuración</button>
-            </div>
-        </section>
+<div class="card">
 
-    </main>
+<div class="row">
 
-    <div id="modal-confirmar" class="modal-overlay" style="display:none;">
-        <div class="modal-content confirm-box">
-            <h3 id="confirm-titulo">Confirmación</h3>
-            <p id="confirm-mensaje"></p>
-            <div class="confirm-buttons">
-                <button id="btn-confirm-aceptar" class="btn-cobrar">Aceptar</button>
-                <button onclick="document.getElementById('modal-confirmar').style.display='none'" class="btn-cancelar">Cancelar</button>
-            </div>
-        </div>
-    </div>
+<div>
+<b>💵 Tasa del dólar</b>
+<div id="rateInfo" class="small">Sin tasa</div>
+</div>
 
-    <!-- Carga de módulos JavaScript -->
-    <script src="js/app.js"></script>
-    <script src="js/ui-effects.js"></script>
-    <script src="js/scanner.js"></script>
-    <script src="js/ocr.js"></script>
-    <script src="js/caja.js"></script>
-    <script src="js/cierre.js"></script>
+<button class="primary" onclick="updateRate()">
+🔄 Actualizar
+</button>
+
+</div>
+
+<div id="rateStatus" class="status warn">
+Sin actualizar
+</div>
+
+<div class="grid">
+
+<div>
+
+<label>Tasa manual</label>
+
+<input
+id="manualRate"
+type="number"
+step="0.0001"
+min="0"
+placeholder="Ej. 100"
+>
+
+</div>
+
+<div style="display:flex;align-items:end">
+
+<button
+class="btn"
+style="width:100%"
+onclick="setManualRate()"
+>
+💾 Usar tasa manual
+</button>
+
+</div>
+
+</div>
+
+</div>
+
+
+<!-- NAVEGACIÓN -->
+
+<nav>
+
+<button class="btn" onclick="show('caja')">
+🛒 Caja
+</button>
+
+<button class="btn" onclick="show('inventario')">
+📦 Inventario
+</button>
+
+<button class="btn" onclick="show('cierres')">
+📊 Cierres
+</button>
+
+<button class="btn" onclick="show('admin')">
+⚙️ Ajustes
+</button>
+
+</nav>
+
+
+<!-- CAJA -->
+
+<section id="caja" class="card">
+
+<h2>🛒 Caja de Cobro</h2>
+
+<div class="grid">
+
+<div>
+
+<label>Buscar producto</label>
+
+<input
+id="search"
+oninput="renderProducts()"
+placeholder="Nombre o código"
+>
+
+</div>
+
+<div>
+
+<label>Caja</label>
+
+<select id="cashbox">
+
+<option value="Caja 1">Caja 1</option>
+<option value="Caja 2">Caja 2</option>
+<option value="Caja 3">Caja 3</option>
+<option value="Caja 4">Caja 4</option>
+
+</select>
+
+</div>
+
+</div>
+
+
+<div id="products" class="grid"></div>
+
+
+<h3>🛒 Carrito</h3>
+
+<div id="cart">
+<small>Carrito vacío</small>
+</div>
+
+
+<div class="card">
+
+<div>
+Subtotal:
+<b id="subtotal">0.00 Bs</b>
+</div>
+
+<div>
+USD:
+<b id="subtotalUSD">—</b>
+</div>
+
+<div class="total">
+Total:
+<span id="total">0.00 Bs</span>
+</div>
+
+</div>
+
+
+<div class="grid3">
+
+<button class="btn" onclick="clearCart()">
+Vaciar
+</button>
+
+<button class="btn" onclick="parkCart()">
+⏸️ Pausar
+</button>
+
+<button class="primary" onclick="finishSale()">
+💰 Cobrar
+</button>
+
+</div>
+
+</section>
+
+
+<!-- INVENTARIO -->
+
+<section id="inventario" class="card hidden">
+
+<h2>📦 Inventario</h2>
+
+<div class="grid">
+
+<div>
+
+<label>Nombre</label>
+<input id="pName">
+
+</div>
+
+<div>
+
+<label>Código</label>
+<input id="pCode">
+
+</div>
+
+<div>
+
+<label>Precio Bs</label>
+<input
+id="pPrice"
+type="number"
+step="0.01"
+min="0"
+>
+
+</div>
+
+<div>
+
+<label>Stock</label>
+<input
+id="pStock"
+type="number"
+step="1"
+min="0"
+>
+
+</div>
+
+</div>
+
+<button
+class="primary"
+onclick="addProduct()"
+style="margin-top:8px"
+>
+➕ Agregar producto
+</button>
+
+<div id="inventory"></div>
+
+</section>
+
+
+<!-- CIERRES -->
+
+<section id="cierres" class="card hidden">
+
+<h2>📊 Cierres e historial</h2>
+
+<div class="grid3">
+
+<div class="stat">
+<b id="statSales">0</b>
+<div class="small">Ventas</div>
+</div>
+
+<div class="stat">
+<b id="statBs">0.00</b>
+<div class="small">Total Bs</div>
+</div>
+
+<div class="stat">
+<b id="statUsd">0.00</b>
+<div class="small">Total USD</div>
+</div>
+
+</div>
+
+
+<div class="grid" style="margin-top:10px">
+
+<button class="btn" onclick="exportData()">
+💾 Exportar respaldo
+</button>
+
+<button class="warning" onclick="closeCashbox()">
+🔒 Cerrar caja
+</button>
+
+</div>
+
+
+<h3>Historial de ventas</h3>
+
+<div id="history"></div>
+
+</section>
+
+
+<!-- ADMINISTRACIÓN -->
+
+<section id="admin" class="card hidden">
+
+<h2>⚙️ Ajustes y administración</h2>
+
+
+<label>Nombre del negocio</label>
+
+<input id="businessName">
+
+
+<label>Endpoint de sincronización</label>
+
+<input
+id="syncUrl"
+placeholder="https://tu-servidor/api/sync"
+>
+
+<p class="small">
+El endpoint debe pertenecer a tu backend.
+Nunca coloques claves secretas de una API dentro de este archivo.
+</p>
+
+
+<div class="grid">
+
+<button class="primary" onclick="saveSettings()">
+💾 Guardar ajustes
+</button>
+
+<button class="btn" onclick="syncNow()">
+🔄 Sincronizar
+</button>
+
+</div>
+
+
+<h3>👥 Usuarios</h3>
+
+<div class="grid">
+
+<input
+id="newUser"
+placeholder="Usuario"
+>
+
+<input
+id="newPass"
+type="password"
+placeholder="Clave"
+>
+
+</div>
+
+
+<label>Rol</label>
+
+<select id="newRole">
+
+<option value="cajero">Cajero</option>
+<option value="supervisor">Supervisor</option>
+<option value="admin">Administrador</option>
+
+</select>
+
+
+<button
+class="btn"
+onclick="addUser()"
+style="margin-top:8px"
+>
+➕ Agregar usuario
+</button>
+
+
+<div id="users"></div>
+
+</section>
+
+
+</div>
+</div>
+
+
+<script>
+
+const KEY='geoMercadoV3';
+
+const DEFAULT_DB={
+settings:{
+businessName:'Geo Mercado',
+syncUrl:'',
+rate:0,
+rateSource:'none',
+rateAt:null
+},
+
+users:[
+{
+user:'admin',
+pass:'1234',
+role:'admin'
+}
+],
+
+products:[
+{
+id:'1',
+name:'Producto ejemplo',
+code:'1001',
+price:100,
+stock:50
+},
+{
+id:'2',
+name:'Producto ejemplo 2',
+code:'1002',
+price:250,
+stock:30
+}
+],
+
+sales:[],
+parked:[],
+queue:[],
+closures:[]
+};
+
+
+let db=loadDatabase();
+
+let cart=[];
+let currentUser=null;
+
+
+function loadDatabase(){
+
+try{
+
+const saved=localStorage.getItem(KEY);
+
+if(!saved){
+return structuredClone(DEFAULT_DB);
+}
+
+const data=JSON.parse(saved);
+
+return Object.assign(
+structuredClone(DEFAULT_DB),
+data,
+{
+settings:Object.assign(
+structuredClone(DEFAULT_DB.settings),
+data.settings||{}
+),
+users:Array.isArray(data.users)?
+data.users:
+structuredClone(DEFAULT_DB.users),
+products:Array.isArray(data.products)?
+data.products:
+[],
+sales:Array.isArray(data.sales)?
+data.sales:
+[],
+parked:Array.isArray(data.parked)?
+data.parked:
+[],
+queue:Array.isArray(data.queue)?
+data.queue:
+[],
+closures:Array.isArray(data.closures)?
+data.closures:
+[]
+}
+);
+
+}catch(e){
+
+console.error(e);
+
+return structuredClone(DEFAULT_DB);
+
+}
+
+}
+
+
+function save(){
+
+localStorage.setItem(
+KEY,
+JSON.stringify(db)
+);
+
+}
+
+
+function money(n){
+
+return Number(n||0).toLocaleString(
+'es-VE',
+{
+minimumFractionDigits:2,
+maximumFractionDigits:2
+}
+);
+
+}
+
+
+function rate(){
+
+return Number(db.settings.rate)||0;
+
+}
+
+
+function login(){
+
+const u=
+document.getElementById('loginUser')
+.value
+.trim();
+
+const p=
+document.getElementById('loginPass')
+.value;
+
+const found=
+db.users.find(
+x=>x.user===u&&x.pass===p
+);
+
+if(!found){
+
+alert('Usuario o clave incorrectos');
+
+return;
+
+}
+
+currentUser=found;
+
+document
+.getElementById('login')
+.classList
+.add('hidden');
+
+document
+.getElementById('appMain')
+.classList
+.remove('hidden');
+
+document
+.getElementById('sessionInfo')
+.textContent=
+found.user+' · '+found.role;
+
+document
+.getElementById('businessName')
+.value=
+db.settings.businessName;
+
+document
+.getElementById('syncUrl')
+.value=
+db.settings.syncUrl;
+
+renderAll();
+
+updateNetwork();
+
+updateRate(true);
+
+}
+
+
+function show(id){
+
+[
+'caja',
+'inventario',
+'cierres',
+'admin'
+]
+.forEach(x=>{
+
+document
+.getElementById(x)
+.classList
+.toggle(
+'hidden',
+x!==id
+);
+
+});
+
+renderAll();
+
+}
+
+
+function renderAll(){
+
+renderProducts();
+renderCart();
+renderInventory();
+renderHistory();
+renderUsers();
+updateRateInfo();
+updateStats();
+
+}
+
+
+function renderProducts(){
+
+const q=
+(
+document
+.getElementById('search')
+.value||''
+)
+.toLowerCase()
+.trim();
+
+const available=
+db.products
+.filter(p=>
+String(p.name)
+.toLowerCase()
+.includes(q)
+||
+String(p.code)
+.toLowerCase()
+.includes(q)
+);
+
+document
+.getElementById('products')
+.innerHTML=
+available
+.map(p=>{
+
+let stockClass='';
+
+if(p.stock<=0){
+stockClass='out-stock';
+}
+
+else if(p.stock<=5){
+stockClass='low-stock';
+}
+
+return `
+<div class="product">
+
+<b>${esc(p.name)}</b>
+
+<br>
+
+<small>
+Código: ${esc(p.code)}
+</small>
+
+<br>
+
+<small class="${stockClass}">
+Stock: ${Number(p.stock)}
+</small>
+
+<br>
+
+<small>
+${money(p.price)} Bs
+</small>
+
+<button
+class="primary"
+style="width:100%;margin-top:7px"
+onclick="addCart('${escAttr(p.id)}')"
+${p.stock<=0?'disabled':''}
+>
+Agregar
+</button>
+
+</div>
+`;
+
+})
+.join('')
+||
+'<p>No hay productos.</p>';
+
+}
+
+
+function addCart(id){
+
+const p=
+db.products.find(
+x=>String(x.id)===String(id)
+);
+
+if(!p||p.stock<1){
+
+alert('Producto sin stock');
+
+return;
+
+}
+
+let c=
+cart.find(
+x=>String(x.id)===String(id)
+);
+
+if(c){
+
+if(c.qty>=p.stock){
+
+alert('Stock insuficiente');
+
+return;
+
+}
+
+c.qty++;
+
+}else{
+
+cart.push({
+id:p.id,
+qty:1
+});
+
+}
+
+renderCart();
+
+}
+
+
+function renderCart(){
+
+const container=
+document.getElementById('cart');
+
+if(!cart.length){
+
+container.innerHTML=
+'<small>Carrito vacío</small>';
+
+}else{
+
+container.innerHTML=
+cart.map(c=>{
+
+const p=
+db.products.find(
+x=>String(x.id)===String(c.id)
+);
+
+if(!p)return '';
+
+return `
+<div class="row cart-line">
+
+<span>
+<b>${esc(p.name)}</b>
+<br>
+<small>
+Cantidad: ${c.qty}
+</small>
+</span>
+
+<span>
+${money(p.price*c.qty)} Bs
+
+<button
+class="btn"
+onclick="removeCart('${escAttr(c.id)}')"
+>
+−
+</button>
+
+<button
+class="btn"
+onclick="addCart('${escAttr(c.id)}')"
+>
++
+</button>
+
+</span>
+
+</div>
+`;
+
+}).join('');
+
+}
+
+
+const total=
+cart.reduce(
+(s,c)=>{
+
+const p=
+db.products.find(
+p=>String(p.id)===String(c.id)
+);
+
+return s+
+(p?
+Number(p.price)*Number(c.qty):
+0);
+
+},
+0
+);
+
+
+document
+.getElementById('subtotal')
+.textContent=
+money(total)+' Bs';
+
+
+document
+.getElementById('subtotalUSD')
+.textContent=
+rate()?
+money(total/rate()):
+'—';
+
+
+document
+.getElementById('total')
+.textContent=
+money(total)+' Bs';
+
+}
+
+
+function removeCart(id){
+
+const c=
+cart.find(
+x=>String(x.id)===String(id)
+);
+
+if(!c)return;
+
+c.qty--;
+
+if(c.qty<=0){
+
+cart=
+cart.filter(
+x=>String(x.id)!==String(id)
+);
+
+}
+
+renderCart();
+
+}
+
+
+function clearCart(){
+
+cart=[];
+
+renderCart();
+
+}
+
+
+function finishSale(){
+
+if(!cart.length){
+
+alert('El carrito está vacío');
+
+return;
+
+}
+
+
+for(const c of cart){
+
+const p=
+db.products.find(
+x=>String(x.id)===String(c.id)
+);
+
+if(!p){
+
+alert('Uno de los productos ya no existe');
+
+return;
+
+}
+
+if(c.qty>p.stock){
+
+alert(
+'Stock insuficiente para: '+
+p.name
+);
+
+return;
+
+}
+
+}
+
+
+const total=
+cart.reduce(
+(s,c)=>{
+
+const p=
+db.products.find(
+p=>String(p.id)===String(c.id)
+);
+
+return s+
+Number(p.price)*Number(c.qty);
+
+},
+0
+);
+
+
+const caja=
+document
+.getElementById('cashbox')
+.value;
+
+
+if(
+!confirm(
+'Confirmar cobro por '+
+money(total)+
+' Bs en '+caja+'?'
+)
+)return;
+
+
+cart.forEach(c=>{
+
+const p=
+db.products.find(
+x=>String(x.id)===String(c.id)
+);
+
+p.stock-=c.qty;
+
+});
+
+
+const sale={
+
+id:createId(),
+
+date:new Date().toISOString(),
+
+cashbox:caja,
+
+user:currentUser.user,
+
+totalBs:total,
+
+totalUsd:
+rate()?
+total/rate():
+0,
+
+rate:rate(),
+
+items:
+cart.map(c=>{
+
+const p=
+db.products.find(
+x=>String(x.id)===String(c.id)
+);
+
+return{
+id:c.id,
+name:p?p.name:'',
+price:p?p.price:0,
+qty:c.qty
+};
+
+})
+
+};
+
+
+db.sales.push(sale);
+
+queueChange(
+'sale',
+sale
+);
+
+cart=[];
+
+save();
+
+renderAll();
+
+alert('✅ Venta registrada correctamente');
+
+}
+
+
+function parkCart(){
+
+if(!cart.length){
+
+alert('El carrito está vacío');
+
+return;
+
+}
+
+
+db.parked.push({
+
+id:createId(),
+
+date:new Date().toISOString(),
+
+cashbox:
+document
+.getElementById('cashbox')
+.value,
+
+user:
+currentUser?
+currentUser.user:
+'',
+
+cart:
+cart.map(x=>({...x}))
+
+});
+
+
+queueChange(
+'parked',
+db.parked[db.parked.length-1]
+);
+
+cart=[];
+
+save();
+
+renderCart();
+
+alert('⏸️ Venta pausada');
+
+}
+
+
+function addProduct(){
+
+const name=
+document
+.getElementById('pName')
+.value
+.trim();
+
+const code=
+document
+.getElementById('pCode')
+.value
+.trim();
+
+const price=
+Number(
+document
+.getElementById('pPrice')
+.value
+);
+
+const stock=
+Number(
+document
+.getElementById('pStock')
+.value
+);
+
+
+if(
+!name||
+!code||
+!Number.isFinite(price)||
+!Number.isFinite(stock)||
+price<0||
+stock<0
+){
+
+alert('Completa correctamente los datos');
+
+return;
+
+}
+
+
+if(
+db.products.some(
+p=>String(p.code)===String(code)
+)
+){
+
+alert('Ya existe un producto con ese código');
+
+return;
+
+}
+
+
+const product={
+
+id:createId(),
+
+name:name,
+
+code:code,
+
+price:price,
+
+stock:Math.floor(stock)
+
+};
+
+
+db.products.push(product);
+
+queueChange(
+'product_create',
+product
+);
+
+
+[
+'pName',
+'pCode',
+'pPrice',
+'pStock'
+].forEach(id=>{
+
+document
+.getElementById(id)
+.value='';
+
+});
+
+
+save();
+
+renderAll();
+
+alert('✅ Producto agregado');
+
+}
+
+
+function renderInventory(){
+
+const container=
+document
+.getElementById('inventory');
+
+
+if(!db.products.length){
+
+container.innerHTML=
+'<p>No hay productos.</p>';
+
+return;
+
+}
+
+
+container.innerHTML=
+db.products
+.map(p=>{
+
+let status='';
+
+if(p.stock<=0){
+
+status=
+'<span class="out-stock">Sin stock</span>';
+
+}
+
+else if(p.stock<=5){
+
+status=
+'<span class="low-stock">Stock bajo</span>';
+
+}
+
+else{
+
+status=
+'<span>Disponible</span>';
+
+}
+
+
+return `
+<div class="row"
+style="
+padding:10px 0;
+border-bottom:1px solid #293244
+">
+
+<span>
+
+<b>${esc(p.name)}</b>
+
+<br>
+
+<small>
+Código: ${esc(p.code)}
+</small>
+
+<br>
+
+<small>
+${money(p.price)} Bs ·
+Stock: ${Number(p.stock)}
+</small>
+
+<br>
+
+<small>
+${status}
+</small>
+
+</span>
+
+<button
+class="danger"
+onclick="deleteProduct('${escAttr(p.id)}')"
+>
+Eliminar
+</button>
+
+</div>
+`;
+
+})
+.join('');
+
+}
+
+
+function deleteProduct(id){
+
+const product=
+db.products.find(
+p=>String(p.id)===String(id)
+);
+
+if(!product)return;
+
+
+if(
+!confirm(
+'¿Eliminar "'+
+product.name+
+'"?'
+)
+)return;
+
+
+db.products=
+db.products.filter(
+p=>String(p.id)!==String(id)
+);
+
+
+queueChange(
+'product_delete',
+{
+id:id
+}
+);
+
+save();
+
+renderAll();
+
+}
+
+
+function updateStats(){
+
+const total=
+db.sales.reduce(
+(s,x)=>s+Number(x.totalBs||0),
+0
+);
+
+const usd=
+db.sales.reduce(
+(s,x)=>s+Number(x.totalUsd||0),
+0
+);
+
+
+document
+.getElementById('statSales')
+.textContent=
+db.sales.length;
+
+
+document
+.getElementById('statBs')
+.textContent=
+money(total);
+
+
+document
+.getElementById('statUsd')
+.textContent=
+money(usd);
+
+}
+
+
+function renderHistory(){
+
+const container=
+document
+.getElementById('history');
+
+
+if(!db.sales.length){
+
+container.innerHTML=
+'<small>No hay ventas.</small>';
+
+return;
+
+}
+
+
+container.innerHTML=
+db.sales
+.slice()
+.reverse()
+.map(s=>`
+
+<div class="sale-card">
+
+<b>
+${new Date(s.date).toLocaleString('es-VE')}
+</b>
+
+<br>
+
+<small>
+Caja: ${esc(s.cashbox)}
+· Usuario: ${esc(s.user)}
+</small>
+
+<br>
+
+Total:
+<b>
+${money(s.totalBs)} Bs
+</b>
+
+·
+$${money(s.totalUsd)}
+
+<br>
+
+<small>
+Tasa: ${money(s.rate)}
+</small>
+
+</div>
+
+`)
+.join('');
+
+}
+
+
+function closeCashbox(){
+
+if(currentUser?.role!=='admin'&&
+currentUser?.role!=='supervisor'){
+
+alert(
+'Solo un administrador o supervisor puede cerrar una caja.'
+);
+
+return;
+
+}
+
+
+const caja=
+document
+.getElementById('cashbox')
+.value;
+
+
+const sales=
+db.sales.filter(
+s=>s.cashbox===caja
+);
+
+
+const total=
+sales.reduce(
+(s,x)=>s+Number(x.totalBs||0),
+0
+);
+
+
+if(
+!confirm(
+'Cerrar '+caja+
+' con '+sales.length+
+' ventas por '+money(total)+' Bs?'
+)
+)return;
+
+
+const closure={
+
+id:createId(),
+
+date:new Date().toISOString(),
+
+cashbox:caja,
+
+user:currentUser.user,
+
+sales:sales.length,
+
+totalBs:total
+
+};
+
+
+db.closures.push(closure);
+
+queueChange(
+'closure',
+closure
+);
+
+save();
+
+alert(
+'🔒 Cierre registrado para '+
+caja
+);
+
+}
+
+
+function setManualRate(){
+
+const r=
+Number(
+document
+.getElementById('manualRate')
+.value
+);
+
+
+if(!(r>0)){
+
+alert('Tasa inválida');
+
+return;
+
+}
+
+
+db.settings.rate=r;
+
+db.settings.rateSource='manual';
+
+db.settings.rateAt=
+new Date().toISOString();
+
+
+queueChange(
+'rate_manual',
+{
+rate:r
+}
+);
+
+save();
+
+updateRateInfo();
+
+renderCart();
+
+}
+
+
+async function updateRate(silent=false){
+
+try{
+
+if(!navigator.onLine){
+
+throw new Error('offline');
+
+}
+
+
+/*
+IMPORTANTE:
+Esta API es solo un ejemplo de fuente de tasa.
+Para usar una fuente específica de Venezuela
+se debe configurar la API correspondiente.
+*/
+
+const url=
+'https://api.exchangerate.host/latest?base=USD&symbols=VES';
+
+
+const res=
+await fetch(
+url,
+{
+cache:'no-store'
+}
+);
+
+
+if(!res.ok){
+
+throw new Error(
+'HTTP '+res.status
+);
+
+}
+
+
+const data=
+await res.json();
+
+
+const r=
+Number(
+data?.rates?.VES||
+data?.rate||
+data?.value
+);
+
+
+if(!(r>0)){
+
+throw new Error(
+'Formato de API no reconocido'
+);
+
+}
+
+
+db.settings.rate=r;
+
+db.settings.rateSource='api';
+
+db.settings.rateAt=
+new Date().toISOString();
+
+
+save();
+
+updateRateInfo();
+
+renderCart();
+
+
+}catch(e){
+
+console.error(e);
+
+updateRateInfo();
+
+
+if(!silent){
+
+alert(
+'No se pudo actualizar la tasa automáticamente. Puedes introducirla manualmente.'
+);
+
+}
+
+}
+
+}
+
+
+function updateRateInfo(){
+
+const r=rate();
+
+
+document
+.getElementById('rateInfo')
+.innerHTML=
+r?
+'1 USD = <b>'+
+money(r)+
+' Bs</b>':
+'Sin tasa';
+
+
+const status=
+document
+.getElementById('rateStatus');
+
+
+status.className=
+'status '+
+(r?'ok':'warn');
+
+
+if(r){
+
+const source=
+db.settings.rateSource==='api'?
+'🟢 API':
+'🟡 Manual';
+
+
+status.textContent=
+source+
+' · '+
+new Date(
+db.settings.rateAt
+).toLocaleString('es-VE');
+
+}else{
+
+status.textContent=
+'⚠️ Introduce una tasa manual o conecta una API';
+
+}
+
+}
+
+
+function updateNetwork(){
+
+document
+.getElementById('net')
+.textContent=
+navigator.onLine?
+'🟢 Online':
+'🔴 Offline';
+
+}
+
+
+window.addEventListener(
+'online',
+()=>{
+
+updateNetwork();
+
+updateRate(true);
+
+syncNow();
+
+}
+);
+
+
+window.addEventListener(
+'offline',
+updateNetwork
+);
+
+
+function saveSettings(){
+
+db.settings.businessName=
+document
+.getElementById('businessName')
+.value
+.trim()||
+'Geo Mercado';
+
+
+db.settings.syncUrl=
+document
+.getElementById('syncUrl')
+.value
+.trim();
+
+
+save();
+
+alert('✅ Ajustes guardados');
+
+}
+
+
+function addUser(){
+
+if(currentUser?.role!=='admin'){
+
+alert(
+'Solo el administrador puede crear usuarios.'
+);
+
+return;
+
+}
+
+
+const u=
+document
+.getElementById('newUser')
+.value
+.trim();
+
+const p=
+document
+.getElementById('newPass')
+.value;
+
+const role=
+document
+.getElementById('newRole')
+.value;
+
+
+if(!u||!p){
+
+alert(
+'Completa usuario y clave.'
+);
+
+return;
+
+}
+
+
+if(
+db.users.some(
+x=>x.user===u
+)
+){
+
+alert(
+'Ese usuario ya existe.'
+);
+
+return;
+
+}
+
+
+const user={
+
+user:u,
+
+pass:p,
+
+role:role
+
+};
+
+
+db.users.push(user);
+
+queueChange(
+'user_create',
+{
+user:u,
+role:role
+}
+);
+
+
+document
+.getElementById('newUser')
+.value='';
+
+document
+.getElementById('newPass')
+.value='';
+
+
+save();
+
+renderUsers();
+
+alert('✅ Usuario creado');
+
+}
+
+
+function renderUsers(){
+
+const container=
+document
+.getElementById('users');
+
+
+container.innerHTML=
+db.users
+.map(x=>`
+
+<div
+class="row"
+style="
+padding:8px 0;
+border-bottom:1px solid #293244
+"
+>
+
+<span>
+<b>${esc(x.user)}</b>
+· ${esc(x.role)}
+</span>
+
+</div>
+
+`)
+.join('');
+
+}
+
+
+function queueChange(type,payload=null){
+
+db.queue.push({
+
+id:createId(),
+
+type:type,
+
+date:new Date().toISOString(),
+
+payload:payload
+
+});
+
+save();
+
+}
+
+
+async function syncNow(){
+
+if(!db.settings.syncUrl){
+
+return;
+
+}
+
+
+if(!navigator.onLine){
+
+return;
+
+}
+
+
+if(!db.queue.length){
+
+return;
+
+}
+
+
+try{
+
+const res=
+await fetch(
+db.settings.syncUrl,
+{
+method:'POST',
+
+headers:{
+'Content-Type':'application/json'
+},
+
+body:JSON.stringify({
+
+device:deviceId(),
+
+business:
+db.settings.businessName,
+
+queue:db.queue,
+
+sentAt:
+new Date().toISOString()
+
+})
+
+}
+);
+
+
+if(!res.ok){
+
+throw new Error(
+'HTTP '+res.status
+);
+
+}
+
+
+db.queue=[];
+
+save();
+
+console.log(
+'Sincronización completada'
+);
+
+
+}catch(e){
+
+console.log(
+'Sincronización pendiente',
+e
+);
+
+}
+
+}
+
+
+function deviceId(){
+
+let id=
+localStorage
+.getItem('geoDeviceId');
+
+
+if(!id){
+
+id=
+'CAJA-'+
+cryptoRandom();
+
+
+localStorage
+.setItem(
+'geoDeviceId',
+id
+);
+
+}
+
+
+return id;
+
+}
+
+
+function cryptoRandom(){
+
+if(
+window.crypto&&
+crypto.getRandomValues
+){
+
+const arr=
+new Uint32Array(2);
+
+crypto.getRandomValues(arr);
+
+return (
+arr[0].toString(36)+
+arr[1].toString(36)
+).toUpperCase();
+
+}
+
+
+return Math
+.random()
+.toString(36)
+.slice(2,10)
+.toUpperCase();
+
+}
+
+
+function createId(){
+
+if(
+window.crypto&&
+crypto.randomUUID
+){
+
+return crypto.randomUUID();
+
+}
+
+return (
+Date.now()+
+'-'+
+Math
+.random()
+.toString(36)
+.slice(2)
+);
+
+}
+
+
+function exportData(){
+
+const backup={
+version:3,
+exportedAt:new Date().toISOString(),
+device:deviceId(),
+database:db
+};
+
+
+const blob=
+new Blob(
+[
+JSON.stringify(
+backup,
+null,
+2
+)
+],
+{
+type:'application/json'
+}
+);
+
+
+const url=
+URL.createObjectURL(blob);
+
+
+const a=
+document.createElement('a');
+
+
+a.href=url;
+
+a.download=
+'geo-mercado-respaldo-'+
+new Date()
+.toISOString()
+.slice(0,10)+
+'.json';
+
+
+document.body.appendChild(a);
+
+a.click();
+
+a.remove();
+
+
+setTimeout(
+()=>URL.revokeObjectURL(url),
+1000
+);
+
+}
+
+
+function esc(v){
+
+return String(v??'')
+.replace(
+/[&<>"']/g,
+m=>({
+
+'&':'&amp;',
+'<':'&lt;',
+'>':'&gt;',
+'"':'&quot;',
+"'":'&#39;'
+
+}[m])
+);
+
+}
+
+
+function escAttr(v){
+
+return String(v??'')
+.replace(
+/[^a-zA-Z0-9_-]/g,
+''
+);
+
+}
+
+
+document.addEventListener(
+'DOMContentLoaded',
+()=>{
+
+updateNetwork();
+
+}
+);
+
+</script>
+
 </body>
 </html>
