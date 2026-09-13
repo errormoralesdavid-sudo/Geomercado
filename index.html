@@ -442,7 +442,7 @@
             </div>
             
             <div class="cierre-card">
-                <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:8px; border-bottom:1px dashed #313c52; padding-bottom:4px;">
+                <div style="display:flex; justify-space-between; align-items:center; margin-bottom:8px; border-bottom:1px dashed #313c52; padding-bottom:4px;">
                     <h4 style="margin:0; border:none; padding:0;">1. Ventas Netas del Día</h4>
                     <button style="background:#fff; color:#000; border:none; padding:4px 8px; border-radius:6px; font-weight:bold; font-size:10px; cursor:pointer;" onclick="window.imprimirCierreZ()">🖨️ IMPRIMIR Z</button>
                 </div>
@@ -1458,7 +1458,7 @@
                 cliente: cNombre, cedula: cCedula, dir: cDir, tlf: cTlf
             };
             ventasHistorico.push(venta);
-            if (window.localStorage) window.localStoragesetItem('geomercado_ventas_v19', JSON.stringify(ventasHistorico));
+            if (window.localStorage) window.localStorage.setItem('geomercado_ventas_v19', JSON.stringify(ventasHistorico));
             
             window.mostrarFeedbackAnimado('exito', 'Venta Cobrada Exitosamente');
 
@@ -1598,100 +1598,89 @@
             }
             
             h += '<hr><h3 style="text-align:right; margin:4px 0; font-size:14px;">TOTAL: ' + window.formatVE(v.totalVES) + '</h3>';
-            
-            if(v.usd > 0) {
-                h += '<h4 style="text-align:right; margin:4px 0; font-size:12px;">Efectivo Entregado: $' + v.usd.toFixed(2) + '</h4>';
-            }
-            
-            h += '<p style="text-align:center; font-size:11px; margin-top:15px;">¡Gracias por su compra!</p>';
-            h += '<script>window.print();window.close();<\/script></body></html>';
+            h += '<p style="text-align:center; margin-top:15px; font-size:11px;">¡Gracias por su compra!</p>';
+            h += '</body></html>';
             doc.write(h);
             doc.close();
-        };
-
-        window.imprimirCierreZ = function() {
-            var totalPM = 0; var totalUSDFisico = 0; var totalVESFisico = 0; var totalPTV = 0;
-            var totalVentasUSD = 0; var totalCostoUSD = 0;
-            for(var i=0; i<ventasHistorico.length; i++) {
-                var v = ventasHistorico[i];
-                totalPM += v.pm; totalUSDFisico += v.usd; totalVESFisico += v.ves; totalPTV += v.ptv; 
-                totalVentasUSD += v.totalUSD;
-                totalCostoUSD += (v.costoUSD || 0);
-            }
-
-            var gananciaNetaUSD = totalVentasUSD - totalCostoUSD;
-            var gananciaTotalVES = gananciaNetaUSD * tasaDia;
-
-            var pw = window.open('', '_blank');
-            if(!pw) { window.mostrarFeedbackAnimado('error', 'Habilita las ventanas emergentes'); return; }
-            var doc = pw.document;
-            var h = '<html><head><title>Cierre Z</title><style>body{font-family:monospace; color:#000; width:280px; margin:0 auto; padding:10px;} .it{display:flex; justify-content:space-between; margin-bottom:4px; font-size:12px;}</style></head><body>';
-            h += '<h2 style="text-align:center; margin:0; font-size:16px;">' + window.escapeHTML(perfilNegocio.nombre) + '</h2>';
-            h += '<h3 style="text-align:center; margin:6px 0; font-size:14px;">REPORTE CIERRE (Z)</h3>';
-            h += '<p style="text-align:center; font-size:11px;">' + new Date().toLocaleDateString() + '</p><hr>';
-            
-            h += '<h4 style="margin:4px 0;">1. VENTAS NETAS</h4>';
-            h += '<div class="it"><span>Punto de Venta:</span><span>' + window.formatVE(totalPTV) + '</span></div>';
-            h += '<div class="it"><span>Pago Móvil:</span><span>' + window.formatVE(totalPM) + '</span></div>';
-            h += '<div class="it"><span>Efectivo (Bs):</span><span>' + window.formatVE(totalVESFisico) + '</span></div>';
-            h += '<hr><div class="it"><strong>GANANCIA REAL (Bs):</strong><strong>' + window.formatVE(gananciaTotalVES) + '</strong></div>';
-            h += '<div class="it"><span>Efectivo Divisas ($) Físico:</span><span>$' + totalUSDFisico.toFixed(2) + '</span></div>';
-            
-            h += '<hr><h4 style="margin:4px 0;">2. GAVETA FÍSICA ESPERADA</h4>';
-            h += '<div class="it"><span>Sencillo Inicial ($):</span><span>$' + fondoCaja.usd.toFixed(2) + '</span></div>';
-            h += '<div class="it"><span>Sencillo Inicial (Bs):</span><span>' + window.formatVE(fondoCaja.ves) + '</span></div><br>';
-            h += '<div class="it"><strong>TOTAL FÍSICO ($):</strong><strong>$' + (fondoCaja.usd + totalUSDFisico).toFixed(2) + '</strong></div>';
-            h += '<div class="it"><strong>TOTAL FÍSICO (Bs):</strong><strong>' + window.formatVE(fondoCaja.ves + totalVESFisico) + '</strong></div>';
-            
-            h += '<p style="text-align:center; font-size:9px; margin-top:15px;">Software: Geo Mercado V19.1 (Ed. Venezuela)</p>';
-            h += '<script>window.print();window.close();<\/script></body></html>';
-            doc.write(h);
-            doc.close();
+            pw.focus();
+            pw.print();
+            pw.close();
         };
 
         window.anularVenta = function(index) {
-            window.mostrarConfirmacion("❌ Anular Factura", "¿Seguro que deseas anular esta factura? El stock se devolverá al inventario.", function() {
+            window.mostrarConfirmacion("❌ Anular Venta", "¿Deseas anular esta venta y reponer el inventario?", function() {
                 var v = ventasHistorico[index];
-                if(v && v.items) {
-                    for(var i=0; i<v.items.length; i++) {
-                        var it = v.items[i];
-                        if(it.tipo !== 'peso' && it.tipo !== 'combo') {
-                            for(var j=0; j<productos.length; j++) {
-                                if(productos[j].id === it.id) {
-                                    productos[j].qty += (it.qtyVenta || 1);
-                                    break;
-                                }
+                for(var i=0; i<v.items.length; i++) {
+                    var item = v.items[i];
+                    if(item.tipo !== 'peso' && item.tipo !== 'combo') {
+                        for(var j=0; j<productos.length; j++) {
+                            if(productos[j].id === item.id) {
+                                productos[j].qty += item.qtyVenta;
+                                break;
                             }
                         }
                     }
-                    if (window.localStorage) window.localStorage.setItem('geomercado_db_v19', JSON.stringify(productos));
                 }
                 ventasHistorico.splice(index, 1);
-                if (window.localStorage) window.localStorage.setItem('geomercado_ventas_v19', JSON.stringify(ventasHistorico));
+                if (window.localStorage) {
+                    window.localStorage.setItem('geomercado_db_v19', JSON.stringify(productos));
+                    window.localStorage.setItem('geomercado_ventas_v19', JSON.stringify(ventasHistorico));
+                }
                 window.renderizarCierreDeCaja();
-                window.mostrarToast("Factura anulada y stock retornado");
+                window.mostrarToast("Venta anulada e inventario restituido");
             });
+        };
+
+        window.imprimirCierreZ = function() {
+            var pw = window.open('', '_blank');
+            if(!pw) { window.mostrarFeedbackAnimado('error', 'Habilita las ventanas emergentes'); return; }
+            var doc = pw.document;
+            var totalPM = 0; var totalUSDFisico = 0; var totalVESFisico = 0; var totalPTV = 0; var totalVentasUSD = 0;
+            
+            for(var i=0; i<ventasHistorico.length; i++) {
+                var v = ventasHistorico[i];
+                totalPM += v.pm; totalUSDFisico += v.usd; totalVESFisico += v.ves; totalPTV += v.ptv;
+                totalVentasUSD += v.totalUSD;
+            }
+
+            var h = '<html><head><title>Cierre Z</title><style>body{font-family:monospace; color:#000; width:280px; margin:0 auto; padding:10px;} .it{display:flex; justify-content:space-between; margin-bottom:4px; font-size:12px;}</style></head><body>';
+            h += '<h2 style="text-align:center; margin:0; font-size:16px;">CIERRE DE CAJA (Z)</h2>';
+            h += '<h3 style="text-align:center; margin:0; font-size:13px;">' + window.escapeHTML(perfilNegocio.nombre) + '</h3>';
+            h += '<p style="text-align:center; font-size:10px;">Fecha: ' + new Date().toLocaleString() + '</p><hr>';
+            
+            h += '<div class="it"><span>Total PTV:</span><span>' + window.formatVE(totalPTV) + '</span></div>';
+            h += '<div class="it"><span>Total Pago Móvil:</span><span>' + window.formatVE(totalPM) + '</span></div>';
+            h += '<div class="it"><span>Efectivo Bs:</span><span>' + window.formatVE(totalVESFisico) + '</span></div>';
+            h += '<div class="it"><span>Efectivo Divisas ($):</span><span>$' + totalUSDFisico.toFixed(2) + '</span></div>';
+            h += '<hr>';
+            h += '<div class="it" style="font-weight:bold;"><span>Total Ventas:</span><span>' + window.formatVE(totalVentasUSD * tasaDia) + '</span></div>';
+            h += '</body></html>';
+            doc.write(h);
+            doc.close();
+            pw.focus();
+            pw.print();
+            pw.close();
         };
 
         window.borrarHistorial = function() {
-            window.mostrarConfirmacion("⚠️ Reiniciar Día", "¿Deseas borrar el historial de ventas del día actual? Esta acción es irreversible.", function() {
+            window.mostrarConfirmacion("⚠️ Reiniciar Día", "¿Deseas borrar todo el historial de ventas del día? Esta acción no se puede deshacer.", function() {
                 ventasHistorico = [];
                 if (window.localStorage) window.localStorage.setItem('geomercado_ventas_v19', JSON.stringify(ventasHistorico));
                 window.renderizarCierreDeCaja();
-                window.mostrarToast("Historial reseteado");
+                window.mostrarToast("Historial borrado por completo");
             });
         };
 
-        window.conmutarPerfil = function(nuevoRol) {
-            rolActual = nuevoRol;
+        window.conmutarPerfil = function(rol) {
+            rolActual = rol;
             document.getElementById('txt-rol').innerText = rolActual;
             window.mostrarToast("Perfil cambiado a: " + rolActual);
         };
 
         window.intentarAdmin = function() {
-            var pin = prompt("Ingresa el PIN Administrador:");
-            if(pin === (perfilNegocio.pin || "1234")) {
-                window.conmutarPerfil("Administrador 👑");
+            var pin = prompt("Ingresa la clave de Administrador:");
+            if(pin === perfilNegocio.pin) {
+                window.conmutarPerfil('Administrador 👑');
             } else {
                 window.mostrarFeedbackAnimado('error', 'PIN Incorrecto');
             }
