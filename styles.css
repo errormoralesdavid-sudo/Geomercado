@@ -84,7 +84,7 @@ body {
     display: block;
 }
 
-/* Botones e Inputs Generales */
+/* Botones e Inputs */
 button {
     touch-action: manipulation;
     transition: transform 0.1s ease, background 0.2s ease;
@@ -198,7 +198,7 @@ input:focus {
     color: #3fb950;
 }
 
-/* Métodos de Pago y Formularios */
+/* Métodos de Pago */
 .pago-container, .form-grid {
     background: #161b22;
     border: 1px solid #30363d;
@@ -290,50 +290,29 @@ input:focus {
     font-weight: bold;
 }
 
-/* Cierre y Resumen */
-.resumen-grid {
-    display: grid;
-    grid-template-columns: 1fr 1fr;
-    gap: 8px;
-    margin-top: 10px;
-}
-
-.resumen-card {
-    background: #161b22;
-    padding: 10px;
-    border-radius: 6px;
-    border: 1px solid #30363d;
-    font-size: 0.85rem;
-}
-
-.resumen-card strong {
-    display: block;
-    font-size: 1rem;
-    color: #58a6ff;
-    margin-top: 4px;
-}
-
-.resumen-card.highlight {
-    grid-column: span 2;
-    background: #1f6beb22;
-    border-color: #1f6beb;
-}
-
-/* Corrección de Modales Bloqueantes */
+/* Modales e Interacción Libres */
 .modal-overlay, .feedback-overlay {
     position: fixed;
     top: 0; left: 0; right: 0; bottom: 0;
     background: rgba(0, 0, 0, 0.85);
-    display: flex;
+    display: none; /* Forzar a estar oculto hasta que JS lo llame */
     flex-direction: column;
     justify-content: center;
     align-items: center;
     z-index: 9999;
     backdrop-filter: blur(4px);
-    pointer-events: auto;
+    pointer-events: none; /* No bloquea los toques cuando está invisible */
 }
 
-/* Elemento oculto sin interferir clics */
+/* Solo captura eventos al mostrarse explícitamente */
+.modal-overlay[style*="display: flex"],
+.modal-overlay[style*="display:block"],
+.feedback-overlay[style*="display: flex"],
+.feedback-overlay[style*="display:block"] {
+    display: flex !important;
+    pointer-events: auto !important;
+}
+
 #hidden-qr-reader {
     display: none !important;
     pointer-events: none !important;
@@ -349,19 +328,10 @@ input:focus {
     border: 1px solid #30363d;
 }
 
-/* Banner de Estado */
-.pm-status-banner {
-    padding: 8px;
-    border-radius: 4px;
-    font-size: 0.8rem;
-    margin-top: 6px;
-    text-align: center;
-}
-
-/* Animaciones de Feedback */
+/* Animaciones */
 @keyframes popIn {
     0% { transform: scale(0.5); opacity: 0; }
-    80% { transform: scale(1.1); }
+    80% { transform: scale(1.1); opacity: 1; }
     100% { transform: scale(1); opacity: 1; }
 }
 
@@ -381,4 +351,5 @@ input:focus {
     border: 1px solid #30363d;
     box-shadow: 0 4px 12px rgba(0,0,0,0.5);
     z-index: 10000;
+    animation: popIn 0.25s ease-out;
 }
