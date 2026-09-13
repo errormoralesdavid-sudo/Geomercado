@@ -1,83 +1,4 @@
-<!DOCTYPE html>
-<html lang="es">
-<head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-  <title>GEO MERCADO 🛍️ - Punto de Venta POS</title>
-  
-  <!-- Tailwind CSS & FontAwesome -->
-  <script src="https://cdn.tailwindcss.com"></script>
-  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
-  
-  <!-- Librerías de Escáner y OCR -->
-  <script src="https://unpkg.com/html5-qrcode"></script>
-  <script src="https://cdn.jsdelivr.net/npm/tesseract.js@5/dist/tesseract.min.js"></script>
-
-  <style>
-    body { background-color: #0b0f19; color: #f1f5f9; font-family: system-ui, -apple-system, sans-serif; user-select: none; }
-    .neon-card { background: rgba(15, 23, 42, 0.85); backdrop-filter: blur(12px); border: 1px solid rgba(56, 189, 248, 0.2); }
-    .neon-border { border-color: #38bdf8; box-shadow: 0 0 12px rgba(56, 189, 248, 0.25); }
-    .neon-text-green { color: #10b981; text-shadow: 0 0 8px rgba(16, 185, 129, 0.3); }
-    .neon-text-blue { color: #38bdf8; text-shadow: 0 0 8px rgba(56, 189, 248, 0.3); }
-    .neon-btn-green { background: #059669; box-shadow: 0 0 10px rgba(16, 185, 129, 0.4); }
-    .neon-btn-green:active { background: #047857; }
-    .no-scrollbar::-webkit-scrollbar { display: none; }
-    .no-scrollbar { -ms-overflow-style: none; scrollbar-width: none; }
-    .tab-btn.active { border-bottom: 2px solid #38bdf8; color: #38bdf8; font-weight: bold; }
-  </style>
-</head>
-<body class="h-screen flex flex-col justify-between overflow-hidden">
-
-  <!-- ENCABEZADO SUPERIOR -->
-  <header class="neon-card px-4 py-2.5 flex justify-between items-center border-b border-slate-800 z-10">
-    <div class="flex items-center gap-2">
-      <div class="w-8 h-8 rounded-lg bg-sky-500/20 border border-sky-400/30 flex items-center justify-center">
-        <i class="fa-solid fa-store text-sky-400 text-sm"></i>
-      </div>
-      <div>
-        <h1 class="font-bold text-sm tracking-wide text-slate-100 flex items-center gap-1.5">
-          GEO MERCADO <span class="text-[10px] bg-sky-500/20 text-sky-300 px-1.5 py-0.2 rounded border border-sky-500/30">V20</span>
-        </h1>
-        <p id="role-indicator" class="text-[10px] text-slate-400">Terminal Principal</p>
-      </div>
-    </div>
-
-    <!-- TASA Y ROL -->
-    <div class="flex items-center gap-2">
-      <div class="bg-slate-900/80 border border-slate-700/80 rounded-lg px-2.5 py-1 text-right flex items-center gap-2">
-        <div>
-          <p class="text-[9px] text-slate-400 font-medium">TASA BCV</p>
-          <p id="display-tasa" class="text-xs font-bold text-emerald-400">Bs. 0.00</p>
-        </div>
-        <button onclick="obtenerTasaOficial()" class="text-sky-400 hover:text-sky-300 text-xs p-1" title="Actualizar Tasa en Vivo">
-          <i class="fa-solid fa-arrows-rotate"></i>
-        </button>
-      </div>
-
-      <select id="select-role" onchange="cambiarRol(this.value)" class="bg-slate-900 text-[11px] border border-slate-700 rounded-lg px-2 py-1 text-slate-300 outline-none">
-        <option value="admin">Administrador Main</option>
-        <option value="cajero">Terminal Cajero</option>
-      </select>
-    </div>
-  </header>
-
-  <!-- NAVEGACIÓN POR PESTAÑAS -->
-  <nav class="bg-slate-900 border-b border-slate-800 flex justify-around text-xs text-slate-400">
-    <button onclick="cambiarPestana('pos')" id="tab-pos" class="tab-btn active py-2 px-4 flex items-center gap-1.5">
-      <i class="fa-solid fa-cash-register"></i> Punto de Venta
-    </button>
-    <button onclick="cambiarPestana('inventario')" id="tab-inventario" class="tab-btn py-2 px-4 flex items-center gap-1.5">
-      <i class="fa-solid fa-boxes-stacked"></i> Inventario
-    </button>
-    <button onclick="cambiarPestana('espera')" id="tab-espera" class="tab-btn py-2 px-4 flex items-center gap-1.5">
-      <i class="fa-solid fa-clock-rotate-left"></i> En Espera (<span id="hold-count">0</span>)
-    </button>
-    <button onclick="cambiarPestana('reportes')" id="tab-reportes" class="tab-btn py-2 px-4 flex items-center gap-1.5">
-      <i class="fa-solid fa-chart-line"></i> Reportes / Cierre
-    </button>
-  </nav>
-
-  <!-- SECCIÓN 1: VISTA PRINCIPAL (POS) -->
+<!DOCTYPE html><html lang="es"><head>  <meta charset="UTF-8">  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">  <title>GEO MERCADO 🛍️ - Punto de Venta POS</title>    <!-- Tailwind CSS & FontAwesome -->  <script src="https://cdn.tailwindcss.com"></script>  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">    <!-- Librerías de Escáner y OCR -->  <script src="https://unpkg.com/html5-qrcode"></script>  <script src="https://cdn.jsdelivr.net/npm/tesseract.js@5/dist/tesseract.min.js"></script>  <style>    body { background-color: #0b0f19; color: #f1f5f9; font-family: system-ui, -apple-system, sans-serif; user-select: none; }    .neon-card { background: rgba(15, 23, 42, 0.85); backdrop-filter: blur(12px); border: 1px solid rgba(56, 189, 248, 0.2); }    .neon-border { border-color: #38bdf8; box-shadow: 0 0 12px rgba(56, 189, 248, 0.25); }    .neon-text-green { color: #10b981; text-shadow: 0 0 8px rgba(16, 185, 129, 0.3); }    .neon-text-blue { color: #38bdf8; text-shadow: 0 0 8px rgba(56, 189, 248, 0.3); }    .neon-btn-green { background: #059669; box-shadow: 0 0 10px rgba(16, 185, 129, 0.4); }    .neon-btn-green:active { background: #047857; }    .no-scrollbar::-webkit-scrollbar { display: none; }    .no-scrollbar { -ms-overflow-style: none; scrollbar-width: none; }    .tab-btn.active { border-bottom: 2px solid #38bdf8; color: #38bdf8; font-weight: bold; }  </style></head><body class="h-screen flex flex-col justify-between overflow-hidden">  <!-- ENCABEZADO SUPERIOR -->  <header class="neon-card px-4 py-2.5 flex justify-between items-center border-b border-slate-800 z-10">    <div class="flex items-center gap-2">      <div class="w-8 h-8 rounded-lg bg-sky-500/20 border border-sky-400/30 flex items-center justify-center">        <i class="fa-solid fa-store text-sky-400 text-sm"></i>      </div>      <div>        <h1 class="font-bold text-sm tracking-wide text-slate-100 flex items-center gap-1.5">          GEO MERCADO <span class="text-[10px] bg-sky-500/20 text-sky-300 px-1.5 py-0.2 rounded border border-sky-500/30">V20</span>        </h1>        <p id="role-indicator" class="text-[10px] text-slate-400">Terminal Principal</p>      </div>    </div>    <!-- TASA Y ROL -->    <div class="flex items-center gap-2">      <div class="bg-slate-900/80 border border-slate-700/80 rounded-lg px-2.5 py-1 text-right flex items-center gap-2">        <div>          <p class="text-[9px] text-slate-400 font-medium">TASA BCV</p>          <p id="display-tasa" class="text-xs font-bold text-emerald-400">Bs. 0.00</p>        </div>        <button onclick="obtenerTasaOficial()" class="text-sky-400 hover:text-sky-300 text-xs p-1" title="Actualizar Tasa en Vivo">          <i class="fa-solid fa-arrows-rotate"></i>        </button>      </div>      <select id="select-role" onchange="cambiarRol(this.value)" class="bg-slate-900 text-[11px] border border-slate-700 rounded-lg px-2 py-1 text-slate-300 outline-none">        <option value="admin">Administrador Main</option>        <option value="cajero">Terminal Cajero</option>      </select>    </div>  </header>  <!-- NAVEGACIÓN POR PESTAÑAS -->  <nav class="bg-slate-900 border-b border-slate-800 flex justify-around text-xs text-slate-400">    <button onclick="cambiarPestana('pos')" id="tab-pos" class="tab-btn active py-2 px-4 flex items-center gap-1.5">      <i class="fa-solid fa-cash-register"></i> Punto de Venta    </button>    <button onclick="cambiarPestana('inventario')" id="tab-inventario" class="tab-btn py-2 px-4 flex items-center gap-1.5">      <i class="fa-solid fa-boxes-stacked"></i> Inventario    </button>    <button onclick="cambiarPestana('espera')" id="tab-espera" class="tab-btn py-2 px-4 flex items-center gap-1.5">      <i class="fa-solid fa-clock-rotate-left"></i> En Espera (<span id="hold-count">0</span>)    </button>    <button onclick="cambiarPestana('reportes')" id="tab-reportes" class="tab-btn py-2 px-4 flex items-center gap-1.5">      <i class="fa-solid fa-chart-line"></i> Reportes / Cierre    </button>  </nav>  <!-- SECCIÓN 1: VISTA PRINCIPAL (POS) -->
   <section id="sec-pos" class="flex-1 flex flex-col p-3 overflow-hidden gap-3">
     
     <div class="flex gap-2">
@@ -247,7 +168,6 @@
       </button>
     </div>
   </div>
-
   <!-- LÓGICA COMPLETA DE GEO MERCADO -->
   <script>
     // ESTADO GENERAL DE LA APLICACIÓN
