@@ -2,215 +2,238 @@
 <html lang="es">
 <head>
   <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>GEO MERCADO 🛍️ - POS Multi-Usuario</title>
-  
-  <!-- CSS & Tailwind Framework -->
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+  <title>GEO MERCADO 🛍️ - POS V20</title>
   <script src="https://cdn.tailwindcss.com"></script>
   <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
-  
-  <!-- Librerías de Escáner y OCR -->
   <script src="https://unpkg.com/html5-qrcode"></script>
   <script src="https://cdn.jsdelivr.net/npm/tesseract.js@5/dist/tesseract.min.js"></script>
-
-  <!-- Firebase SDKs para sincronización en vivo -->
-  <script src="https://www.gstatic.com/firebasejs/9.22.1/firebase-app-compat.js"></script>
-  <script src="https://www.gstatic.com/firebasejs/9.22.1/firebase-database-compat.js"></script>
-
   <style>
-    body { background-color: #0f172a; color: #f8fafc; font-family: system-ui, -apple-system, sans-serif; }
-    .glass-card { background: rgba(30, 41, 59, 0.7); backdrop-filter: blur(12px); border: 1px solid rgba(255, 255, 255, 0.1); }
-    .neon-border { border-color: #38bdf8; box-shadow: 0 0 10px rgba(56, 189, 248, 0.2); }
+    body { background-color: #0b0f19; color: #f1f5f9; font-family: system-ui, -apple-system, sans-serif; user-select: none; }
+    .neon-card { background: rgba(15, 23, 42, 0.75); backdrop-filter: blur(12px); border: 1px solid rgba(56, 189, 248, 0.2); }
+    .neon-border { border-color: #38bdf8; box-shadow: 0 0 12px rgba(56, 189, 248, 0.25); }
+    .neon-text-green { color: #10b981; text-shadow: 0 0 8px rgba(16, 185, 129, 0.3); }
+    .neon-text-blue { color: #38bdf8; text-shadow: 0 0 8px rgba(56, 189, 248, 0.3); }
+    .neon-btn-green { background: #059669; box-shadow: 0 0 10px rgba(16, 185, 129, 0.4); }
+    .neon-btn-green:active { background: #047857; }
+    .no-scrollbar::-webkit-scrollbar { display: none; }
+    .no-scrollbar { -ms-overflow-style: none; scrollbar-width: none; }
   </style>
 </head>
-<body class="h-screen flex flex-col overflow-hidden">
+<body class="h-screen flex flex-col justify-between overflow-hidden">
 
-  <!-- ENCABEZADO SUPERIOR -->
-  <header class="glass-card px-4 py-3 flex justify-between items-center border-b border-slate-700">
-    <div class="flex items-center gap-3">
-      <h1 class="text-xl font-bold tracking-wider text-sky-400 flex items-center gap-2">
-        <i class="fa-solid font-bold fa-store"></i> GEO MERCADO
-      </h1>
-      <span id="role-badge" class="text-xs px-2 py-1 rounded-full bg-slate-700 text-slate-300 font-semibold">Cargando rol...</span>
+  <!-- ENCABEZADO PRINCIPAL -->
+  <header class="neon-card px-4 py-2.5 flex justify-between items-center border-b border-slate-800 z-10">
+    <div class="flex items-center gap-2">
+      <div class="w-8 h-8 rounded-lg bg-sky-500/20 border border-sky-400/30 flex items-center justify-center">
+        <i class="fa-solid fa-store text-sky-400 text-sm"></i>
+      </div>
+      <div>
+        <h1 class="font-bold text-sm tracking-wide text-slate-100 flex items-center gap-1.5">
+          GEO MERCADO <span class="text-[10px] bg-sky-500/20 text-sky-300 px-1.5 py-0.2 rounded border border-sky-500/30">V20</span>
+        </h1>
+        <p id="role-indicator" class="text-[10px] text-slate-400">Terminal Cajero</p>
+      </div>
     </div>
 
-    <div class="flex items-center gap-4 text-sm">
-      <div class="bg-slate-800 px-3 py-1.5 rounded-lg border border-slate-700 flex items-center gap-2">
-        <span class="text-slate-400">BCV:</span>
-        <span id="tasa-val" class="font-bold text-emerald-400">Bs. 0.00</span>
-        <button onclick="obtenerTasaBCV()" class="text-sky-400 hover:text-sky-300 ml-1" title="Actualizar Tasa">
+    <!-- Tasa BCV y Control de Rol -->
+    <div class="flex items-center gap-2">
+      <div class="bg-slate-900/80 border border-slate-700/80 rounded-lg px-2.5 py-1 text-right flex items-center gap-2">
+        <div>
+          <p class="text-[9px] text-slate-400 font-medium">TASA BCV</p>
+          <p id="display-tasa" class="text-xs font-bold text-emerald-400">Bs. 0.00</p>
+        </div>
+        <button onclick="obtenerTasaBCV()" class="text-sky-400 hover:text-sky-300 text-xs p-1" title="Actualizar Tasa en Vivo">
           <i class="fa-solid fa-arrows-rotate"></i>
         </button>
       </div>
 
-      <!-- Selector de Rol (Simulación de Sesión) -->
-      <select id="user-role-select" onchange="cambiarRol(this.value)" class="bg-slate-800 text-xs border border-slate-700 rounded-lg px-2 py-1.5 text-slate-200">
-        <option value="cajero">Rol: Cajero</option>
-        <option value="admin">Rol: Administrador</option>
+      <select id="select-role" onchange="cambiarRol(this.value)" class="bg-slate-900 text-[11px] border border-slate-700 rounded-lg px-2 py-1 text-slate-300 outline-none">
+        <option value="cajero">Cajero</option>
+        <option value="admin">Admin</option>
       </select>
     </div>
   </header>
 
   <!-- CONTENIDO PRINCIPAL -->
-  <div class="flex-1 flex overflow-hidden">
+  <main class="flex-1 flex flex-col p-3 overflow-hidden gap-3">
     
-    <!-- PANEL IZQUIERDO: Ventas y Productos -->
-    <main class="flex-1 p-4 flex flex-col gap-4 overflow-y-auto">
-      
-      <!-- Barra de Búsqueda y Escáner -->
-      <div class="glass-card p-3 rounded-xl flex gap-2">
-        <div class="relative flex-1">
-          <i class="fa-solid fa-magnifying-glass absolute left-3 top-3.5 text-slate-400"></i>
-          <input type="text" id="search-input" onkeyup="filtrarProductos()" placeholder="Buscar producto o código..." class="w-full bg-slate-900 border border-slate-700 rounded-lg pl-10 pr-4 py-2 text-sm focus:outline-none focus:border-sky-500">
+    <!-- BARRA DE BÚSQUEDA Y ESCÁNER -->
+    <div class="flex gap-2">
+      <div class="relative flex-1">
+        <i class="fa-solid fa-magnifying-glass absolute left-3 top-3 text-slate-500 text-xs"></i>
+        <input type="text" id="input-search" oninput="filtrarProductos()" placeholder="Buscar producto o código de barra..." class="w-full bg-slate-900/90 border border-slate-700/80 rounded-xl pl-8 pr-3 py-2 text-xs text-slate-200 placeholder-slate-500 focus:outline-none focus:border-sky-500 transition">
+      </div>
+      <button onclick="toggleCamara Scanner()" class="bg-slate-800 hover:bg-slate-700 text-sky-400 border border-slate-700 px-3 rounded-xl flex items-center gap-1.5 text-xs font-medium transition">
+        <i class="fa-solid fa-barcode"></i> Escaneo
+      </button>
+    </div>
+
+    <!-- VISOR DE CÁMARA ESCÁNER (OCULTO POR DEFECTO) -->
+    <div id="scanner-container" class="hidden bg-slate-900 border border-sky-500/50 rounded-xl p-2 relative">
+      <div id="reader" class="w-full rounded-lg overflow-hidden"></div>
+      <button onclick="toggleCamaraScanner()" class="absolute top-4 right-4 bg-rose-600 text-white w-7 h-7 rounded-full flex items-center justify-center text-xs">
+        <i class="fa-solid fa-xmark"></i>
+      </button>
+    </div>
+
+    <!-- GRILLA DE PRODUCTOS -->
+    <div id="grid-productos" class="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 gap-2.5 overflow-y-auto flex-1 no-scrollbar pr-0.5">
+      <!-- Carga dinámica -->
+    </div>
+
+  </main>
+
+  <!-- SECCIÓN INFERIOR: CARRITO Y RESUMEN -->
+  <footer class="neon-card border-t border-slate-800 p-3 flex flex-col gap-2 z-10">
+    <div class="flex justify-between items-center text-xs">
+      <span class="text-slate-400 font-medium flex items-center gap-1">
+        <i class="fa-solid fa-cart-shopping text-sky-400"></i> Orden (<span id="cart-count">0</span>)
+      </span>
+      <button onclick="vaciarCarrito()" class="text-rose-400 hover:text-rose-300 text-[11px]">Vaciar</button>
+    </div>
+
+    <!-- VISTA PREVIA DEL CARRITO -->
+    <div id="cart-preview" class="max-h-24 overflow-y-auto space-y-1.5 no-scrollbar">
+      <!-- Items del carrito -->
+    </div>
+
+    <!-- TOTALES -->
+    <div class="pt-2 border-t border-slate-800/80 flex justify-between items-center">
+      <div>
+        <p class="text-[10px] text-slate-400">TOTAL ESTIMADO</p>
+        <p id="total-usd" class="text-xs font-semibold text-slate-300">$0.00</p>
+        <p id="total-bs" class="text-base font-bold neon-text-green">Bs. 0.00</p>
+      </div>
+
+      <button onclick="abrirModalCobro()" class="neon-btn-green text-white font-bold px-6 py-2.5 rounded-xl text-xs flex items-center gap-2 transition">
+        <i class="fa-solid fa-cash-register"></i> COBRAR
+      </button>
+    </div>
+  </footer>
+
+  <!-- MODAL DE COBRO -->
+  <div id="modal-cobro" class="fixed inset-0 bg-slate-950/80 backdrop-blur-md hidden flex items-end sm:items-center justify-center p-0 sm:p-4 z-50">
+    <div class="neon-card w-full sm:max-w-md rounded-t-2xl sm:rounded-2xl p-4 space-y-4 border border-slate-700">
+      <div class="flex justify-between items-center border-b border-slate-800 pb-2">
+        <h3 class="font-bold text-sm text-slate-100">Procesar Pago</h3>
+        <button onclick="cerrarModalCobro()" class="text-slate-400 hover:text-slate-200 text-sm"><i class="fa-solid fa-xmark"></i></button>
+      </div>
+
+      <div class="bg-slate-900/90 p-3 rounded-xl border border-slate-800 space-y-1">
+        <div class="flex justify-between text-xs text-slate-400">
+          <span>Monto Total:</span>
+          <span id="modal-total-usd" class="text-slate-200 font-bold">$0.00</span>
         </div>
-        <button onclick="abrirEscaner()" class="bg-sky-600 hover:bg-sky-500 text-white px-4 py-2 rounded-lg flex items-center gap-2 text-sm font-medium transition">
-          <i class="fa-solid fa-barcode"></i> Escanear
-        </button>
-      </div>
-
-      <!-- Grilla de Productos -->
-      <div id="grid-productos" class="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 gap-3 flex-1 overflow-y-auto pr-1">
-        <!-- Productos cargados dinámicamente -->
-      </div>
-    </main>
-
-    <!-- PANEL DERECHO: Carrito y Cobro -->
-    <aside class="w-96 glass-card border-l border-slate-700 flex flex-col">
-      <div class="p-4 border-b border-slate-700 flex justify-between items-center">
-        <h2 class="font-bold text-lg text-slate-200 flex items-center gap-2">
-          <i class="fa-solid fa-cart-shopping text-sky-400"></i> Orden Actual
-        </h2>
-        <button onclick="vaciarCarrito()" class="text-xs text-rose-400 hover:text-rose-300">Vaciar</button>
-      </div>
-
-      <!-- Items del Carrito -->
-      <div id="cart-items" class="flex-1 overflow-y-auto p-4 space-y-3">
-        <!-- Detalle de la venta -->
-      </div>
-
-      <!-- Totales y Resumen -->
-      <div class="p-4 border-t border-slate-700 bg-slate-900/50 space-y-3">
-        <div class="flex justify-between text-sm text-slate-400">
-          <span>Total en USD:</span>
-          <span id="total-usd" class="font-bold text-slate-200">$0.00</span>
+        <div class="flex justify-between text-sm font-bold">
+          <span class="text-slate-300">Total a pagar:</span>
+          <span id="modal-total-bs" class="text-emerald-400">Bs. 0.00</span>
         </div>
-        <div class="flex justify-between text-lg font-bold">
-          <span class="text-slate-200">Total en Bs:</span>
-          <span id="total-bs" class="text-emerald-400">Bs. 0.00</span>
-        </div>
-
-        <!-- Botones de Acción -->
-        <button onclick="procesarCobro()" class="w-full bg-emerald-600 hover:bg-emerald-500 text-white font-bold py-3 rounded-xl shadow-lg transition flex justify-center items-center gap-2">
-          <i class="fa-solid fa-cash-register"></i> Registrar Venta
-        </button>
       </div>
-    </aside>
 
+      <!-- Pagos Ingresados -->
+      <div class="space-y-2">
+        <label class="text-[11px] text-slate-400 font-medium">Ingresar Pagos Recibidos:</label>
+        <div class="grid grid-cols-2 gap-2">
+          <div>
+            <span class="text-[10px] text-slate-400">Efectivo USD ($)</span>
+            <input type="number" step="0.01" id="pay-usd" oninput="calcularVuelto()" placeholder="0.00" class="w-full bg-slate-900 border border-slate-700 rounded-lg p-2 text-xs text-slate-100 focus:outline-none focus:border-sky-500">
+          </div>
+          <div>
+            <span class="text-[10px] text-slate-400">Pago Móvil / Bs</span>
+            <input type="number" step="0.01" id="pay-bs" oninput="calcularVuelto()" placeholder="0.00" class="w-full bg-slate-900 border border-slate-700 rounded-lg p-2 text-xs text-slate-100 focus:outline-none focus:border-sky-500">
+          </div>
+        </div>
+      </div>
+
+      <!-- Vuelto Calculado -->
+      <div class="bg-slate-900/50 p-2.5 rounded-lg border border-slate-800 text-center">
+        <p class="text-[10px] text-slate-400">VUELTO CORRESPONDIENTE</p>
+        <p id="vuelto-bs" class="text-sm font-bold text-sky-400">Bs. 0.00</p>
+        <p id="vuelto-usd" class="text-[11px] text-slate-400">$0.00</p>
+      </div>
+
+      <button onclick="finalizarVenta()" class="w-full neon-btn-green text-white font-bold py-3 rounded-xl text-xs tracking-wider transition">
+        CONFIRMAR REGISTRO DE VENTA
+      </button>
+    </div>
   </div>
 
-  <!-- SCRIPT DE FUNCIONALIDAD -->
+  <!-- SCRIPT CON LÓGICA INTEGRADA -->
   <script>
-    // Configuración Inicial de Firebase (Reemplazar con tus credenciales si usas consola propia)
-    const firebaseConfig = {
-      apiKey: "AIzaSyDemoKeyOnly_GEO_MERCADO",
-      authDomain: "geo-mercado-pos.firebaseapp.com",
-      databaseURL: "https://geo-mercado-pos-default-rtdb.firebaseio.com",
-      projectId: "geo-mercado-pos",
-      storageBucket: "geo-mercado-pos.appspot.com",
-      messagingSenderId: "123456789",
-      appId: "1:123456789:web:abcdef"
-    };
+    // Variables de Estado Centralizado
+    var tasaDia = parseFloat(localStorage.getItem('geomercado_tasa_v19')) || 623.02;
+    var rolActual = localStorage.getItem('geomercado_rol') || 'cajero';
+    var productos = JSON.parse(localStorage.getItem('geomercado_prods')) || [
+      { id: '1', nombre: 'Harina PAN 1kg', precioUSD: 1.10, stock: 50, codigo: '7591001001' },
+      { id: '2', nombre: 'Arroz Primor 1kg', precioUSD: 1.25, stock: 40, codigo: '7591002002' },
+      { id: '3', nombre: 'Aceite Mazeite 1L', precioUSD: 3.50, stock: 20, codigo: '7591003003' },
+      { id: '4', nombre: 'Azúcar Montalbán 1kg', precioUSD: 1.15, stock: 30, codigo: '7591004004' }
+    ];
+    var carrito = [];
+    var html5QrcodeScanner = null;
 
-    // Inicializar Firebase
-    if (!firebase.apps.length) {
-      firebase.initializeApp(firebaseConfig);
-    }
-    const db = firebase.database();
-
-    // Estado Local de la Aplicación
-    let tasaBCV = parseFloat(localStorage.getItem('geo_tasa_bcv')) || 623.02;
-    let rolActual = localStorage.getItem('geo_rol') || 'admin';
-    let productos = [];
-    let carrito = [];
-
-    // 1. OBTENER TASA BCV OFICIAL EN TIEMPO REAL
+    // 1. OBTENER TASA BCV OFICIAL DESDE LA API
     async function obtenerTasaBCV() {
       try {
-        const res = await fetch('https://rates.dolarvzla.com/bcv/current.json');
-        const data = await res.json();
-        if (data && data.price) {
-          tasaBCV = parseFloat(data.price);
-          localStorage.setItem('geo_tasa_bcv', tasaBCV);
-          document.getElementById('tasa-val').innerText = `Bs. ${tasaBCV.toFixed(2)}`;
+        const respuesta = await fetch('https://rates.dolarvzla.com/bcv/current.json');
+        const datos = await respuesta.json();
+        if (datos && datos.price) {
+          tasaDia = parseFloat(datos.price);
+          localStorage.setItem('geomercado_tasa_v19', tasaDia);
+          actualizarPantallaTasa();
+          renderizarProductos(productos);
           renderizarCarrito();
         }
       } catch (e) {
-        console.warn('No se pudo obtener la tasa en vivo, usando respaldo local:', tasaBCV);
-        document.getElementById('tasa-val').innerText = `Bs. ${tasaBCV.toFixed(2)}`;
+        console.warn('Uso de tasa local por fallo de red:', tasaDia);
+        actualizarPantallaTasa();
       }
     }
 
-    // 2. CAMBIO Y CONTROL DE ROLES (ADMIN / CAJERO)
-    function cambiarRol(nuevoRol) {
-      rolActual = nuevoRol;
-      localStorage.setItem('geo_rol', nuevoRol);
-      const badge = document.getElementById('role-badge');
-      badge.innerText = nuevoRol === 'admin' ? 'Administrador Main' : 'Cajero / Terminal';
-      badge.className = `text-xs px-2 py-1 rounded-full font-semibold ${nuevoRol === 'admin' ? 'bg-sky-900 text-sky-300 border border-sky-500' : 'bg-slate-700 text-slate-300'}`;
+    function actualizarPantallaTasa() {
+      document.getElementById('display-tasa').innerText = `Bs. ${tasaDia.toFixed(2)}`;
     }
 
-    // 3. SINCRONIZACIÓN DE PRODUCTOS EN TIEMPO REAL
-    function sincronizarInventario() {
-      // Escucha cambios en tiempo real desde la base de datos principal
-      db.ref('inventario').on('value', (snapshot) => {
-        const data = snapshot.val();
-        if (data) {
-          productos = Object.keys(data).map(key => ({ id: key, ...data[key] }));
-        } else {
-          // Inventario de prueba inicial si la BD está vacía
-          productos = [
-            { id: '1', nombre: 'Harina PAN 1kg', precioUSD: 1.10, stock: 45, codigo: '7591001001' },
-            { id: '2', nombre: 'Arroz Primor 1kg', precioUSD: 1.25, stock: 30, codigo: '7591002002' },
-            { id: '3', nombre: 'Aceite Mazeite 1L', precioUSD: 3.50, stock: 15, codigo: '7591003003' },
-            { id: '4', nombre: 'Azúcar Montalbán 1kg', precioUSD: 1.15, stock: 20, codigo: '7591004004' }
-          ];
-        }
-        renderizarProductos(productos);
-      });
+    // 2. CONTROL DE ROLES
+    function cambiarRol(rol) {
+      rolActual = rol;
+      localStorage.setItem('geomercado_rol', rol);
+      document.getElementById('role-indicator').innerText = rol === 'admin' ? 'Administrador Main' : 'Terminal Cajero';
     }
 
-    // Renderizar Productos en Pantalla
+    // 3. RENDERIZADO DE PRODUCTOS
     function renderizarProductos(lista) {
       const grid = document.getElementById('grid-productos');
       grid.innerHTML = '';
       lista.forEach(p => {
-        const precioBs = (p.precioUSD * tasaBCV).toFixed(2);
+        const precioBs = (p.precioUSD * tasaDia).toFixed(2);
         grid.innerHTML += `
-          <div onclick="agregarAlCarrito('${p.id}')" class="glass-card p-3 rounded-xl hover:neon-border transition cursor-pointer flex flex-col justify-between">
+          <div onclick="agregarAlCarrito('${p.id}')" class="neon-card p-2.5 rounded-xl hover:neon-border cursor-pointer flex flex-col justify-between transition">
             <div>
-              <span class="text-xs text-slate-400 font-mono">Cod: ${p.codigo}</span>
-              <h3 class="font-bold text-sm text-slate-100 line-clamp-2">${p.nombre}</h3>
+              <p class="text-[9px] text-slate-500 font-mono">#${p.codigo}</p>
+              <h4 class="font-medium text-xs text-slate-200 line-clamp-2">${p.nombre}</h4>
             </div>
-            <div class="mt-3 flex justify-between items-end">
+            <div class="mt-2 flex justify-between items-end">
               <div>
-                <p class="text-xs text-slate-400">$${p.precioUSD.toFixed(2)}</p>
-                <p class="text-sm font-bold text-emerald-400">Bs. ${precioBs}</p>
+                <p class="text-[10px] text-slate-400">$${p.precioUSD.toFixed(2)}</p>
+                <p class="text-xs font-bold text-emerald-400">Bs. ${precioBs}</p>
               </div>
-              <span class="text-xs px-2 py-0.5 rounded bg-slate-800 text-slate-300">Stock: ${p.stock}</span>
+              <span class="text-[9px] bg-slate-800 text-slate-400 px-1.5 py-0.5 rounded">St: ${p.stock}</span>
             </div>
           </div>
         `;
       });
     }
 
-    // 4. LÓGICA DE CARRITO Y COBRO
+    // 4. MANEJO DE CARRITO
     function agregarAlCarrito(id) {
       const prod = productos.find(p => p.id === id);
-      if (!prod || prod.stock <= 0) return alert('Producto agotado');
+      if (!prod || prod.stock <= 0) return alert('Producto sin stock disponible');
 
-      const itemEnCarrito = carrito.find(item => item.id === id);
-      if (itemEnCarrito) {
-        if (itemEnCarrito.cant < prod.stock) itemEnCarrito.cant++;
+      const item = carrito.find(i => i.id === id);
+      if (item) {
+        if (item.cant < prod.stock) item.cant++;
       } else {
         carrito.push({ ...prod, cant: 1 });
       }
@@ -218,35 +241,39 @@
     }
 
     function renderizarCarrito() {
-      const cartContainer = document.getElementById('cart-items');
-      cartContainer.innerHTML = '';
+      const contenedor = document.getElementById('cart-preview');
+      const contador = document.getElementById('cart-count');
+      contenedor.innerHTML = '';
+      
       let totalUSD = 0;
+      let totalItems = 0;
 
       carrito.forEach((item, index) => {
         const subtotal = item.precioUSD * item.cant;
         totalUSD += subtotal;
-        cartContainer.innerHTML += `
-          <div class="flex items-center justify-between bg-slate-800/60 p-2.5 rounded-lg border border-slate-700/50">
-            <div class="flex-1">
-              <h4 class="text-xs font-semibold text-slate-200">${item.nombre}</h4>
-              <p class="text-xs text-slate-400">$${item.precioUSD.toFixed(2)} x ${item.cant}</p>
+        totalItems += item.cant;
+
+        contenedor.innerHTML += `
+          <div class="flex justify-between items-center bg-slate-900/80 p-1.5 rounded-lg border border-slate-800 text-xs">
+            <div class="truncate flex-1">
+              <p class="font-medium text-slate-200 truncate">${item.nombre}</p>
+              <p class="text-[10px] text-slate-400">$${item.precioUSD.toFixed(2)} x ${item.cant}</p>
             </div>
             <div class="flex items-center gap-2">
-              <span class="text-sm font-bold text-emerald-400">$${subtotal.toFixed(2)}</span>
-              <button onclick="eliminarDelCarrito(${index})" class="text-rose-400 hover:text-rose-300 text-xs p-1">
-                <i class="fa-solid fa-trash"></i>
-              </button>
+              <span class="font-bold text-emerald-400">$${subtotal.toFixed(2)}</span>
+              <button onclick="quitarDelCarrito(${index})" class="text-rose-400 text-[10px] px-1"><i class="fa-solid fa-trash"></i></button>
             </div>
           </div>
         `;
       });
 
-      const totalBs = totalUSD * tasaBCV;
+      const totalBs = totalUSD * tasaDia;
+      contador.innerText = totalItems;
       document.getElementById('total-usd').innerText = `$${totalUSD.toFixed(2)}`;
       document.getElementById('total-bs').innerText = `Bs. ${totalBs.toFixed(2)}`;
     }
 
-    function eliminarDelCarrito(index) {
+    function quitarDelCarrito(index) {
       carrito.splice(index, 1);
       renderizarCarrito();
     }
@@ -256,48 +283,86 @@
       renderizarCarrito();
     }
 
-    // 5. ENVIAR VENTA A LA MEMORIA CENTRAL (FIREBASE)
-    function procesarCobro() {
-      if (carrito.length === 0) return alert('El carrito está vacío');
+    // 5. ESCÁNER DE CÓDIGO DE BARRAS
+    function toggleCamaraScanner() {
+      const cont = document.getElementById('scanner-container');
+      if (cont.classList.contains('hidden')) {
+        cont.classList.remove('hidden');
+        html5QrcodeScanner = new Html5QrcodeScanner("reader", { fps: 10, qrbox: 250 });
+        html5QrcodeScanner.render((decodedText) => {
+          const prod = productos.find(p => p.codigo === decodedText);
+          if (prod) {
+            agregarAlCarrito(prod.id);
+            toggleCamaraScanner();
+          }
+        });
+      } else {
+        if (html5QrcodeScanner) html5QrcodeScanner.clear();
+        cont.classList.add('hidden');
+      }
+    }
 
+    // 6. PROCESO DE COBRO Y VUELTOS
+    function abrirModalCobro() {
+      if (carrito.length === 0) return alert('Selecciona al menos un producto');
       const totalUSD = carrito.reduce((sum, i) => sum + (i.precioUSD * i.cant), 0);
-      const totalBs = totalUSD * tasaBCV;
+      const totalBs = totalUSD * tasaDia;
 
-      const venta = {
-        fecha: new Date().toISOString(),
-        cajeroRol: rolActual,
-        items: carrito,
-        montoUSD: totalUSD,
-        montoBs: totalBs,
-        tasaAplicada: tasaBCV
-      };
+      document.getElementById('modal-total-usd').innerText = `$${totalUSD.toFixed(2)}`;
+      document.getElementById('modal-total-bs').innerText = `Bs. ${totalBs.toFixed(2)}`;
+      document.getElementById('modal-cobro').classList.remove('hidden');
+    }
 
-      // Guardar en la base de datos principal centralizada
-      db.ref('ventas_registradas').push(venta).then(() => {
-        alert('✅ Venta registrada y sincronizada exitosamente con la central');
-        vaciarCarrito();
-      }).catch(err => {
-        console.error('Error al guardar:', err);
-        alert('Venta procesada localmente (Modo Offline)');
-        vaciarCarrito();
+    function cerrarModalCobro() {
+      document.getElementById('modal-cobro').classList.add('hidden');
+    }
+
+    function calcularVuelto() {
+      const totalUSD = carrito.reduce((sum, i) => sum + (i.precioUSD * i.cant), 0);
+      const totalBs = totalUSD * tasaDia;
+
+      const payUSD = parseFloat(document.getElementById('pay-usd').value) || 0;
+      const payBs = parseFloat(document.getElementById('pay-bs').value) || 0;
+
+      const totalIngresadoBs = (payUSD * tasaDia) + payBs;
+      const vueltoBs = totalIngresadoBs - totalBs;
+      const vueltoUSD = vueltoBs / tasaDia;
+
+      if (vueltoBs >= 0) {
+        document.getElementById('vuelto-bs').innerText = `Bs. ${vueltoBs.toFixed(2)}`;
+        document.getElementById('vuelto-usd').innerText = `$${vueltoUSD.toFixed(2)}`;
+      } else {
+        document.getElementById('vuelto-bs').innerText = `Faltan Bs. ${Math.abs(vueltoBs).toFixed(2)}`;
+        document.getElementById('vuelto-usd').innerText = `Faltan $${Math.abs(vueltoUSD).toFixed(2)}`;
+      }
+    }
+
+    function finalizarVenta() {
+      // Descontar inventario
+      carrito.forEach(item => {
+        const p = productos.find(prod => prod.id === item.id);
+        if (p) p.stock -= item.cant;
       });
+
+      localStorage.setItem('geomercado_prods', JSON.stringify(productos));
+      alert('Venta procesada con éxito');
+      vaciarCarrito();
+      cerrarModalCobro();
+      renderizarProductos(productos);
     }
 
-    // Filtrar Productos en la Búsqueda
     function filtrarProductos() {
-      const query = document.getElementById('search-input').value.toLowerCase();
-      const filtrados = productos.filter(p => 
-        p.nombre.toLowerCase().includes(query) || p.codigo.includes(query)
-      );
-      renderizarProductos(filtrados);
+      const q = document.getElementById('input-search').value.toLowerCase();
+      const res = productos.filter(p => p.nombre.toLowerCase().includes(q) || p.codigo.includes(q));
+      renderizarProductos(res);
     }
 
-    // Inicialización al cargar la ventana
-    window.onload = () => {
-      document.getElementById('user-role-select').value = rolActual;
+    // Inicialización del POS
+    window.onload = function() {
+      document.getElementById('select-role').value = rolActual;
       cambiarRol(rolActual);
       obtenerTasaBCV();
-      sincronizarInventario();
+      renderizarProductos(productos);
     };
   </script>
 </body>
