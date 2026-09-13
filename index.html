@@ -3,15 +3,15 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>Geo Mercado V19.1</title>
-    
+    <title>Geo Mercado V19.5</title>
+
     <!-- Configuración PWA -->
     <link rel="manifest" href="manifest.json">
     <meta name="theme-color" content="#0d1117">
-    
+
     <!-- Estilos -->
     <link rel="stylesheet" href="css/styles.css">
-    
+
     <!-- Librerías Externas -->
     <script src="https://unpkg.com/html5-qrcode" type="text/javascript"></script>
     <script src="https://cdn.jsdelivr.net/npm/tesseract.js@5/dist/tesseract.min.js"></script>
@@ -35,6 +35,171 @@
     <input type="file" id="file-barcode-reg" accept="image/*" style="display:none;" onchange="window.escanearBarcodeFoto(event, 'registro')">
     <input type="file" id="file-barcode-caja" accept="image/*" style="display:none;" onchange="window.escanearBarcodeFoto(event, 'caja')">
     <div id="hidden-qr-reader" style="display:none;"></div>
+
+    <!-- NAVEGACIÓN Y ENCABEZADO -->
+    <header class="app-header">
+        <h1 id="header-titulo">GEOMERCADO</h1>
+        <div class="tasa-badge">
+            <span>BCV:</span>
+            <input type="number" id="input-tasa" step="0.01" value="36.50" onchange="window.actualizarTasa(this.value)">
+        </div>
+    </header>
+
+    <nav class="nav-tabs">
+        <button class="tab-btn active" onclick="window.cambiarPestaña('caja')">🛒 Caja</button>
+        <button class="tab-btn" onclick="window.cambiarPestaña('inventario')">📦 Inventario</button>
+        <button class="tab-btn" onclick="window.cambiarPestaña('cierre')">📊 Cierre</button>
+        <button class="tab-btn" onclick="window.cambiarPestaña('perfil')">⚙️ Ajustes</button>
+    </nav>
+
+    <main class="main-container">
+
+        <!-- SECCIÓN 1: CAJA / VENTA -->
+        <section id="sec-caja" class="tab-content active">
+            <div class="caja-actions">
+                <button class="btn-scan" onclick="window.abrirCamaraEnVivo('caja')">📷 Escanear Código</button>
+                <button class="btn-secondary" onclick="window.recuperarFactura()">📂 Recuperar Pausa</button>
+            </div>
+
+            <div class="search-box">
+                <input type="text" id="caja-buscar" placeholder="🔍 Buscar producto..." oninput="window.filtrarProductosCaja(this.value)">
+            </div>
+            <div id="caja-sugerencias" class="sugerencias-list"></div>
+
+            <div class="carrito-container">
+                <h3>Carrito de Compras</h3>
+                <div id="carrito-items" class="carrito-list"></div>
+                
+                <div class="totales-card">
+                    <div class="total-row">
+                        <span>Total USD:</span>
+                        <strong id="total-usd">$0.00</strong>
+                    </div>
+                    <div class="total-row main-total">
+                        <span>Total VES:</span>
+                        <strong id="total-ves">Bs. 0,00</strong>
+                    </div>
+                </div>
+            </div>
+
+            <!-- MÉTODOS DE PAGO -->
+            <div class="pago-container">
+                <h4>Métodos de Pago</h4>
+                <div class="pago-grid">
+                    <div class="pago-field">
+                        <label>💳 Punto (VES)</label>
+                        <input type="text" id="pay-ptv" placeholder="0,00" oninput="window.mascaraMoneda(this); window.calcularCaja();">
+                    </div>
+                    <div class="pago-field">
+                        <label>📲 Pago Móvil (VES)</label>
+                        <input type="text" id="pay-pm" placeholder="0,00" oninput="window.mascaraMoneda(this); window.calcularCaja();">
+                    </div>
+                    <div class="pago-field">
+                        <label>💵 Efectivo ($)</label>
+                        <input type="number" id="pay-usd" placeholder="0.00" step="0.01" oninput="window.calcularCaja();">
+                    </div>
+                    <div class="pago-field">
+                        <label>💵 Efectivo (VES)</label>
+                        <input type="text" id="pay-ves" placeholder="0,00" oninput="window.mascaraMoneda(this); window.calcularCaja();">
+                    </div>
+                </div>
+
+                <div class="pm-ocr-box">
+                    <label class="btn-ocr">
+                        📄 Cargar Capture Pago Móvil (OCR)
+                        <input type="file" accept="image/*" style="display:none;" onchange="window.escanearCapturePagoCompleto(event)">
+                    </label>
+                    <input type="text" id="pm-ref" placeholder="Ref. Pago Móvil" style="margin-top:5px;">
+                    <input type="text" id="pm-phone" placeholder="Tlf. Cliente (para WhatsApp)" style="margin-top:5px;">
+                    <button class="btn-ws" onclick="window.enviarDatosPagoMovilWS()">📲 Enviar Datos PM por WhatsApp</button>
+                    <div id="pm-status-banner" class="pm-status-banner" style="display:none;"></div>
+                </div>
+
+                <!-- DATOS DEL CLIENTE -->
+                <div class="cliente-box">
+                    <input type="text" id="cliente-nombre" placeholder="Nombre Cliente (Opcional)">
+                    <input type="text" id="cliente-cedula" placeholder="CI / RIF">
+                    <input type="text" id="cliente-dir" placeholder="Dirección">
+                </div>
+
+                <div class="caja-buttons">
+                    <button class="btn-cobrar" onclick="window.procesarCobro(true)">🖨️ Cobrar con Ticket</button>
+                    <button class="btn-cobrar-solo" onclick="window.procesarCobro(false)">✅ Cobrar Solo</button>
+                    <button class="btn-cancelar" onclick="window.limpiarCaja(false)">❌ Cancelar</button>
+                </div>
+            </div>
+        </section>
+
+        <!-- SECCIÓN 2: INVENTARIO -->
+        <section id="sec-inventario" class="tab-content">
+            <h3>Registro de Producto</h3>
+            <div class="form-grid">
+                <input type="text" id="prod-nombre" placeholder="Nombre del producto">
+                <div class="barcode-input-group">
+                    <input type="text" id="prod-serial" placeholder="Código de Barras">
+                    <button onclick="window.abrirCamaraEnVivo('registro')">📷</button>
+                </div>
+                <input type="number" id="prod-costo" placeholder="Costo USD" step="0.01">
+                <input type="number" id="prod-precio" placeholder="Precio Venta USD" step="0.01">
+                <input type="number" id="prod-qty" placeholder="Cantidad / Stock">
+                <button class="btn-cobrar" onclick="window.guardarProducto()">💾 Guardar Producto</button>
+            </div>
+
+            <h3 style="margin-top:20px;">Lista de Productos</h3>
+            <div id="lista-productos" class="productos-list"></div>
+        </section>
+
+        <!-- SECCIÓN 3: CIERRE DE CAJA -->
+        <section id="sec-cierre" class="tab-content">
+            <h3>Resumen del Día</h3>
+            <div class="resumen-grid">
+                <div class="resumen-card"><span>Punto de Venta:</span><strong id="resumen-ptv">Bs. 0,00</strong></div>
+                <div class="resumen-card"><span>Pago Móvil:</span><strong id="resumen-pm">Bs. 0,00</strong></div>
+                <div class="resumen-card"><span>Efectivo Bs:</span><strong id="resumen-ves">Bs. 0,00</strong></div>
+                <div class="resumen-card"><span>Efectivo USD:</span><strong id="resumen-efectivo-usd">$0.00</strong></div>
+                <div class="resumen-card highlight"><span>Ganancia Neta:</span><strong id="resumen-ganancia-ves">Bs. 0,00</strong></div>
+            </div>
+
+            <div class="cierre-actions" style="margin-top:15px;">
+                <button class="btn-cobrar" onclick="window.imprimirCierreZ()">🖨️ Imprimir Cierre Z</button>
+                <button class="btn-cancelar" onclick="window.borrarHistorial()">⚠️ Reiniciar Día</button>
+            </div>
+
+            <h3 style="margin-top:20px;">Historial de Ventas</h3>
+            <div id="lista-historial-ventas"></div>
+        </section>
+
+        <!-- SECCIÓN 4: PERFIL / AJUSTES -->
+        <section id="sec-perfil" class="tab-content">
+            <h3>Perfil del Negocio</h3>
+            <div class="form-grid">
+                <input type="text" id="cfg-nombre" placeholder="Nombre Comercial">
+                <input type="text" id="cfg-rif" placeholder="RIF / Identificación">
+                <input type="text" id="cfg-dir" placeholder="Dirección">
+                <input type="text" id="cfg-tlf" placeholder="Teléfono de Contacto">
+                
+                <h4>Datos para Pago Móvil</h4>
+                <input type="text" id="cfg-pm-banco" placeholder="Banco (ej: Banesco, BDV)">
+                <input type="text" id="cfg-pm-cedula" placeholder="Cédula / RIF Destino">
+                <input type="text" id="cfg-pm-tlf" placeholder="Teléfono Pago Móvil">
+
+                <button class="btn-cobrar" onclick="window.guardarPerfil()">💾 Guardar Configuración</button>
+            </div>
+        </section>
+
+    </main>
+
+    <!-- Modal de Confirmación Global -->
+    <div id="modal-confirmar" class="modal-overlay" style="display:none;">
+        <div class="modal-content confirm-box">
+            <h3 id="confirm-titulo">Confirmación</h3>
+            <p id="confirm-mensaje"></p>
+            <div class="confirm-buttons">
+                <button id="btn-confirm-aceptar" class="btn-cobrar">Aceptar</button>
+                <button onclick="document.getElementById('modal-confirmar').style.display='none'" class="btn-cancelar">Cancelar</button>
+            </div>
+        </div>
+    </div>
 
     <!-- MÓDULOS JAVASCRIPT EN ORDEN -->
     <script src="js/app.js"></script>
