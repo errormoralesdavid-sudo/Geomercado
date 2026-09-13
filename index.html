@@ -4,22 +4,15 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
     <title>Geo Mercado V19.5</title>
-
-    <!-- Configuración PWA -->
     <link rel="manifest" href="manifest.json">
     <meta name="theme-color" content="#0d1117">
-
-    <!-- Estilos -->
-<link rel="stylesheet" href="styles.css">
-    
-
-    <!-- Librerías Externas -->
-    <script src="https://unpkg.com/html5-qrcode" type="text/javascript"></script>
+    <link rel="stylesheet" href="styles.css">
+    <script src="https://unpkg.com/html5-qrcode"></script>
     <script src="https://cdn.jsdelivr.net/npm/tesseract.js@5/dist/tesseract.min.js"></script>
 </head>
 <body>
 
-    <!-- Modales para Escáner y Feedback -->
+    <!-- Modales -->
     <div id="modal-camara" class="modal-overlay" style="display:none;">
         <div class="modal-content">
             <div id="interactive-scanner"></div>
@@ -32,12 +25,11 @@
         <p id="scan-feedback-msg"></p>
     </div>
 
-    <!-- Lectores ocultos para archivos de imagen -->
     <input type="file" id="file-barcode-reg" accept="image/*" style="display:none;" onchange="window.escanearBarcodeFoto(event, 'registro')">
     <input type="file" id="file-barcode-caja" accept="image/*" style="display:none;" onchange="window.escanearBarcodeFoto(event, 'caja')">
     <div id="hidden-qr-reader" style="display:none;"></div>
 
-    <!-- NAVEGACIÓN Y ENCABEZADO -->
+    <!-- Encabezado y Navegación -->
     <header class="app-header">
         <h1 id="header-titulo">GEOMERCADO</h1>
         <div class="tasa-badge">
@@ -55,7 +47,7 @@
 
     <main class="main-container">
 
-        <!-- SECCIÓN 1: CAJA / VENTA -->
+        <!-- Caja -->
         <section id="sec-caja" class="tab-content active">
             <div class="caja-actions">
                 <button class="btn-scan" onclick="window.abrirCamaraEnVivo('caja')">📷 Escanear Código</button>
@@ -83,7 +75,6 @@
                 </div>
             </div>
 
-            <!-- MÉTODOS DE PAGO -->
             <div class="pago-container">
                 <h4>Métodos de Pago</h4>
                 <div class="pago-grid">
@@ -116,7 +107,6 @@
                     <div id="pm-status-banner" class="pm-status-banner" style="display:none;"></div>
                 </div>
 
-                <!-- DATOS DEL CLIENTE -->
                 <div class="cliente-box">
                     <input type="text" id="cliente-nombre" placeholder="Nombre Cliente (Opcional)">
                     <input type="text" id="cliente-cedula" placeholder="CI / RIF">
@@ -131,8 +121,8 @@
             </div>
         </section>
 
-        <!-- SECCIÓN 2: INVENTARIO -->
-        <section id="sec-inventario" class="tab-content">
+        <!-- Inventario -->
+        <section id="sec-inventario" class="tab-content" style="display:none;">
             <h3>Registro de Producto</h3>
             <div class="form-grid">
                 <input type="text" id="prod-nombre" placeholder="Nombre del producto">
@@ -150,8 +140,8 @@
             <div id="lista-productos" class="productos-list"></div>
         </section>
 
-        <!-- SECCIÓN 3: CIERRE DE CAJA -->
-        <section id="sec-cierre" class="tab-content">
+        <!-- Cierre -->
+        <section id="sec-cierre" class="tab-content" style="display:none;">
             <h3>Resumen del Día</h3>
             <div class="resumen-grid">
                 <div class="resumen-card"><span>Punto de Venta:</span><strong id="resumen-ptv">Bs. 0,00</strong></div>
@@ -170,8 +160,8 @@
             <div id="lista-historial-ventas"></div>
         </section>
 
-        <!-- SECCIÓN 4: PERFIL / AJUSTES -->
-        <section id="sec-perfil" class="tab-content">
+        <!-- Perfil -->
+        <section id="sec-perfil" class="tab-content" style="display:none;">
             <h3>Perfil del Negocio</h3>
             <div class="form-grid">
                 <input type="text" id="cfg-nombre" placeholder="Nombre Comercial">
@@ -190,7 +180,6 @@
 
     </main>
 
-    <!-- Modal de Confirmación Global -->
     <div id="modal-confirmar" class="modal-overlay" style="display:none;">
         <div class="modal-content confirm-box">
             <h3 id="confirm-titulo">Confirmación</h3>
@@ -202,7 +191,7 @@
         </div>
     </div>
 
-    <!-- MÓDULOS JAVASCRIPT EN ORDEN -->
+    <!-- Carga de módulos JavaScript -->
     <script src="js/app.js"></script>
     <script src="js/ui-effects.js"></script>
     <script src="js/scanner.js"></script>
